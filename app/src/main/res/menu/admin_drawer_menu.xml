@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_overview"
+            android:icon="@drawable/ic_sun"
+            android:title="Overview"
+            android:checked="true"/>
+        <item
+            android:id="@+id/nav_content"
+            android:icon="@drawable/ic_file_text"
+            android:title="Content Management"/>
+        <item
+            android:id="@+id/nav_hospitals"
+            android:icon="@drawable/ic_hospital"
+            android:title="Hospital Management"/>
+        <item
+            android:id="@+id/nav_users"
+            android:icon="@drawable/ic_user"
+            android:title="User Management"/>
+        <item
+            android:id="@+id/nav_monitoring"
+            android:icon="@drawable/ic_alert_triangle"
+            android:title="Monitoring &amp; Audit"/>
+    </group>
+
+    <group android:id="@+id/group_logout">
+        <item
+            android:id="@+id/nav_admin_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="Logout"/>
+    </group>
+</menu>

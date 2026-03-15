@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Shadow (Offset by 1,1 and 20% opacity black) -->
+    <group android:translateX="1" android:translateY="1">
+        <path
+            android:fillColor="#33000000"
+            android:pathData="M10,20v-6h4v6h5v-8h3L12,3 2,12h3v8z"/>
+    </group>
+    <!-- Main Icon (Red) -->
+    <path
+        android:fillColor="@color/emergency_red"
+        android:pathData="M10,20v-6h4v6h5v-8h3L12,3 2,12h3v8z"/>
+</vector>

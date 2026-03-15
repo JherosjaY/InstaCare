@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="24dp"
+            android:height="24dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24">
+
+            <!-- Ripple ring (starts invisible, scales up and fades) -->
+            <group android:name="ripple_group" android:pivotX="12" android:pivotY="12" android:scaleX="0.5" android:scaleY="0.5">
+                <path
+                    android:name="ripple"
+                    android:strokeColor="#22C55E"
+                    android:strokeWidth="1"
+                    android:strokeAlpha="0"
+                    android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/>
+            </group>
+
+            <!-- Main green circle -->
+            <group android:name="circle_group" android:pivotX="12" android:pivotY="12" android:scaleX="0" android:scaleY="0">
+                <path
+                    android:name="circle"
+                    android:fillColor="#22C55E"
+                    android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/>
+            </group>
+
+            <!-- Checkmark stroke -->
+            <path
+                android:name="check"
+                android:pathData="M6.5,12.5 l3.5,3.5 l8,-8"
+                android:strokeWidth="2.5"
+                android:strokeColor="@android:color/white"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round"
+                android:trimPathEnd="0"/>
+        </vector>
+    </aapt:attr>
+
+    <!-- Ripple scales up -->
+    <target android:name="ripple_group">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:duration="600"
+                    android:propertyName="scaleX"
+                    android:valueFrom="0.5"
+                    android:valueTo="1.6"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/decelerate_cubic"/>
+                <objectAnimator
+                    android:duration="600"
+                    android:propertyName="scaleY"
+                    android:valueFrom="0.5"
+                    android:valueTo="1.6"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/decelerate_cubic"/>
+            </set>
+        </aapt:attr>
+    </target>
+
+    <!-- Ripple fades in then out -->
+    <target android:name="ripple">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:duration="200"
+                    android:propertyName="strokeAlpha"
+                    android:valueFrom="0"
+                    android:valueTo="0.6"
+                    android:valueType="floatType"/>
+                <objectAnimator
+                    android:duration="400"
+                    android:startOffset="200"
+                    android:propertyName="strokeAlpha"
+                    android:valueFrom="0.6"
+                    android:valueTo="0"
+                    android:valueType="floatType"/>
+            </set>
+        </aapt:attr>
+    </target>
+
+    <!-- Circle pops in with overshoot at 100ms -->
+    <target android:name="circle_group">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:duration="500"
+                    android:startOffset="100"
+                    android:interpolator="@android:interpolator/overshoot"
+                    android:propertyName="scaleX"
+                    android:valueFrom="0"
+                    android:valueTo="1"
+                    android:valueType="floatType"/>
+                <objectAnimator
+                    android:duration="500"
+                    android:startOffset="100"
+                    android:interpolator="@android:interpolator/overshoot"
+                    android:propertyName="scaleY"
+                    android:valueFrom="0"
+                    android:valueTo="1"
+                    android:valueType="floatType"/>
+            </set>
+        </aapt:attr>
+    </target>
+
+    <!-- Checkmark draws in after circle -->
+    <target android:name="check">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="350"
+                android:startOffset="500"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
+                android:propertyName="trimPathEnd"
+                android:valueFrom="0"
+                android:valueTo="1"
+                android:valueType="floatType"/>
+        </aapt:attr>
+    </target>
+</animated-vector>

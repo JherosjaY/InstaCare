@@ -1,0 +1,45 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Shadow -->
+    <group
+        android:name="shadow_group"
+        android:pivotX="100"
+        android:pivotY="170">
+        <path
+            android:name="shadow"
+            android:pathData="M100,170 m-30,0 a30,10 0 1,0 60,0 a30,10 0 1,0 -60,0"
+            android:fillColor="#E5E7EB"
+            android:fillAlpha="0.5"/>
+    </group>
+
+    <!-- Pin Group for Bouncing -->
+    <group
+        android:name="pin_group"
+        android:pivotX="100"
+        android:pivotY="170">
+        
+        <!-- Pin Body (Red) -->
+        <path
+            android:name="pin_body"
+            android:pathData="M100,30 C72.386,30 50,52.386 50,80 C50,117.5 100,170 100,170 C100,170 150,117.5 150,80 C150,52.386 127.614,30 100,30 Z"
+            android:fillColor="@color/primary"/>
+
+        <!-- Pin Hole (White) -->
+        <path
+            android:name="pin_hole"
+            android:pathData="M100,80 m-15,0 a15,15 0 1,0 30,0 a15,15 0 1,0 -30,0"
+            android:fillColor="#FFFFFF"/>
+            
+        <!-- Pulse Effect Ring (Initially Hidden or Scaled) -->
+         <path
+            android:name="pulse_ring"
+            android:pathData="M100,80 m-30,0 a30,30 0 1,0 60,0 a30,30 0 1,0 -60,0"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="2"
+            android:strokeAlpha="0.5"/>
+    </group>
+</vector>

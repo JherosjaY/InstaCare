@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+    android:shareInterpolator="false">
+
+    <!-- Initial Pop In -->
+    <scale
+        android:duration="400"
+        android:fromXScale="0.0"
+        android:fromYScale="0.0"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:toXScale="1.0"
+        android:toYScale="1.0" />
+
+    <!-- First Beat (Expands) -->
+    <scale
+        android:startOffset="400"
+        android:duration="150"
+        android:fromXScale="1.0"
+        android:fromYScale="1.0"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:toXScale="1.2"
+        android:toYScale="1.2" />
+
+    <!-- First Beat (Contracts) -->
+    <scale
+        android:startOffset="550"
+        android:duration="150"
+        android:fromXScale="1.2"
+        android:fromYScale="1.2"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:toXScale="1.0"
+        android:toYScale="1.0" />
+
+    <!-- Second Beat (Expands - Harder) -->
+    <scale
+        android:startOffset="800"
+        android:duration="150"
+        android:fromXScale="1.0"
+        android:fromYScale="1.0"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:toXScale="1.3"
+        android:toYScale="1.3" />
+
+    <!-- Second Beat (Contracts - Slower) -->
+    <scale
+        android:startOffset="950"
+        android:duration="300"
+        android:fromXScale="1.3"
+        android:fromYScale="1.3"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:toXScale="1.0"
+        android:toYScale="1.0" />
+        
+</set>

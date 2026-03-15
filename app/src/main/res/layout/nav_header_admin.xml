@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_admin_sidebar_header"
+    android:padding="20dp"
+    android:paddingBottom="24dp"
+    android:gravity="center_horizontal">
+
+    <!-- Admin Avatar Circle -->
+    <LinearLayout
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@drawable/bg_admin_avatar_circle"
+        android:gravity="center"
+        android:layout_marginBottom="12dp"
+        android:layout_gravity="center_horizontal"
+        android:elevation="6dp">
+        <ImageView
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:src="@drawable/ic_user"
+            app:tint="#EF4444"/>
+    </LinearLayout>
+
+    <!-- Name -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="InstaCare Admin"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:letterSpacing="0.01"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="2dp"/>
+
+    <!-- Email -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="admin@instacare.com"
+        android:textSize="12sp"
+        android:textColor="#FFCDD4"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Role Badge -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_admin_badge"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="4dp">
+        <View
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:background="@drawable/circle_white_bg"
+            android:backgroundTint="#EF4444"
+            android:layout_marginEnd="6dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ADMINISTRATOR"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="#EF4444"
+            android:letterSpacing="0.08"/>
+    </LinearLayout>
+
+</LinearLayout>

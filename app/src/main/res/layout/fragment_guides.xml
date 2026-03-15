@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/dashboard_background">
+
+    <!-- Custom Top Bar (Restored from Original) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:background="@drawable/bg_topbar_surface_rounded"
+        android:elevation="8dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="First Aid Guides"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"/>
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stay safe today."
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"/>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/bookmarkListCard"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <ImageView
+                android:id="@+id/btnViewBookmarks"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_bookmark"
+                android:layout_gravity="center"
+                app:tint="@color/text_primary"/>
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Search & Filters Container (Restored from Original) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@color/dashboard_background">
+        
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/InstaSearchInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hintEnabled="false"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_search"
+            app:endIconTint="@color/input_stroke_selector">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/searchEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Search procedures (e.g., CPR)"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/categoryChips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="All"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:checked="true"
+                    android:textColor="@color/chip_text_selector"
+                    app:checkedIconTint="@color/white"
+                    app:chipBackgroundColor="@color/chip_background_selector"
+                    app:chipStrokeColor="@color/dashboard_card_border"
+                    app:chipStrokeWidth="1dp"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBleeding"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bleeding"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:textColor="@color/chip_text_selector"
+                    app:checkedIconTint="@color/white"
+                    app:chipBackgroundColor="@color/chip_background_selector"
+                    app:chipStrokeColor="@color/dashboard_card_border"
+                    app:chipStrokeWidth="1dp"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipCardiac"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cardiac"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:textColor="@color/chip_text_selector"
+                    app:checkedIconTint="@color/white"
+                    app:chipBackgroundColor="@color/chip_background_selector"
+                    app:chipStrokeColor="@color/dashboard_card_border"
+                    app:chipStrokeWidth="1dp"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBurn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Burn"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:textColor="@color/chip_text_selector"
+                    app:checkedIconTint="@color/white"
+                    app:chipBackgroundColor="@color/chip_background_selector"
+                    app:chipStrokeColor="@color/dashboard_card_border"
+                    app:chipStrokeWidth="1dp"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipChoking"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Choking"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:textColor="@color/chip_text_selector"
+                    app:checkedIconTint="@color/white"
+                    app:chipBackgroundColor="@color/chip_background_selector"
+                    app:chipStrokeColor="@color/dashboard_card_border"
+                    app:chipStrokeWidth="1dp"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFracture"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fracture"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:textColor="@color/chip_text_selector"
+                    app:checkedIconTint="@color/white"
+                    app:chipBackgroundColor="@color/chip_background_selector"
+                    app:chipStrokeColor="@color/dashboard_card_border"
+                    app:chipStrokeWidth="1dp"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipPoisoning"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Poisoning"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:textColor="@color/chip_text_selector"
+                    app:checkedIconTint="@color/white"
+                    app:chipBackgroundColor="@color/chip_background_selector"
+                    app:chipStrokeColor="@color/dashboard_card_border"
+                    app:chipStrokeWidth="1dp"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipWounds"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Wounds"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:textColor="@color/chip_text_selector"
+                    app:checkedIconTint="@color/white"
+                    app:chipBackgroundColor="@color/chip_background_selector"
+                    app:chipStrokeColor="@color/dashboard_card_border"
+                    app:chipStrokeWidth="1dp"/>
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/guidesRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="120dp"
+        android:clipToPadding="false"
+        tools:listitem="@layout/item_guide"/>
+
+</LinearLayout>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Dark Mode Colors -->
+    <color name="surface_card">@color/surface_dark</color> <!-- Gray-800 for cards -->
+    <color name="secondary">@color/secondary_light</color> <!-- Lighter blue for visibility on dark bg -->
+    
+    <!-- Auth Header: Keep Red in Dark Mode as requested -->
+    <color name="auth_header_background">@color/primary</color>
+
+    <color name="text_on_card_primary">@color/text_primary_dark</color>
+    <color name="text_on_card_secondary">@color/text_secondary_dark</color>
+
+    <!-- Dynamic Colors for Dark Mode -->
+    <color name="input_outline_default">#FFFFFF</color> <!-- Match Light Mode for better visibility in Dark Mode -->
+    <color name="apple_icon_tint">#FFFFFF</color>
+
+    <!-- Semantic Theme Colors -->
+    <color name="text_primary">@color/text_primary_dark</color>
+    <color name="text_secondary">@color/text_secondary_dark</color>
+    <color name="dashboard_background">@color/background_dark</color>
+    <color name="dashboard_surface">@color/surface_dark</color>
+    <color name="bottom_nav_tint">@color/primary</color>
+    <color name="bottom_nav_selected">@color/primary</color>
+    <color name="dashboard_card_border">#374151</color>
+    <color name="dialog_icon_bg">#111827</color> <!-- Gray-900 -->
+    <color name="stepper_inactive">#4B5563</color> <!-- Gray-600 for better visibility than background -->
+    <color name="stepper_inactive_text">@color/text_secondary_dark</color>
+    
+    <!-- Guide Detail Colors -->
+    <color name="guide_detail_surface">@color/surface_dark</color>
+    <color name="guide_detail_background">@color/background_dark</color>
+    <color name="guide_detail_shadow">@android:color/transparent</color>
+    
+    <!-- Warning Styles (Dark Mode) -->
+    <color name="warning_surface">#431407</color> <!-- Orange-950 -->
+    <color name="warning_border">#9A3412</color>  <!-- Orange-800 -->
+    <color name="warning_text">#FFEDD5</color>    <!-- Orange-100 -->
+
+    <!-- Medical ID Colors (Dark) -->
+    <color name="medical_blood_bg">#251818</color> <!-- Softer Red-Tinted Surface -->
+    <color name="medical_blood_text">#FCA5A5</color> <!-- Red-300 -->
+    <color name="medical_blood_value">#FECACA</color> <!-- Red-200 -->
+    
+    <color name="medical_allergy_bg">#172554</color> <!-- Blue-950 -->
+    <color name="medical_allergy_text">#93C5FD</color> <!-- Blue-300 -->
+    <color name="medical_allergy_value">#BFDBFE</color> <!-- Blue-200 -->
+
+    <color name="medical_cond_bg">#431407</color> <!-- Orange-950 -->
+    <color name="medical_cond_text">#FDBA74</color> <!-- Orange-300 -->
+    <color name="medical_cond_value">#FED7AA</color> <!-- Orange-200 -->
+
+    <color name="medical_meds_bg">#052E16</color> <!-- Green-950 -->
+    <color name="medical_meds_text">#86EFAC</color> <!-- Green-300 -->
+    <color name="medical_meds_value">#BBF7D0</color> <!-- Green-200 -->
+
+    <color name="medical_phys_bg">#2E1065</color> <!-- Purple-950 -->
+    <color name="medical_phys_text">#C4B5FD</color> <!-- Purple-300 -->
+    <color name="medical_phys_value">#DDD6FE</color> <!-- Purple-200 -->
+    
+    <color name="ucrop_color_widget_background" tools:override="true">#1F2937</color> <!-- Hardcoded Surface Dark -->
+    <!-- SOS Hotlines Colors (Dark) -->
+    <color name="sos_background">#111827</color>
+    <color name="sos_subheader">#9CA3AF</color>
+    <color name="sos_card_bg">#374151</color>
+    <color name="sos_card_text">#FFFFFF</color>
+    <color name="sos_card_icon">@color/primary</color> <!-- Red Icon for consistency -->
+    <color name="sos_card_stroke">#7F1D1D</color> <!-- Dark Red Border -->
+    <color name="sos_safe_button_bg">#10B981</color> <!-- Success Green -->
+    <color name="sos_safe_button_text">#FFFFFF</color>
+    <color name="sos_safe_button_stroke">#059669</color> <!-- Darker Green Border -->
+    <!-- Medical Info Screen Colors (Dark) -->
+    <color name="medical_info_background">@color/background_dark</color>     <!-- Match app dark bg -->
+    <color name="medical_info_card">@color/surface_dark</color>           <!-- Match app surface -->
+    <color name="medical_info_header">@color/surface_dark</color>         <!-- Match app surface so corners show -->
+    <color name="medical_info_label">#FFFFFF</color>          <!-- White text -->
+    <color name="medical_info_value">#A1A1AA</color>          <!-- Zinc-400 -->
+    <color name="medical_info_hint">#52525B</color>           <!-- Zinc-600 -->
+    <color name="medical_info_divider">#374151</color>        <!-- Gray-700 for visibility -->
+    <color name="medical_info_section">#A1A1AA</color>        <!-- Zinc-400 -->
+    <color name="medical_info_accent">@color/emergency_red</color>         <!-- Red accent -->
+    <color name="medical_info_header_icon">#FFFFFF</color>    <!-- White icons -->
+    <color name="medical_info_save_icon">@color/primary</color>      <!-- Red primary save -->
+    <color name="shield_checkmark">#FFFFFF</color>
+    <color name="color_error_red">#26EF4444</color>
+    <color name="permission_icon_bg">#FEE2E2</color>
+</resources>

@@ -1,0 +1,37 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.InstaCare" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="android:windowBackground">@color/background_dark</item>
+        <item name="android:textColorPrimary">@color/text_primary_dark</item>
+        <item name="android:textColorSecondary">@color/text_secondary_dark</item>
+        <item name="android:statusBarColor">@color/dashboard_surface</item>
+        <item name="android:navigationBarColor">@color/dashboard_surface</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="onboardingOverlay">@drawable/onboarding_overlay_dark</item>
+        <item name="onboardingTitleColor">#FFFFFF</item> <!-- Pure White -->
+        <item name="onboardingDescriptionColor">#E0E0E0</item> <!-- Light Gray -->
+        <item name="onboardingInactiveIndicatorColor">#424242</item> <!-- Darker Gray -->
+        <item name="colorControlActivated">@color/primary</item>
+        <item name="colorAccent">@color/primary</item>
+    </style>
+
+    <style name="Theme.InstaCare.Auth" parent="Theme.InstaCare">
+        <item name="android:statusBarColor">@color/background_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/background_dark</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+
+    <style name="Theme.InstaCare.UCrop" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">#111827</item>
+        <item name="colorPrimaryDark">#111827</item>
+        <item name="colorAccent">@color/primary</item>
+        <item name="android:statusBarColor">#111827</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">#111827</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+</resources>

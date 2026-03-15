@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+
+    <!-- Self-contained: vector is inline, no external file needed -->
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="24dp"
+            android:height="24dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24">
+
+            <!-- Whole icon wrapped in a group for wiggle animation -->
+            <group
+                android:name="wiggle_group"
+                android:pivotX="12"
+                android:pivotY="12"
+                android:rotation="0">
+
+                <path
+                    android:name="mail"
+                    android:fillColor="#FF000000"
+                    android:pathData="M20,4H4c-1.1,0 -1.99,0.9 -1.99,2L2,18c0,1.1 0.9,2 2,2h16c1.1,0 2,-0.9 2,-2V6c0,-1.1 -0.9,-2 -2,-2zM20,8l-8,5 -8,-5V6l8,5 8,-5v2z"/>
+            </group>
+        </vector>
+    </aapt:attr>
+
+    <!-- Wiggle: tilts left → right → center, loops forever -->
+    <target android:name="wiggle_group">
+        <aapt:attr name="android:animation">
+            <set android:ordering="sequentially">
+                <!-- Tilt left -->
+                <objectAnimator
+                    android:duration="150"
+                    android:propertyName="rotation"
+                    android:valueFrom="0"
+                    android:valueTo="-12"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/accelerate_decelerate"/>
+                <!-- Tilt right -->
+                <objectAnimator
+                    android:duration="150"
+                    android:propertyName="rotation"
+                    android:valueFrom="-12"
+                    android:valueTo="12"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/accelerate_decelerate"/>
+                <!-- Tilt left again -->
+                <objectAnimator
+                    android:duration="150"
+                    android:propertyName="rotation"
+                    android:valueFrom="12"
+                    android:valueTo="-8"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/accelerate_decelerate"/>
+                <!-- Settle right -->
+                <objectAnimator
+                    android:duration="150"
+                    android:propertyName="rotation"
+                    android:valueFrom="-8"
+                    android:valueTo="5"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/accelerate_decelerate"/>
+                <!-- Settle center -->
+                <objectAnimator
+                    android:duration="200"
+                    android:propertyName="rotation"
+                    android:valueFrom="5"
+                    android:valueTo="0"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/overshoot"/>
+                <!-- Pause before repeating -->
+                <objectAnimator
+                    android:duration="1500"
+                    android:propertyName="rotation"
+                    android:valueFrom="0"
+                    android:valueTo="0"
+                    android:valueType="floatType"/>
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>

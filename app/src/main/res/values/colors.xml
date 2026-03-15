@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Primary Colors (Tailwind Red-500) -->
+    <color name="primary">#EF4444</color>
+    <color name="primary_dark">#DC2626</color>
+    <color name="primary_light">#FCA5A5</color>
+    
+    <!-- Secondary Colors (Tailwind Blue-900) -->
+    <color name="secondary">#1E3A8A</color>
+    <color name="secondary_light">#3B82F6</color>
+    
+    <!-- Neutral Colors -->
+    <color name="background_light">#F9FAFB</color> <!-- Gray-50 -->
+    <color name="background_dark">#111827</color>  <!-- Gray-900 -->
+    <color name="surface_light">#FFFFFF</color>
+    <color name="surface_dark">#1F2937</color>    <!-- Gray-800 -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    
+    <color name="text_primary_light">#111827</color>
+    <color name="text_secondary_light">#6B7280</color>
+    <color name="text_primary_dark">#F9FAFB</color>
+    <color name="text_secondary_dark">#9CA3AF</color>
+    <color name="text_tertiary">#9CA3AF</color>
+
+    <!-- Semantic Colors -->
+    <color name="emergency_red">#EF4444</color>
+    <color name="success_green">#10B981</color>
+    <color name="warning_orange">#F97316</color> <!-- Orange-500 -->
+    <color name="warning_surface">#FFF7ED</color> <!-- Orange-50 -->
+    <color name="warning_border">#FDBA74</color>  <!-- Orange-300 -->
+    <color name="warning_text">#9A3412</color>    <!-- Orange-800 -->
+
+    <!-- Auth Screen Colors -->
+    <color name="auth_header_background">@color/primary</color> <!-- Brand Red -->
+    <color name="auth_header_text_color">#FFFFFF</color>
+    
+    <color name="surface_card">@color/surface_light</color>
+    <color name="text_on_card_primary">@color/text_primary_light</color>
+    <color name="text_on_card_secondary">@color/text_secondary_light</color>
+    
+    <color name="input_focused_stroke">@color/primary</color>
+    <color name="social_icon_border">#E5E7EB</color>
+
+    <!-- Dynamic Colors for Dark Mode -->
+    <color name="input_outline_default">#9CA3AF</color> <!-- Gray-400 for Light Mode -->
+    <color name="brand_green">#22C55E</color> <!-- Green-500 (Tailwind-like) -->
+    <color name="highlight_yellow">#FFD700</color> <!-- Gold -->
+    <color name="apple_icon_tint">@color/text_primary_light</color>
+
+    <!-- Semantic Theme Colors -->
+    <color name="text_primary">@color/text_primary_light</color>
+    <color name="text_secondary">@color/text_secondary_light</color>
+    <color name="dashboard_background">@color/background_light</color>
+    <color name="dashboard_surface">@color/surface_light</color>
+    <color name="bottom_nav_tint">@color/primary</color>
+    <color name="bottom_nav_selected">@color/primary</color>
+    <color name="purple_primary">#A78BFA</color>
+    <color name="purple_bg">#20A78BFA</color>
+    <color name="green_bg">#2010B981</color>
+    <color name="red_bg">#20EF4444</color>
+    <color name="blue_bg">#203B82F6</color>
+    <color name="orange_bg">#20F97316</color>
+    <color name="gray_bg">#206B7280</color>
+    <color name="dashboard_card_border">#E5E7EB</color>
+    <color name="dialog_icon_bg">#F3F4F6</color> <!-- Gray-100 -->
+    <color name="stepper_inactive">#E5E7EB</color> <!-- Gray-200 -->
+    <color name="stepper_inactive_text">#6B7280</color> <!-- Gray-500 -->
+    
+    <!-- Guide Detail Colors -->
+    <color name="guide_detail_surface">#FFFFFF</color> <!-- Pure White -->
+    <color name="guide_detail_background">#F9FAFB</color> <!-- Off-White -->
+    <color name="guide_detail_shadow">@color/text_primary_light</color>
+    
+    <!-- Medical ID Colors (Light) -->
+    <color name="medical_blood_bg">#FFF5F5</color> <!-- Smooth Red-50 -->
+    <color name="medical_blood_text">#991B1B</color> <!-- Red-800 -->
+    <color name="medical_blood_value">#7F1D1D</color> <!-- Red-900 -->
+    
+    <color name="medical_allergy_bg">#EFF6FF</color> <!-- Blue-50 -->
+    <color name="medical_allergy_text">#1E40AF</color> <!-- Blue-800 -->
+    <color name="medical_allergy_value">#1E3A8A</color> <!-- Blue-900 -->
+
+    <color name="medical_cond_bg">#FFF7ED</color> <!-- Orange-50 -->
+    <color name="medical_cond_text">#9A3412</color> <!-- Orange-800 -->
+    <color name="medical_cond_value">#7C2D12</color> <!-- Orange-900 -->
+
+    <color name="medical_meds_bg">#F0FDF4</color> <!-- Green-50 -->
+    <color name="medical_meds_text">#166534</color> <!-- Green-800 -->
+    <color name="medical_meds_value">#14532D</color> <!-- Green-900 -->
+
+    <color name="medical_phys_bg">#F5F3FF</color> <!-- Purple-50 -->
+    <color name="medical_phys_text">#5B21B6</color> <!-- Purple-800 -->
+    <color name="medical_phys_value">#4C1D95</color> <!-- Purple-900 -->
+
+    <color name="ucrop_color_widget_background" tools:override="true">@color/dashboard_surface</color>
+    <color name="ucrop_color_widget_text" tools:override="true">@color/text_primary_light</color>
+    <color name="ucrop_color_widget_active" tools:override="true">@color/primary</color>
+
+    <!-- SOS Hotlines Colors (Light) -->
+    <color name="sos_background">#F9FAFB</color>
+    <color name="sos_subheader">#6B7280</color>
+    <color name="sos_card_bg">#FFFFFF</color>
+    <color name="sos_card_text">#111827</color>
+    <color name="sos_card_icon">@color/primary</color> <!-- Red Icon -->
+    <color name="sos_card_stroke">#FEE2E2</color> <!-- Light Red Border -->
+    <color name="sos_safe_button_bg">#10B981</color> <!-- Success Green -->
+    <color name="sos_safe_button_text">#FFFFFF</color>
+    <color name="sos_safe_button_stroke">#059669</color> <!-- Darker Green Border -->
+    <!-- Medical Info Screen Colors (Light) -->
+    <color name="medical_info_background">#F9FAFB</color>    <!-- Off-white -->
+    <color name="medical_info_card">#FFFFFF</color>           <!-- White -->
+    <color name="medical_info_header">#F9FAFB</color>        <!-- Match bg -->
+    <color name="medical_info_label">#111827</color>          <!-- Dark text -->
+    <color name="medical_info_value">#6B7280</color>          <!-- Grey text -->
+    <color name="medical_info_hint">#9CA3AF</color>           <!-- Lighter grey -->
+    <color name="medical_info_divider">#E5E7EB</color>        <!-- Light divider -->
+    <color name="medical_info_section">#6B7280</color>        <!-- Section label -->
+    <color name="medical_info_accent">@color/emergency_red</color>         <!-- Red accent for "Not set" -->
+    <color name="medical_info_header_icon">#111827</color>    <!-- Dark icons -->
+    <color name="medical_info_save_icon">@color/primary</color>      <!-- Red primary save -->
+    <color name="shield_checkmark">#FFFFFF</color>
+    <color name="color_error_red">#26EF4444</color>
+    <color name="permission_icon_bg">#FFFFFF</color>
+</resources>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="onboardingOverlay" format="reference" />
+    <attr name="onboardingTitleColor" format="color" />
+    <attr name="onboardingDescriptionColor" format="color" />
+    <attr name="onboardingInactiveIndicatorColor" format="color" />
+    <!-- Base Theme -->
+    <style name="Base.Theme.InstaCare" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="android:windowBackground">@color/dashboard_background</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:statusBarColor">@color/dashboard_surface</item>
+        <item name="android:navigationBarColor">@color/dashboard_surface</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="colorControlActivated">@color/primary</item>
+        <item name="colorAccent">@color/primary</item>
+        <item name="onboardingOverlay">@drawable/onboarding_overlay_light</item>
+        <item name="onboardingTitleColor">@color/text_primary</item>
+        <item name="onboardingDescriptionColor">@color/text_secondary</item>
+        <item name="onboardingInactiveIndicatorColor">#BDBDBD</item> <!-- Gray -->
+    </style>
+
+    <!-- Application Theme -->
+    <style name="Theme.InstaCare" parent="Base.Theme.InstaCare">
+    </style>
+
+    <!-- Custom Card Style -->
+    <style name="InstaCard" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">20dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="cardBackgroundColor">@color/surface_card</item>
+    </style>
+
+    <!-- Primary Button Style -->
+    <style name="InstaButton" parent="Widget.Material3.Button">
+        <item name="cornerRadius">12dp</item>
+        <item name="android:paddingVertical">12dp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <!-- Input Field Style -->
+    <style name="InstaInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">24dp</item>
+        <item name="boxCornerRadiusTopEnd">24dp</item>
+        <item name="boxCornerRadiusBottomStart">24dp</item>
+        <item name="boxCornerRadiusBottomEnd">24dp</item>
+        <item name="boxStrokeColor">@color/input_stroke_selector</item>
+    </style>
+
+    <!-- Dedicated Search Style for Guides -->
+    <style name="InstaSearchInput" parent="InstaInput">
+        <item name="hintTextColor">@color/input_stroke_selector</item>
+        <item name="android:textColorHint">@color/input_stroke_selector</item>
+    </style>
+
+    <!-- Dropdown Style -->
+    <style name="InstaDropdownInput" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxCornerRadiusTopStart">24dp</item>
+        <item name="boxCornerRadiusTopEnd">24dp</item>
+        <item name="boxCornerRadiusBottomStart">24dp</item>
+        <item name="boxCornerRadiusBottomEnd">24dp</item>
+        <item name="boxStrokeColor">@color/input_stroke_selector</item>
+        <item name="hintTextColor">@color/primary</item>
+        <item name="android:textColorHint">@color/input_outline_default</item>
+        <item name="endIconTint">@color/text_primary</item>
+    </style>
+
+
+
+    <!-- Theme-Aware Animated Splash Screen -->
+    <style name="Theme.InstaCare.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#EF4444</item>
+        <!-- Link to the Custom Heart Icon -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/avd_splash_heart_pulse</item>
+        <!-- Extended duration for a smooth, premium feel (~1.5s total) -->
+        <item name="windowSplashScreenAnimationDuration">1500</item>
+        <item name="postSplashScreenTheme">@style/Theme.InstaCare.Auth</item>
+    </style>
+
+    <style name="CircleImage">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="VerificationInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">8dp</item>
+        <item name="boxCornerRadiusTopEnd">8dp</item>
+        <item name="boxCornerRadiusBottomStart">8dp</item>
+        <item name="boxCornerRadiusBottomEnd">8dp</item>
+        <item name="boxStrokeColor">@color/otp_stroke_color</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+
+    <!-- Auth Theme: Solid Status Bar, Sync with Theme Selection -->
+    <style name="Theme.InstaCare.Auth" parent="Theme.InstaCare">
+        <item name="android:statusBarColor">@color/dashboard_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/dashboard_background</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+    <style name="RoundedTopCorners" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">30dp</item>
+        <item name="cornerSizeTopRight">30dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <style name="RoundedBottomCorners" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomLeft">30dp</item>
+        <item name="cornerSizeBottomRight">30dp</item>
+    </style>
+
+    <style name="BottomNavCardStyle" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardElevation">16sp</item>
+        <item name="cardBackgroundColor">@color/dashboard_surface</item>
+        <item name="shapeAppearanceOverlay">@style/RoundedTopCorners</item>
+        <item name="strokeWidth">0dp</item>
+    </style>
+
+    <style name="BottomSheetDialogTheme" parent="Theme.Material3.DayNight.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/dashboard_surface</item>
+        <item name="colorControlActivated">@color/primary</item>
+        <item name="colorAccent">@color/primary</item>
+        <item name="colorPrimary">@color/primary</item>
+    </style>
+
+    <style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="Theme.InstaCare.UCrop" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@android:color/white</item>
+        <item name="colorPrimaryDark">@android:color/white</item>
+        <item name="colorAccent">@color/primary</item>
+        <item name="android:statusBarColor">@android:color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@android:color/white</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+
+    <style name="TextAppearance.InstaCare.HeaderTitle" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+</resources>

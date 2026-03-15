@@ -1,0 +1,72 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Soft circular background glow -->
+    <path
+        android:pathData="M100,100 m-80,0 a80,80 0 1,0 160,0 a80,80 0 1,0 -160,0"
+        android:fillColor="#FEF3C7"/>
+
+    <!-- Bell Body - Clean modern shape -->
+    <group
+        android:name="bell_group"
+        android:pivotX="100"
+        android:pivotY="60">
+        <path
+            android:name="bell_body"
+            android:pathData="M100,35 C100,35 95,35 95,30 C95,25 100,22 100,22 C100,22 105,25 105,30 C105,35 100,35 100,35 Z"
+            android:fillColor="#F59E0B"/>
+        <path
+            android:pathData="M100,38 C75,38 58,60 55,95 C53,115 45,125 35,130 L35,135 L165,135 L165,130 C155,125 147,115 145,95 C142,60 125,38 100,38 Z"
+            android:fillColor="#FBBF24"/>
+        <!-- Bell highlight (left side shine) -->
+        <path
+            android:pathData="M80,45 C68,55 62,75 60,95 C59,108 55,118 48,125 L55,125 C60,118 63,108 64,95 C66,72 73,52 85,43 Z"
+            android:fillColor="#FCD34D"/>
+    </group>
+
+    <!-- Clapper group - swings independently -->
+    <group
+        android:name="clapper_group"
+        android:pivotX="100"
+        android:pivotY="135">
+        <path
+            android:name="bell_clapper"
+            android:pathData="M100,135 C94,135 88,140 88,148 C88,155 93,160 100,160 C107,160 112,155 112,148 C112,140 106,135 100,135 Z"
+            android:fillColor="#D97706"/>
+    </group>
+
+    <!-- Sound wave RIGHT -->
+    <group android:name="wave_right_group">
+        <path
+            android:name="wave_right"
+            android:pathData="M155,65 Q172,95 155,125"
+            android:strokeColor="#FBBF24"
+            android:strokeWidth="4"
+            android:strokeLineCap="round"
+            android:strokeAlpha="0"/>
+    </group>
+
+    <!-- Sound wave LEFT -->
+    <group android:name="wave_left_group">
+        <path
+            android:name="wave_left"
+            android:pathData="M45,65 Q28,95 45,125"
+            android:strokeColor="#FBBF24"
+            android:strokeWidth="4"
+            android:strokeLineCap="round"
+            android:strokeAlpha="0"/>
+    </group>
+
+    <!-- Notification badge (red dot) -->
+    <path
+        android:name="badge"
+        android:pathData="M135,40 m-12,0 a12,12 0 1,0 24,0 a12,12 0 1,0 -24,0"
+        android:fillColor="#EF4444"/>
+    <path
+        android:pathData="M135,40 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0"
+        android:fillColor="#FCA5A5"/>
+
+</vector>
