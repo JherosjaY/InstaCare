@@ -90,6 +90,17 @@ erDiagram
     HOSPITALS ||--o{ ENDORSEMENTS : "receives referral"
 ```
 
+## Context on User Roles (Admin / Barangay / User)
+
+Based on the actual code in `LoginActivity.java`, the application supports 3 roles, although they are currently handled as follows:
+
+- **Admin**: Built-in hardcoded account (`username: admin`). Has access to `AdminDashboardActivity`.
+- **Barangay**: Built-in hardcoded account (`username: barangay`). Has access to `BarangayDashboardActivity`.
+- **User**: Dynamically stored in the `users` table. These are the accounts created via `RegisterActivity`.
+
+> [!NOTE]
+> Currently, the `users` table does not have a `role` column because the Admin and Barangay accounts are "built-in". If you plan to allow registration for multiple roles in the future, we can add a `role` column to the `User.java` entity.
+
 ## Detailed Table Descriptions
 
 ### 1. USERS (`users`)
