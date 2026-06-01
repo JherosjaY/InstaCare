@@ -1,0 +1,224 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/chat_background">
+
+    <!-- Chat Messages List (Full Screen) -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvChatMessages"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingHorizontal="12dp"
+        android:paddingTop="90dp"
+        android:paddingBottom="96dp"
+        android:clipToPadding="false"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <!-- Premium Floating Integrated Header -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/headerCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="12dp"
+        app:cardBackgroundColor="@color/dashboard_surface"
+        app:shapeAppearanceOverlay="@style/RoundedBottomCorners"
+        app:strokeWidth="0dp"
+        android:layout_marginTop="-10dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:elevation="0dp">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/chatToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                app:navigationIcon="@drawable/ic_chevron_left"
+                app:navigationIconTint="@color/text_primary">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginEnd="48dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:id="@+id/ivChatShield"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_shield"
+                            app:tint="@color/primary"
+                            android:layout_marginEnd="6dp"/>
+
+                        <TextView
+                            android:id="@+id/tvChatTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Barangay Bagontaas"
+                            android:textAppearance="@style/TextAppearance.InstaCare.HeaderTitle"
+                            android:textSize="17sp"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvChatSubtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="BARANGAY SUPPORT • IC-2026-3520"
+                        android:textAppearance="@style/TextAppearance.InstaCare.HeaderSubtitle"
+                        android:textSize="10sp"
+                        android:alpha="0.7"
+                        android:letterSpacing="0.05"/>
+                </LinearLayout>
+
+            </com.google.android.material.appbar.MaterialToolbar>
+
+        </com.google.android.material.appbar.AppBarLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Floating Input Pill Area -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/inputPillCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="8dp"
+        app:cardBackgroundColor="@color/chat_input_bg"
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/chat_input_stroke"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Replying To Preview -->
+            <LinearLayout
+                android:id="@+id/layoutReplyingToPreview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="10dp"
+                android:gravity="center_vertical"
+                android:background="@color/chat_input_stroke"
+                android:visibility="gone">
+
+                <View
+                    android:id="@+id/viewReplyIndicator"
+                    android:layout_width="3dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/chat_bubble_outgoing"
+                    android:layout_marginEnd="12dp"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ivReplyPreviewImage"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="12dp"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Small"
+                        android:background="@color/chat_input_stroke"/>
+
+                    <TextView
+                        android:id="@+id/tvReplyToText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="The original message text..."
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        android:maxLines="2"
+                        android:ellipsize="end"/>
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/btnCancelReply"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_close"
+                    app:tint="@color/text_secondary"
+                    android:background="?attr/selectableItemBackgroundBorderless"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/chatInputContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="6dp"
+                android:gravity="center_vertical">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etChatMessage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Type your message..."
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
+                    android:background="@null"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="12dp"
+                    android:paddingVertical="12dp"
+                    android:maxLines="3"
+                    android:minLines="1"
+                    android:scrollbars="vertical"
+                    android:overScrollMode="always"
+                    android:scrollbarStyle="insideInset"
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:textSize="14sp"/>
+
+                <ImageButton
+                    android:id="@+id/btnAttachImage"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@drawable/ic_image"
+                    app:tint="@color/text_secondary"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="10dp"
+                    android:scaleType="centerInside"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSendChat"
+                    style="@style/Widget.Material3.Button.IconButton.Filled"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    app:icon="@drawable/ic_send"
+                    app:iconTint="@android:color/white"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    android:backgroundTint="@color/primary"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+                    android:layout_margin="2dp"
+                    android:elevation="2dp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

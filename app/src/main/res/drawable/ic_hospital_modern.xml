@@ -1,0 +1,17 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Building Shape -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M15,11V5l-3,-3 -3,3v2H2v11h18V11h-5zM9,7h6v4H9V7zM4,17v-4h3v4H4zM14,15h-4v-2h4v2zM19,17h-3v-4h3v4z"/>
+    <!-- Cross Detail (Overlay) -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M10,8.5h4v1h-4z"/>
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M11.5,7h1v4h-1z"/>
+</vector>

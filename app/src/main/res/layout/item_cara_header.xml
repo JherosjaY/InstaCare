@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:paddingTop="24dp"
+    android:paddingBottom="16dp">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivCaraAvatar"
+        android:layout_width="86dp"
+        android:layout_height="86dp"
+        android:src="@drawable/cara_avatar"
+        android:scaleType="centerCrop"
+        android:padding="4dp"
+        app:strokeWidth="2.5dp"
+        app:strokeColor="@color/primary"
+        app:shapeAppearanceOverlay="@style/CircleAppearanceOverlay"
+        android:elevation="6dp"/>
+
+    <TextView
+        android:id="@+id/tvCaraName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cara"
+        android:textColor="@color/primary"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:letterSpacing="0.02"/>
+
+    <TextView
+        android:id="@+id/tvCaraSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Your Personal Assistant"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif-medium"
+        android:alpha="0.7"/>
+</LinearLayout>

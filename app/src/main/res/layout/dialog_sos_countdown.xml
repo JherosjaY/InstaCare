@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="32dp"
+    android:background="@drawable/rounded_bottom_sheet"
+    android:gravity="center"
+    android:elevation="16dp">
+
+    <ImageView
+        android:id="@+id/ivWarningIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_baseline_warning_24"
+        android:layout_marginBottom="16dp"
+        app:tint="#EF4444"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sending SOS in..."
+        android:textSize="18sp"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/tvCountdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="5"
+        android:textSize="80sp"
+        android:textStyle="bold"
+        android:textColor="#EF4444"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/tvSelectedType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Crime Emergency"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_primary"
+        android:layout_marginBottom="24dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCancel"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="CANCEL"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#EF4444"
+        app:strokeColor="#EF4444"
+        app:strokeWidth="2dp"
+        app:cornerRadius="12dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"/>
+
+</LinearLayout>

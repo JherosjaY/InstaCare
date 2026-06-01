@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8FAFC">
+
+    <HorizontalScrollView
+        android:id="@+id/chipScrollBarangay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="12dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Using Barangay Primary Blue (#2563EB) for chip outlines -> but MaterialChip handles standard states. We will override chip default by just using outline colors or default state -->
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupFilterBarangay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleSelection="true"
+            app:selectionRequired="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipTyphoon"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                app:chipBackgroundColor="@color/chip_bg_blue_selector"
+                android:textColor="@color/chip_text_blue_selector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Typhoon"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipEarthquake"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                app:chipBackgroundColor="@color/chip_bg_blue_selector"
+                android:textColor="@color/chip_text_blue_selector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Earthquake"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFire"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                app:chipBackgroundColor="@color/chip_bg_blue_selector"
+                android:textColor="@color/chip_text_blue_selector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fire"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFlood"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                app:chipBackgroundColor="@color/chip_bg_blue_selector"
+                android:textColor="@color/chip_text_blue_selector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Flood"/>
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvDisastersBarangay"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="12dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/chipScrollBarangay"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:listitem="@layout/item_disaster_guide"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

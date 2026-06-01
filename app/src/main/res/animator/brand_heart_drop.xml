@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <objectAnimator
+        android:propertyName="translateY"
+        android:duration="300"
+        android:valueFrom="-30"
+        android:valueTo="0"
+        android:interpolator="@android:anim/bounce_interpolator"
+        android:startOffset="100" />
+    <objectAnimator
+        android:propertyName="alpha"
+        android:duration="100"
+        android:valueFrom="0"
+        android:valueTo="1"
+        android:startOffset="100" />
+</set>

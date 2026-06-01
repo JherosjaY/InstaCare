@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:paddingBottom="8dp">
+
+    <!-- Incoming Message (Left) -->
+    <LinearLayout
+        android:id="@+id/layoutIncoming"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:orientation="horizontal"
+        android:gravity="top"
+        android:paddingEnd="64dp"
+        android:paddingStart="4dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:paddingVertical="4dp">
+
+        <ImageView
+            android:id="@+id/ivAvatarIncoming"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/ic_hospital"
+            android:background="@drawable/bg_icon_circle"
+            android:padding="4dp"
+            app:tint="@android:color/white"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/bubbleIncoming"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chat_bubble_incoming"
+                android:orientation="vertical"
+                android:padding="2dp">
+
+                <!-- Reply Preview (Incoming) -->
+                <LinearLayout
+                    android:id="@+id/layoutReplyIncoming"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_rounded_soft"
+                    android:backgroundTint="@color/chat_input_stroke"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="8dp"
+                    android:gravity="center_vertical"
+                    android:visibility="gone">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ivReplyImageIncoming"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="8dp"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Small"
+                        android:background="@color/chat_input_stroke"/>
+
+                    <TextView
+                        android:id="@+id/tvReplyMsgIncoming"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="2"
+                        android:ellipsize="end"
+                        android:text="Replying to message..."
+                        android:textColor="#64748B"
+                        android:textSize="12sp"/>
+                </LinearLayout>
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/ivIncomingImage"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_margin="4dp"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    app:shapeAppearanceOverlay="@style/RoundedBottomCorners"
+                    android:background="@color/chat_input_stroke"/>
+
+                <TextView
+                    android:id="@+id/tvIncomingMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="10dp"
+                    android:text="Hello! How can we help you?"
+                    android:textColor="@color/chat_bubble_incoming_text"
+                    android:textSize="14sp"
+                    android:maxWidth="260dp"
+                    android:lineSpacingExtra="2dp"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvIncomingTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="10:30 AM"
+                android:textColor="@color/text_tertiary"
+                android:textSize="10sp"
+                android:layout_marginStart="4dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Outgoing Message (Right) -->
+    <LinearLayout
+        android:id="@+id/layoutOutgoing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:orientation="horizontal"
+        android:gravity="top|end"
+        android:paddingStart="64dp"
+        android:paddingEnd="4dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:paddingVertical="4dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="end">
+
+            <LinearLayout
+                android:id="@+id/bubbleOutgoing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chat_bubble_outgoing"
+                android:orientation="vertical"
+                android:padding="2dp">
+
+                <!-- Reply Preview (Outgoing) -->
+                <LinearLayout
+                    android:id="@+id/layoutReplyOutgoing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_rounded_soft"
+                    android:backgroundTint="@color/chat_input_stroke"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="8dp"
+                    android:gravity="center_vertical"
+                    android:visibility="gone">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ivReplyImageOutgoing"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="8dp"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Small"
+                        android:background="@color/chat_input_stroke"/>
+
+                    <TextView
+                        android:id="@+id/tvReplyMsgOutgoing"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="2"
+                        android:ellipsize="end"
+                        android:text="Replying to message..."
+                        android:textColor="#F0F9FF"
+                        android:textSize="12sp"/>
+                </LinearLayout>
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/ivOutgoingImage"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_margin="4dp"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    app:shapeAppearanceOverlay="@style/RoundedBottomCorners"
+                    android:background="@color/chat_bubble_outgoing"/>
+
+                <TextView
+                    android:id="@+id/tvOutgoingMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="10dp"
+                    android:text="I have a question."
+                    android:textColor="@color/chat_bubble_outgoing_text"
+                    android:textSize="14sp"
+                    android:maxWidth="260dp"
+                    android:lineSpacingExtra="2dp"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvOutgoingTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="10:31 AM"
+                android:textColor="@color/text_tertiary"
+                android:textSize="10sp"
+                android:layout_marginEnd="4dp"/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ivAvatarOutgoing"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/ic_user"
+            android:background="@drawable/bg_icon_circle"
+            android:padding="4dp"
+            app:tint="@android:color/white"/>
+    </LinearLayout>
+</LinearLayout>

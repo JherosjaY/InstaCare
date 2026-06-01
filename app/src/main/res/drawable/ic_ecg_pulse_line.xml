@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="48dp"
+    android:viewportWidth="200"
+    android:viewportHeight="48">
+    
+    <!-- The ECG Pulse Line -->
+    <path
+        android:name="pulse_line"
+        android:strokeColor="@color/primary"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M0,24 L40,24 L50,10 L65,38 L80,24 L120,24 L130,5 L145,43 L160,24 L200,24"
+        android:trimPathEnd="1" />
+        
+</vector>

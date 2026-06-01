@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:ordering="together">
+
+    <!-- Head: Draws the line (0s - 1s) -->
+    <objectAnimator
+        android:duration="2000"
+        android:propertyName="trimPathEnd"
+        android:repeatCount="infinite"
+        android:repeatMode="restart">
+        <propertyValuesHolder android:propertyName="trimPathEnd">
+            <keyframe android:fraction="0.0" android:value="0" />
+            <keyframe android:fraction="0.5" android:value="1" /> <!-- 1000ms -->
+            <keyframe android:fraction="1.0" android:value="1" />
+        </propertyValuesHolder>
+    </objectAnimator>
+
+    <!-- Tail: Erases the line (1s - 2s) -->
+    <objectAnimator
+        android:duration="2000"
+        android:propertyName="trimPathStart"
+        android:repeatCount="infinite"
+        android:repeatMode="restart">
+        <propertyValuesHolder android:propertyName="trimPathStart">
+            <keyframe android:fraction="0.0" android:value="0" />
+            <keyframe android:fraction="0.5" android:value="0" /> <!-- Wait 1000ms -->
+            <keyframe android:fraction="1.0" android:value="1" /> <!-- Finish at 2000ms -->
+        </propertyValuesHolder>
+    </objectAnimator>
+
+</set>

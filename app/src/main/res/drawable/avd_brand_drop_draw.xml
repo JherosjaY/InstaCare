@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_brand_logo">
+    
+    <!-- Drawing the 'C' monogram -->
+    <target
+        android:name="c_shape"
+        android:animation="@animator/brand_c_draw" />
+        
+    <!-- Dropping the heart dot -->
+    <target
+        android:name="heart_group"
+        android:animation="@animator/brand_heart_drop" />
+        
+</animated-vector>

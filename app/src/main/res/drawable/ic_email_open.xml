@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Envelope Body (Open) -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M20,8l-8,5 -8,-5v10h16v-10z"/>
+    <!-- Flap (Open Upwards) -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M12,13L4,8l8-5 8,5 -8,5z"/>
+</vector>

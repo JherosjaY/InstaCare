@@ -1,0 +1,138 @@
+# 🛡️ InstaCare: Professional Emergency & Evacuation System
+**Master Documentation & Technical Architecture**
+
+InstaCare is a high-fidelity, multi-role (User, Barangay, Admin) mobile ecosystem designed for rapid emergency response, medical certificate management, and disaster evacuation coordination.
+
+---
+
+## 🚀 Key Features & Capabilities
+
+### 1. 🤖 Cara: Your AI Medical Assistant
+- **Real-time Guidance:** Integrated AI assistant providing immediate first-aid instructions and mental health support.
+- **Natural Interaction:** Built on a dedicated `ChatActivity` with full message persistence via `AssistantMessage` and `ChatMessage` database tables.
+- **Context Awareness:** Capable of guiding users through critical procedures like CPR or wound care.
+
+### 2. 🚨 Advanced Emergency Response (SOS)
+- **Multi-Category SOS:** Dedicated channels for **Medical**, **Fire**, **Crime**, and **Disaster** emergencies.
+- **The "Safety Pulse" Countdown:** A 5-second glowing animation that prevents accidental triggers while ensuring zero-click activation if the timer expires.
+- **Real-time Tracking:** Monitor responder distance and ETA via `SOSTrackActivity`.
+
+### 3. 🗺️ Location Intelligence & Facility Mapping
+- **Overpass API Integration:** Queries the global **OpenStreetMap (OSM)** database in real-time to find hospitals and shelters within 50km.
+- **Status Monitoring:** Real-time capacity updates (Open, Full, Closed) for Evacuation Centers.
+- **Integrated Routing:** One-tap navigation using **OSRM** (Open Source Routing Machine) directly within the `MapView`.
+
+### 4. ✨ Premium UI/UX Animations
+- **Red Scanner Reveal:** High-tech scanning effect for Login-to-Dashboard transitions.
+- **Rounded Rect Expansion:** Theme cards that physically "grow" into the full screen with 28dp radius synchronization.
+- **Dual-Circular Reveal:** Context-aware theme switching (Expanding for Dark, Collapsing for Light).
+
+---
+
+## 🛠️ System Flows
+
+### 🅰️ Emergency Medical Response Flow
+```mermaid
+graph TD
+    A[User Hits SOS] --> B{5s Countdown}
+    B -- Cancelled --> C[Exit]
+    B -- Expired --> D[Activate GPS & Recording]
+    D --> E[Notify Barangay/Admin]
+    E --> F[Responder Assigned]
+    F --> G[Real-time Tracking UI]
+```
+
+### 🅱️ Evacuation & Shelter Coordination Flow
+```mermaid
+graph TD
+    A[Disaster Alert Issued] --> B[Admin Opens Evac Center]
+    B --> C[Push Notification to Residents]
+    C --> D[User Opens Map]
+    D --> E[Overpass API Fetches Nearby Shelters]
+    E --> F[User Views Capacity Status]
+    F --> G[In-App Route Navigation]
+```
+
+---
+
+## 🎨 Visual Database ERD (Entity Relationships)
+
+```mermaid
+erDiagram
+    USER ||--o{ EMERGENCY_ALERT : "reports"
+    USER ||--o{ ENDORSEMENT : "requests"
+    USER ||--o{ CHAT_MESSAGE : "sends"
+    USER }|--|| BARANGAY_ZONE : "assigned_to"
+    
+    EMERGENCY_ALERT ||--o{ ALERT_NOTIFICATION : "triggers"
+    EMERGENCY_ALERT ||--o| ENDORSEMENT : "linked_to"
+    
+    ENDORSEMENT ||--o{ ENDORSEMENT_STATUS_LOG : "has_history"
+    
+    USER {
+        string uid PK
+        string username
+        string role
+        boolean isEmailBound
+    }
+    
+    EMERGENCY_ALERT {
+        int id PK
+        string userId FK
+        string category
+        long timestamp
+    }
+    
+    ENDORSEMENT {
+        int id PK
+        int alertId FK
+        string username FK
+        string patientName
+        string status
+        string caseRef
+    }
+```
+
+---
+
+## 🔗 Relational Mapping (Table Connections)
+
+The following table lists the specific columns that "connect" (Foreign Keys) different parts of the InstaCare ecosystem:
+
+| Source Table | Source Column | Target Table | Connection Type |
+| :--- | :--- | :--- | :--- |
+| `User` | `uid` | `EmergencyAlert` | **(1:N)** - Tracks which user reported an incident. |
+| `User` | `username` | `Endorsement` | **(1:N)** - Links medical requests to a profile. |
+| `User` | `uid` | `ActivityLog` | **(1:N)** - Audit trail for user actions. |
+| `EmergencyAlert`| `id` | `Endorsement` | **(1:1)** - Connects a medical request to its source SOS. |
+| `EmergencyAlert`| `id` | `AlertNotification`| **(1:N)** - Links specific alerts to SOS incidents. |
+| `Endorsement` | `id` | `EndorsementStatusLog`| **(1:N)** - History of status changes (Pending -> Approved). |
+| `BarangayZone` | `barName` | `User` | **(1:N)** - Assigns users to their specific local zone. |
+| `User` | `uid` | `ChatMessage` | **(1:N)** - Identifies sender/receiver in chats. |
+
+---
+
+## 📊 Database Architecture (Complete Table Registry)
+
+| Table Name | Primary Purpose | Key Fields |
+| :--- | :--- | :--- |
+| `User` | Resident Identity & Role Auth | `uid`, `email`, `role`, `isEmailBound`, `fullName` |
+| `EmergencyAlert` | Real-time Incident Reports | `id`, `userId`, `category`, `label`, `timestamp`, `status` |
+| `Endorsement` | Med-Cert & Assistance Requests | `id`, `alertId`, `username`, `patientName`, `purpose`, `status` |
+| `Hospital` | Dynamically Fetched Medical Facilities | `id`, `name`, `latitude`, `longitude`, `phone`, `capacity` |
+| `EvacuationCenter` | Disaster Shelters & Assembly Points | `id`, `name`, `status`, `source`, `centerType`, `latitude` |
+| `AssistantMessage` | Cara AI Conversion Memory | `msgId`, `content`, `isBot`, `timestamp` |
+| `ChatMessage` | Responder-to-User Communication | `id`, `senderId`, `receiverId`, `message`, `type` |
+| `Notification` | System & Local Alerts | `id`, `title`, `body`, `type`, `isRead`, `timestamp` |
+| `BarangayZone` | Administrative Boundary Data | `barName`, `zoneCoords`, `pincode` |
+| `EndorsementStatusLog` | Audit Trail for Med-Cert Requests | `id`, `endorsementId`, `status`, `remarks`, `timestamp` |
+| `AlertNotification` | Specific Notifications tied to SOS | `id`, `alertId`, `title`, `message` |
+| `ActivityLog` | General System Audit Trail | `id`, `userId`, `description`, `type`, `time` |
+| `EmergencyContact` | User's Personal Trusted Contacts | `id`, `userId`, `contactName`, `phoneNumber` |
+| `Guide` | First Aid Educational Content | `id`, `title`, `category`, `difficulty`, `videoUrl` |
+| `DisasterGuide` | Natural Disaster Survival Content | `id`, `title`, `disasterType`, `stepsJson` |
+
+---
+
+> [!TIP]
+> **Technical Note on UI Sync:** The `EditProfileBottomSheet` uses direct **SessionManager-to-AppDatabase** synchronization, ensuring that email verification status and theme preferences are updated across all dashboard fragments instantly.

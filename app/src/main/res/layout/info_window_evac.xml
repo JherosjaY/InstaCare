@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="220dp"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp"
+    app:cardBackgroundColor="@color/surface_card"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/dashboard_card_border">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Orange header bar for evacuation branding -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@drawable/glossy_orange_gradient">
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_marker_evac"
+                app:tint="@android:color/white"/>
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- Center Name -->
+            <TextView
+                android:id="@+id/evacInfoWindowName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Evacuation Center"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:maxLines="2"
+                android:ellipsize="end"/>
+
+            <!-- Type / Address -->
+            <TextView
+                android:id="@+id/evacInfoWindowType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Shelter · Address"
+                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginTop="2dp"
+                android:maxLines="2"
+                android:ellipsize="end"/>
+
+            <!-- Status + Capacity row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp">
+
+                <!-- Status Badge -->
+                <TextView
+                    android:id="@+id/evacInfoWindowStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Open"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="3dp"
+                    android:background="@drawable/bg_badge_pill"/>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                <!-- Capacity Count -->
+                <TextView
+                    android:id="@+id/evacInfoWindowCapacity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cap: —"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_secondary"/>
+            </LinearLayout>
+
+            <!-- Contact Number -->
+            <LinearLayout
+                android:id="@+id/evacInfoContactRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="6dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:src="@drawable/ic_phone"
+                    app:tint="@color/warning_orange"
+                    android:layout_marginEnd="4dp"/>
+
+                <TextView
+                    android:id="@+id/evacInfoWindowContact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="N/A"
+                    android:textSize="11sp"
+                    android:textColor="@color/text_secondary"/>
+            </LinearLayout>
+
+            <!-- Route Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/evacInfoWindowRouteBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Get Route"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"
+                app:backgroundTint="@color/warning_orange"
+                android:layout_marginTop="10dp"
+                app:cornerRadius="8dp"/>
+
+            <!-- Dismiss hint -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/dashboard_card_border"
+                android:layout_marginTop="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tap to dismiss"
+                android:textSize="9sp"
+                android:textColor="@color/warning_orange"
+                android:layout_marginTop="4dp"
+                android:layout_gravity="center_horizontal"/>
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

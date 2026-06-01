@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dashboard_background">
+
+    <!-- Fragment Container -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainer"
+        android:name="com.example.instacare.HomeFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Bottom Navigation with Cinematic Notch & 32dp Rounded Corners -->
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottomAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:fabAlignmentMode="center"
+        app:fabCradleMargin="10dp"
+        app:fabCradleRoundedCornerRadius="18dp"
+        app:fabCradleVerticalOffset="0dp"
+        app:hideOnScroll="false"
+        app:elevation="8dp"
+        app:backgroundTint="@color/dashboard_surface"
+        app:shapeAppearanceOverlay="@style/NotchedBarShape"
+        app:contentInsetStart="0dp"
+        app:contentInsetEnd="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetRight="0dp"
+        app:contentInsetStartWithNavigation="0dp"
+        android:padding="0dp"
+        style="@style/Widget.MaterialComponents.BottomAppBar">
+
+        <!-- Manual Navigation (Absolute Symmetry - Centered Spacer Chain) -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/manualNavLayout"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:background="@android:color/transparent">
+
+            <!-- SOS Force Field Spacer (Absolute Center) -->
+            <View
+                android:id="@+id/sosSpacer"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:visibility="invisible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <!-- Home (Corner Respecting Ripple) -->
+            <LinearLayout
+                android:id="@+id/btnNavHome"
+                android:layout_width="70dp"
+                android:layout_height="64dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@drawable/bg_nav_item_ripple_left"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnNavHospitals"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_chainStyle="spread">
+                <ImageView
+                    android:id="@+id/ivNavHome"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_nav_home"
+                    app:tint="@color/bottom_nav_selected"/>
+                <TextView
+                    android:id="@+id/tvNavHome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Home"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/bottom_nav_selected"
+                    android:visibility="visible"/>
+            </LinearLayout>
+
+            <!-- Locations -->
+            <LinearLayout
+                android:id="@+id/btnNavHospitals"
+                android:layout_width="70dp"
+                android:layout_height="64dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@drawable/bg_nav_item_ripple"
+                app:layout_constraintStart_toEndOf="@id/btnNavHome"
+                app:layout_constraintEnd_toStartOf="@id/sosSpacer"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+                <ImageView
+                    android:id="@+id/ivNavHospitals"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_nav_hospitals"
+                    app:tint="@color/text_secondary"/>
+                <TextView
+                    android:id="@+id/tvNavHospitals"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Locations"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_secondary"
+                    android:visibility="gone"/>
+            </LinearLayout>
+
+            <!-- Guides -->
+            <LinearLayout
+                android:id="@+id/btnNavGuides"
+                android:layout_width="70dp"
+                android:layout_height="64dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@drawable/bg_nav_item_ripple"
+                app:layout_constraintStart_toEndOf="@id/sosSpacer"
+                app:layout_constraintEnd_toStartOf="@id/btnNavProfile"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+                <ImageView
+                    android:id="@+id/ivNavGuides"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_nav_guides"
+                    app:tint="@color/text_secondary"/>
+                <TextView
+                    android:id="@+id/tvNavGuides"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Guides"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_secondary"
+                    android:visibility="gone"/>
+            </LinearLayout>
+
+            <!-- Profile (Corner Respecting Ripple) -->
+            <LinearLayout
+                android:id="@+id/btnNavProfile"
+                android:layout_width="70dp"
+                android:layout_height="64dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@drawable/bg_nav_item_ripple_right"
+                app:layout_constraintStart_toEndOf="@id/btnNavGuides"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/ivNavProfile"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/ic_nav_profile"
+                    app:shapeAppearanceOverlay="@style/SOSCircleShape"
+                    android:scaleType="centerCrop"/>
+                <TextView
+                    android:id="@+id/tvNavProfile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Profile"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_secondary"
+                    android:visibility="gone"/>
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.bottomappbar.BottomAppBar>
+
+    <!-- Floating SOS Button (Premium Gradient) -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabSOS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/bottomAppBar"
+        app:fabCustomSize="74dp"
+        app:maxImageSize="74dp"
+        app:shapeAppearanceOverlay="@style/SOSCircleShape"
+        app:srcCompat="@drawable/sos_button_gradient"
+        android:backgroundTint="@android:color/transparent"
+        app:backgroundTint="@android:color/transparent"
+        app:borderWidth="0dp"
+        app:elevation="12dp"
+        app:pressedTranslationZ="16dp"
+        android:contentDescription="SOS"
+        android:stateListAnimator="@null"/>
+
+    <!-- SOS Text Overlay (Centered within FAB) -->
+    <TextView
+        android:id="@+id/tvSOSLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SOS"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        app:layout_anchor="@id/fabSOS"
+        app:layout_anchorGravity="center"
+        android:elevation="14dp"
+        android:gravity="center"
+        android:layout_marginTop="2dp"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

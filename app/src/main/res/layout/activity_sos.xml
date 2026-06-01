@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sosRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/sos_background">
+
+    <!-- Red Header Section (Fixed Height for better overlap) -->
+    <LinearLayout
+        android:id="@+id/sosHeaderSection"
+        android:layout_width="0dp"
+        android:layout_height="240dp"
+        android:background="#EF4444"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingTop="32dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_baseline_warning_24"
+            app:tint="@color/white"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/tvSosHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SOS ACTIVE"
+            android:textColor="@color/white"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.1"/>
+
+        <TextView
+            android:id="@+id/tvSosCaseRef"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Case: Generating..."
+            android:textColor="#FCA5A5"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <!-- White Content Container (60% Height Floating Card) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sosContentCard"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_sos_content"
+        android:padding="24dp"
+        app:layout_constraintHeight_percent="0.65"
+        app:layout_constraintTop_toBottomOf="@id/sosHeaderSection"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        android:layout_marginTop="-40dp">
+
+        <!-- Dynamic Emergency Category Chip -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/chipEmergencyType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="General Emergency"
+            android:textColor="@color/text_primary"
+            app:backgroundTint="@color/dashboard_surface"
+            android:elevation="4dp"
+            app:cornerRadius="20dp"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/tvHotlinesTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Emergency Hotlines"
+            android:textColor="@color/text_primary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/chipEmergencyType"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="24dp"/>
+
+        <TextView
+            android:id="@+id/tvSosSubHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Valencia City Local Emergency Response"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/tvHotlinesTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="4dp"/>
+
+        <!-- Dynamic Hotlines Container -->
+        <ScrollView
+            android:id="@+id/scrollHotlines"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scrollbars="none"
+            app:layout_constraintTop_toBottomOf="@id/tvSosSubHeader"
+            app:layout_constraintBottom_toTopOf="@id/btnImSafe"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:id="@+id/hotlinesContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <!-- Buttons dynamically populated -->
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- Primary Action Button (Pinned to Bottom of Card) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnImSafe"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:text="I AM SAFE NOW"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:icon="@drawable/ic_baseline_check_circle_24"
+            app:iconGravity="textStart"
+            app:iconTint="@color/white"
+            app:backgroundTint="#10B981"
+            app:cornerRadius="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

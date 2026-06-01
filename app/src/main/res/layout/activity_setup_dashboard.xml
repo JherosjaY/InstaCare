@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dashboard_background"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    tools:context=".SetupDashboardActivity">
+
+    <LinearLayout
+        android:id="@+id/mainContentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <!-- Header Section -->
+        <LinearLayout
+            android:id="@+id/headerSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="20dp"
+            android:background="@drawable/bg_topbar_surface_rounded"
+            android:elevation="8dp"
+            android:outlineAmbientShadowColor="@color/black"
+            android:outlineSpotShadowColor="@color/black">
+
+            <TextView
+                android:id="@+id/setupTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Setup Your Dashboard"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"/>
+
+            <TextView
+                android:id="@+id/setupSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Let's personalize your experience"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+    <!-- Stepper Timeline (Horizontal) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingVertical="20dp"
+        android:paddingHorizontal="30dp">
+
+        <!-- Step 1 Circle (Theme) -->
+        <FrameLayout
+            android:layout_width="32dp"
+            android:layout_height="32dp">
+            <View
+                android:id="@+id/stepCircle1"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_step_active"/>
+            <TextView
+                android:id="@+id/stepText1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="1"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="12sp"/>
+        </FrameLayout>
+
+        <View
+            android:id="@+id/stepLine1"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="4dp"
+            android:background="@color/stepper_inactive"/>
+
+        <!-- Step 2 Circle (Photo) -->
+        <FrameLayout
+            android:layout_width="32dp"
+            android:layout_height="32dp">
+            <View
+                android:id="@+id/stepCircle2"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_step_inactive"/>
+            <TextView
+                android:id="@+id/stepText2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="2"
+                android:textColor="@color/stepper_inactive_text"
+                android:textStyle="bold"
+                android:textSize="12sp"/>
+        </FrameLayout>
+
+        <View
+            android:id="@+id/stepLine2"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="4dp"
+            android:background="@color/stepper_inactive"/>
+
+        <!-- Step 3 Circle (Info) -->
+        <FrameLayout
+            android:layout_width="32dp"
+            android:layout_height="32dp">
+            <View
+                android:id="@+id/stepCircle3"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_step_inactive"/>
+            <TextView
+                android:id="@+id/stepText3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="3"
+                android:textColor="@color/stepper_inactive_text"
+                android:textStyle="bold"
+                android:textSize="12sp"/>
+        </FrameLayout>
+
+        <View
+            android:id="@+id/stepLine3"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="4dp"
+            android:background="@color/stepper_inactive"/>
+
+        <!-- Step 4 Circle (Complete) -->
+        <FrameLayout
+            android:layout_width="32dp"
+            android:layout_height="32dp">
+            <View
+                android:id="@+id/stepCircle4"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_step_inactive"/>
+            <TextView
+                android:id="@+id/stepText4"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="4"
+                android:textColor="@color/stepper_inactive_text"
+                android:textStyle="bold"
+                android:textSize="12sp"/>
+        </FrameLayout>
+    </LinearLayout>
+
+    <!-- Step Content Area -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <!-- STEP 1: Theme Selection (New Separate Step) -->
+        <LinearLayout
+            android:id="@+id/step1ThemeContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingHorizontal="32dp"
+            android:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Choose Your Theme"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select the style that fits you best"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="40dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/setupLightModeCard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    app:cardCornerRadius="20dp"
+                    app:strokeWidth="2dp"
+                    app:strokeColor="@color/primary"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardElevation="0dp">
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp"
+                            android:gravity="center">
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/ic_light_mode_modern"/>
+                            <TextView
+                                android:id="@+id/setupLightModeText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Light Mode"
+                                android:textColor="#111827"
+                                android:textStyle="bold"
+                                android:layout_marginTop="12dp"/>
+                        </LinearLayout>
+                        <ImageView
+                            android:id="@+id/setupLightModeCheck"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_check_selected"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="10dp"
+                            android:visibility="visible"/>
+                    </FrameLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/setupDarkModeCard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="10dp"
+                    app:cardCornerRadius="20dp"
+                    app:strokeWidth="0dp"
+                    app:strokeColor="@color/primary"
+                    app:cardBackgroundColor="#1F2937"
+                    app:cardElevation="0dp">
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp"
+                            android:gravity="center">
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/ic_dark_mode_modern"/>
+                            <TextView
+                                android:id="@+id/setupDarkModeText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Dark Mode"
+                                android:textColor="#E5E7EB"
+                                android:textStyle="bold"
+                                android:layout_marginTop="12dp"/>
+                        </LinearLayout>
+                        <ImageView
+                            android:id="@+id/setupDarkModeCheck"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_check_selected"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="10dp"
+                            android:visibility="gone"/>
+                    </FrameLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- STEP 2: Profile Photo (Formerly Step 1) -->
+        <LinearLayout
+            android:id="@+id/step2PhotoContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingHorizontal="32dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Your Photo"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Help others recognize you"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="32dp"/>
+
+            <FrameLayout
+                android:layout_width="164dp"
+                android:layout_height="164dp"
+                android:layout_gravity="center"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:layout_marginBottom="32dp">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/profileAvatar"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_gravity="center"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/profile_placeholder"
+                    android:background="@color/input_outline_default"
+                    android:padding="6dp"
+                    app:shapeAppearanceOverlay="@style/CircleImage"
+                    app:strokeWidth="3dp"
+                    app:strokeColor="@color/primary"/>
+
+                <FrameLayout
+                    android:id="@+id/cameraBadge"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/bg_camera_badge"
+                    android:elevation="4dp">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_camera_white"
+                        app:tint="@android:color/white"/>
+                </FrameLayout>
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Tap to upload photo"
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary"/>
+        </LinearLayout>
+
+        <!-- STEP 3: Personal Info (Formerly Step 2) -->
+        <LinearLayout
+            android:id="@+id/step3InfoContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="16dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirm Your Info"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Make sure everything looks right"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="24dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/setupNameLayout"
+                style="@style/InstaInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Full Name"
+                android:layout_marginBottom="16dp"
+                app:startIconDrawable="@drawable/ic_user"
+                app:startIconTint="@color/text_secondary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/setupNameInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName|textCapWords"
+                    android:padding="16dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/setupEmailLayout"
+                style="@style/InstaInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                android:layout_marginBottom="16dp"
+                app:startIconDrawable="@drawable/ic_mail"
+                app:startIconTint="@color/text_secondary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/setupEmailInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:padding="16dp"
+                    android:enabled="false"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/setupPhoneLayout"
+                style="@style/InstaInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Phone"
+                android:layout_marginBottom="4dp"
+                app:startIconDrawable="@drawable/ic_phone"
+                app:startIconTint="@color/text_secondary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/setupPhoneInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"
+                    android:maxLength="11"
+                    android:padding="16dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/phoneProgress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="4dp"
+                android:layout_marginBottom="16dp"
+                android:max="11"
+                android:progress="0"
+                android:visibility="gone"
+                app:trackThickness="3dp"
+                app:trackCornerRadius="2dp"
+                app:indicatorColor="@color/primary"
+                app:trackColor="#E5E7EB"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/setupAddressLayout"
+                style="@style/InstaInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Address"
+                android:layout_marginBottom="16dp"
+                app:startIconDrawable="@drawable/ic_map_pin"
+                app:startIconTint="@color/text_secondary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/setupAddressInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPostalAddress|textCapWords"
+                    android:padding="16dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <!-- STEP 4: Complete (Formerly Step 3) -->
+        <LinearLayout
+            android:id="@+id/step4CompleteContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingHorizontal="32dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/completeIcon"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:src="@drawable/avd_check_circle"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="You're All Set!"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="Your dashboard is ready. Start exploring InstaCare and stay safe!"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:lineSpacingExtra="4dp"/>
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- Bottom Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="16dp"
+        android:paddingBottom="32dp"
+        android:gravity="center">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/backButton"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Back"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:cornerRadius="14dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/nextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:paddingHorizontal="48dp"
+            android:text="Next"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            app:backgroundTint="@color/primary"
+            app:cornerRadius="14dp"
+            app:iconGravity="textEnd"
+            app:iconTint="@android:color/white"/>
+    </LinearLayout>
+</LinearLayout>
+</FrameLayout>

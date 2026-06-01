@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/dashboard_background">
+
+    <!-- Custom Top Bar matching First Aid Guides -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:background="@drawable/bg_topbar_surface_rounded"
+        android:elevation="8dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Disaster "
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Readiness"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/emergency_red"/>
+            </LinearLayout>
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Be prepared, stay safe."
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary"/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btnViewBookmarksDisaster"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_bookmark"
+            app:tint="@color/emergency_red"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Search & Filters Container -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+        
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/InstaSearchInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hintEnabled="false"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_search"
+            app:endIconTint="@color/input_stroke_selector">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/searchEditTextDisaster"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Search readiness guides..."/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupFilter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="All"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:checked="true"
+                    android:textColor="@color/chip_text_selector"
+                    app:checkedIconTint="@color/white"
+                    app:chipBackgroundColor="@color/chip_background_selector"
+                    app:chipStrokeColor="@color/dashboard_card_border"
+                    app:chipStrokeWidth="1dp"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipTyphoon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Typhoon"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:textColor="@color/chip_text_selector"
+                    app:checkedIconTint="@color/white"
+                    app:chipBackgroundColor="@color/chip_background_selector"
+                    app:chipStrokeColor="@color/dashboard_card_border"
+                    app:chipStrokeWidth="1dp"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipEarthquake"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Earthquake"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:textColor="@color/chip_text_selector"
+                    app:checkedIconTint="@color/white"
+                    app:chipBackgroundColor="@color/chip_background_selector"
+                    app:chipStrokeColor="@color/dashboard_card_border"
+                    app:chipStrokeWidth="1dp"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFire"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fire"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:textColor="@color/chip_text_selector"
+                    app:checkedIconTint="@color/white"
+                    app:chipBackgroundColor="@color/chip_background_selector"
+                    app:chipStrokeColor="@color/dashboard_card_border"
+                    app:chipStrokeWidth="1dp"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFlood"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Flood"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:textColor="@color/chip_text_selector"
+                    app:checkedIconTint="@color/white"
+                    app:chipBackgroundColor="@color/chip_background_selector"
+                    app:chipStrokeColor="@color/dashboard_card_border"
+                    app:chipStrokeWidth="1dp"/>
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvDisasters"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="32dp"
+            android:clipToPadding="false"
+            tools:listitem="@layout/item_disaster_guide"/>
+
+        <LinearLayout
+            android:id="@+id/emptyStateDisaster"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="32dp"
+            android:visibility="gone">
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/ic_shield_alert"
+                app:tint="@color/emergency_red"
+                android:layout_marginBottom="16dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No Guides Found"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Try adjusting your search or filters."
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:gravity="center"/>
+        </LinearLayout>
+    </FrameLayout>
+
+</LinearLayout>
+

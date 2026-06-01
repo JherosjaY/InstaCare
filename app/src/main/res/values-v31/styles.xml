@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Theme-Aware Animated Splash Screen for API 31+ -->
+    <style name="Theme.InstaCare.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#EF4444</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/avd_splash_heart_pulse</item>
+        <item name="windowSplashScreenAnimationDuration">1500</item>
+        <item name="postSplashScreenTheme">@style/Theme.InstaCare.Auth</item>
+    </style>
+</resources>

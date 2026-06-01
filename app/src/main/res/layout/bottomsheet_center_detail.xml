@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- Center name header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_icon_orange"
+            android:layout_marginEnd="12dp">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_marker_evac"
+                app:tint="@color/warning_orange"/>
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvCheckInCenterName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Center Name"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:maxLines="2"
+                android:ellipsize="end"/>
+
+            <TextView
+                android:id="@+id/tvCheckInCenterStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="● Open"
+                android:textSize="12sp"
+                android:textColor="@color/success_green"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Live evacuee count -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="#FFF3E0"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/warning_border"
+        android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="14dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_account_plus"
+                app:tint="@color/warning_orange"
+                android:layout_marginEnd="10dp"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Currently Checked In"
+                    android:textSize="12sp"
+                    android:textColor="@color/warning_text"/>
+
+                <TextView
+                    android:id="@+id/tvLiveCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 evacuees"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/warning_orange"/>
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Capacity progress bar -->
+    <TextView
+        android:id="@+id/tvCapacityLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Capacity: 0 / 0"
+        android:textSize="12sp"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="6dp"/>
+
+    <ProgressBar
+        android:id="@+id/progressCapacity"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:max="100"
+        android:progress="0"
+        android:progressTint="@color/success_green"
+        android:background="@drawable/bg_drag_handle"
+        android:layout_marginBottom="20dp"/>
+
+    <!-- Resources Section -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Available Resources"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_primary"
+        android:layout_marginBottom="8dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvCenterResources"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:nestedScrollingEnabled="true"/>
+
+    <!-- Check-In / Check-Out Buttons -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCheckIn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="✅  I'm Here — Check In"
+        android:textSize="15sp"
+        android:textColor="@android:color/white"
+        app:backgroundTint="@color/success_green"
+        android:layout_marginTop="16dp"
+        app:cornerRadius="12dp"
+        android:padding="14dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCheckOut"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🚪  Check Out"
+        android:textSize="14sp"
+        app:backgroundTint="@color/surface_card"
+        app:strokeColor="@color/dashboard_card_border"
+        app:strokeWidth="1dp"
+        android:textColor="@color/text_secondary"
+        android:layout_marginTop="8dp"
+        app:cornerRadius="12dp"
+        android:padding="12dp"
+        android:visibility="gone"/>
+</LinearLayout>

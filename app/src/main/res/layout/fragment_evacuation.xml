@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dashboard_background">
+
+    <!-- Map View -->
+    <FrameLayout
+        android:id="@+id/evacMapContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/dashboard_background">
+
+        <org.osmdroid.views.MapView
+            android:id="@+id/evacMapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true"/>
+    </FrameLayout>
+
+    <!-- Header Overlay -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/evacTopBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:background="@drawable/bg_topbar_surface_rounded"
+        android:elevation="8dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:id="@+id/tvTitleEvacuation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Evacuation Centers"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Find safety near you."
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"/>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/evacRefreshCard"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_refresh"
+                android:layout_gravity="center"
+                app:tint="@color/warning_orange"/>
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Bottom Sheet -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/evacBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardCornerRadius="24dp"
+        app:cardBackgroundColor="@color/surface_card"
+        app:strokeWidth="0dp"
+        app:cardElevation="0dp"
+        app:behavior_peekHeight="280dp"
+        app:behavior_expandedOffset="100dp"
+        app:behavior_fitToContents="false"
+        app:behavior_hideable="true"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- Drag Handle -->
+            <View
+                android:layout_width="48dp"
+                android:layout_height="4dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/bg_drag_handle"/>
+
+            <!-- ─── DISASTER TYPE FILTER CHIPS ─── -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="8dp">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupDisasterType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:singleSelection="true"
+                    app:selectionRequired="true"
+                    app:chipSpacingHorizontal="6dp">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipDisasterAll"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🗂 All"
+                        android:checked="true"
+                        android:textSize="12sp"
+                        app:chipBackgroundColor="@color/chip_bg_color"
+                        app:chipStrokeColor="@color/chip_stroke_color"
+                        app:chipStrokeWidth="1dp"
+                        android:textColor="@color/chip_text_color"
+                        app:checkedIconVisible="false"/>
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipDisasterFlood"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🌊 Flood"
+                        android:textSize="12sp"
+                        app:chipBackgroundColor="@color/chip_bg_color"
+                        app:chipStrokeColor="@color/chip_stroke_color"
+                        app:chipStrokeWidth="1dp"
+                        android:textColor="@color/chip_text_color"
+                        app:checkedIconVisible="false"/>
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipDisasterEarthquake"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🌍 Earthquake"
+                        android:textSize="12sp"
+                        app:chipBackgroundColor="@color/chip_bg_color"
+                        app:chipStrokeColor="@color/chip_stroke_color"
+                        app:chipStrokeWidth="1dp"
+                        android:textColor="@color/chip_text_color"
+                        app:checkedIconVisible="false"/>
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipDisasterFire"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔥 Fire"
+                        android:textSize="12sp"
+                        app:chipBackgroundColor="@color/chip_bg_color"
+                        app:chipStrokeColor="@color/chip_stroke_color"
+                        app:chipStrokeWidth="1dp"
+                        android:textColor="@color/chip_text_color"
+                        app:checkedIconVisible="false"/>
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipDisasterTyphoon"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🌀 Typhoon"
+                        android:textSize="12sp"
+                        app:chipBackgroundColor="@color/chip_bg_color"
+                        app:chipStrokeColor="@color/chip_stroke_color"
+                        app:chipStrokeWidth="1dp"
+                        android:textColor="@color/chip_text_color"
+                        app:checkedIconVisible="false"/>
+
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
+
+            <!-- Loading State -->
+            <LinearLayout
+                android:id="@+id/evacLoadingState"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone">
+                <ProgressBar
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:indeterminateTint="@color/warning_orange"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Finding evacuation centers..."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"/>
+            </LinearLayout>
+
+            <!-- Empty State -->
+            <LinearLayout
+                android:id="@+id/evacEmptyState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="32dp"
+                android:visibility="gone">
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_marker_evac"
+                    app:tint="@color/warning_orange"
+                    android:layout_marginBottom="16dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No Centers Found"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"/>
+                <TextView
+                    android:id="@+id/tvEvacEmptyMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No evacuation centers match the selected filter."
+                    android:textSize="14sp"
+                    android:textColor="@color/text_secondary"
+                    android:gravity="center"
+                    android:layout_marginTop="6dp"/>
+            </LinearLayout>
+
+            <!-- RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/evacRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:paddingHorizontal="16dp"
+                android:paddingBottom="180dp"
+                android:clipToPadding="false"
+                tools:listitem="@layout/item_evacuation"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Compass FAB -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/evacNavFabContainer"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="24dp"
+        app:cardBackgroundColor="#FF6D00"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp"
+        app:strokeWidth="0dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/evacNavFabIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_navigation"
+            app:tint="@android:color/white"/>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Compass Overlay -->
+    <FrameLayout
+        android:id="@+id/evacCompassOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="20dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/evacCompassDialContainer"
+            android:layout_width="280dp"
+            android:layout_height="280dp"
+            android:layout_gravity="center"
+            app:cardBackgroundColor="#1AFFFFFF"
+            app:cardCornerRadius="140dp"
+            app:cardElevation="0dp"
+            app:strokeColor="#40FFFFFF"
+            app:strokeWidth="1dp">
+
+            <RelativeLayout
+                android:id="@+id/evacCompassDial"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true" android:layout_alignParentTop="true"
+                    android:layout_marginTop="16dp" android:text="N"
+                    android:textColor="#FF6D00" android:textSize="24sp" android:textStyle="bold"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true" android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="16dp" android:text="S"
+                    android:textColor="@android:color/white" android:textSize="20sp" android:textStyle="bold"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_centerVertical="true" android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="16dp" android:text="E"
+                    android:textColor="@android:color/white" android:textSize="20sp" android:textStyle="bold"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_centerVertical="true" android:layout_alignParentStart="true"
+                    android:layout_marginStart="16dp" android:text="W"
+                    android:textColor="@android:color/white" android:textSize="20sp" android:textStyle="bold"/>
+                <ImageView
+                    android:layout_width="40dp" android:layout_height="40dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_navigation"
+                    app:tint="#FF6D00"/>
+            </RelativeLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="100dp"
+            android:text="Tap to close"
+            android:textColor="#B3FFFFFF" android:textSize="14sp"/>
+    </FrameLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
