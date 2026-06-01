@@ -201,6 +201,28 @@
         android:contentDescription="SOS"
         android:stateListAnimator="@null"/>
 
+    <!-- Minimalist Scroll Up Circle -->
+    <FrameLayout
+        android:id="@+id/fabScrollTop"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginBottom="120dp"
+        app:layout_anchor="@id/fabSOS"
+        app:layout_anchorGravity="top|center_horizontal"
+        android:background="@drawable/bg_scroll_top_minimalist"
+        android:elevation="6dp"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="Scroll to top">
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_chevron_up"
+            app:tint="@android:color/white" />
+    </FrameLayout>
+
     <!-- SOS Text Overlay (Centered within FAB) -->
     <TextView
         android:id="@+id/tvSOSLabel"

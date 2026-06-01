@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+import java.util.Properties
+
 android {
     namespace = "com.example.instacare"
     compileSdk = 36
@@ -11,7 +13,7 @@ android {
         buildConfig = true
     }
 
-    val localProperties = java.util.Properties()
+    val localProperties = Properties()
     val localPropertiesFile = rootProject.file("local.properties")
     if (localPropertiesFile.exists()) {
         localProperties.load(localPropertiesFile.inputStream())

@@ -36,6 +36,7 @@ public class UserDashboardActivity extends AppCompatActivity {
     private com.google.android.material.imageview.ShapeableImageView ivNavProfile;
     private TextView tvNavHome, tvNavHospitals, tvNavGuides, tvNavProfile;
     private FloatingActionButton fabSOS;
+    private View fabScrollTop;
     private int currentTabIndex = 0; // 0: Home, 1: Hospitals, 2: Guides, 3: Profile
     public boolean isFirstLoad = true; // Tracks if this is the initial session load
 
@@ -119,6 +120,7 @@ public class UserDashboardActivity extends AppCompatActivity {
         tvNavProfile = findViewById(R.id.tvNavProfile);
         
         fabSOS = findViewById(R.id.fabSOS);
+        fabScrollTop = findViewById(R.id.fabScrollTop);
 
         // --- FINAL ROUNDED NOTCHED BAR FIX (Choy Edition) ---
         if (bottomAppBar != null) {
@@ -545,5 +547,32 @@ public class UserDashboardActivity extends AppCompatActivity {
         }
     }
     
+    public void setScrollTopAction(boolean show, View.OnClickListener listener) {
+        if (fabScrollTop == null) return;
+        if (show) {
+            if (fabScrollTop.getVisibility() != View.VISIBLE) {
+                fabScrollTop.setVisibility(View.VISIBLE);
+                fabScrollTop.setAlpha(0f);
+                fabScrollTop.setTranslationY(20f); // Slight slide-up start
+                fabScrollTop.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setDuration(400)
+                    .setInterpolator(new android.view.animation.OvershootInterpolator())
+                    .start();
+            }
+            fabScrollTop.setOnClickListener(listener);
+        } else {
+            if (fabScrollTop.getVisibility() == View.VISIBLE) {
+                fabScrollTop.animate()
+                    .alpha(0f)
+                    .translationY(20f)
+                    .setDuration(300)
+                    .withEndAction(() -> fabScrollTop.setVisibility(View.GONE))
+                    .start();
+            }
+        }
+    }
+
     private long lastBackPressTime = 0;
 }

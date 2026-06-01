@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 public class GuidesFragment extends Fragment {
 
     private List<com.example.instacare.data.local.Guide> allGuides;
@@ -34,12 +35,13 @@ public class GuidesFragment extends Fragment {
     private TextView btnTypeFirstAid, btnTypeDisaster;
     private ChipGroup categoryChips;
     private ChipGroup disasterCategoryChips;
-    private TextInputEditText searchEditText;
+    private com.google.android.material.textfield.TextInputEditText searchEditText;
     private boolean isShowingBookmarksOnly = false;
     private boolean isShowingDisasterReadiness = false;
     private android.widget.ImageView btnViewBookmarks;
     private String currentCategory = "All";
     private String currentDisasterCategory = "All";
+    private float cornerRadiusPx;
 
     @Nullable
     @Override
@@ -61,15 +63,18 @@ public class GuidesFragment extends Fragment {
         searchEditText = view.findViewById(R.id.searchEditText);
         btnViewBookmarks = view.findViewById(R.id.btnViewBookmarks);
 
-        // Edge-to-Edge inset handling for the top bar
-        View topBar = view.findViewById(R.id.topBar);
-        if (topBar != null) {
-            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(topBar, (v, windowInsets) -> {
+        // Edge-to-Edge inset handling for the AppBarLayout
+        com.google.android.material.appbar.AppBarLayout appBar = view.findViewById(R.id.appBarLayout);
+        if (appBar != null) {
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(appBar, (v, windowInsets) -> {
                 androidx.core.graphics.Insets insets = windowInsets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
-                int padding20 = (int)(20 * getResources().getDisplayMetrics().density);
-                v.setPadding(padding20, insets.top + padding20, padding20, padding20);
+                v.setPadding(v.getPaddingLeft(), insets.top, v.getPaddingRight(), v.getPaddingBottom());
                 return windowInsets;
             });
+
+            // Dynamic corners based on scroll
+            cornerRadiusPx = getResources().getDisplayMetrics().density * 24; // 24dp
+            setupDynamicCorners(appBar);
         }
 
         setupRecyclerView();
@@ -317,6 +322,45 @@ public class GuidesFragment extends Fragment {
             guidesRecyclerView.setVisibility(View.VISIBLE);
             if (emptyGuides != null) emptyGuides.setVisibility(View.GONE);
             if (emptyBookmarks != null) emptyBookmarks.setVisibility(View.GONE);
+        }
+    }
+
+    private void setupDynamicCorners(com.google.android.material.appbar.AppBarLayout appBar) {
+        View emptyGuides = getView() != null ? getView().findViewById(R.id.emptyStateGuides) : null;
+        View emptyBookmarks = getView() != null ? getView().findViewById(R.id.emptyStateBookmarks) : null;
+
+        appBar.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+            float totalRange = appBarLayout.getTotalScrollRange();
+            if (totalRange == 0) return;
+
+            float percentage = Math.abs(verticalOffset) / totalRange;
+            // 0.0 means fully expanded (rounded), 1.0 means fully collapsed (flat)
+            float currentRadius = cornerRadiusPx * (1.0f - percentage);
+
+            updateBackgroundCorners(guidesRecyclerView, currentRadius);
+            if (emptyGuides != null) updateBackgroundCorners(emptyGuides, currentRadius);
+            if (emptyBookmarks != null) updateBackgroundCorners(emptyBookmarks, currentRadius);
+
+            // Show/Hide Scroll-to-Top based on scroll progress
+            if (getActivity() instanceof UserDashboardActivity) {
+                UserDashboardActivity activity = (UserDashboardActivity) getActivity();
+                boolean shouldShow = percentage > 0.8f; // Show when mostly collapsed
+                activity.setScrollTopAction(shouldShow, v -> {
+                    if (guidesRecyclerView != null) {
+                        guidesRecyclerView.smoothScrollToPosition(0);
+                        appBarLayout.setExpanded(true, true);
+                    }
+                });
+            }
+        });
+    }
+
+    private void updateBackgroundCorners(View view, float radius) {
+        if (view == null) return;
+        android.graphics.drawable.Drawable background = view.getBackground();
+        if (background instanceof android.graphics.drawable.GradientDrawable) {
+            float[] radii = {radius, radius, radius, radius, 0, 0, 0, 0};
+            ((android.graphics.drawable.GradientDrawable) background).setCornerRadii(radii);
         }
     }
 }
