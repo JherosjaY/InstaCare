@@ -63,7 +63,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
     private GroqHelper groqHelper;
     
     // Assistant State Machine
-    private enum State { IDLE, AWAITING_NAME_CONFIRM, AWAITING_THEME_CONFIRM, AWAITING_CLEAR_CONFIRM, AWAITING_NAV_CONFIRM, AWAITING_EMAIL_CONFIRM, AWAITING_PHONE_CONFIRM, AWAITING_ADDRESS_CONFIRM, AWAITING_NOTIF_SELECTION }
+    private enum State { IDLE, AWAITING_NAME_CONFIRM, AWAITING_THEME_CONFIRM, AWAITING_CLEAR_CONFIRM, AWAITING_NAV_CONFIRM, AWAITING_EMAIL_CONFIRM, AWAITING_PHONE_CONFIRM, AWAITING_ADDRESS_CONFIRM, AWAITING_NOTIF_SELECTION, AWAITING_LANGUAGE_SELECTION }
     private State currentState = State.IDLE;
     private String pendingValue = "";
     private List<com.example.instacare.data.local.Notification> pendingUnreads = new ArrayList<>();
@@ -137,11 +137,22 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                 chatHistory.addAll(filteredHistory);
 
                 if (chatHistory.size() <= 1) { // Only contains header
-                    // 2. DOUBLE-CHECK: Re-query DB synchronously or ensure atomic insert
-                    String greetingPrefix = getGreetingPrefix();
-                    String welcomeText = greetingPrefix + " " + firstName + "! I am Cara. Unsay matabang nako nimo karon?";
-                    
-                    addCaraMessage(welcomeText);
+                    String lang = sessionManager.getString("USER_ASSISTANT_LANGUAGE", "");
+                    if (lang.isEmpty()) {
+                        String greetingPrefix = getGreetingPrefix();
+                        addCaraMessage(greetingPrefix + " " + firstName + "! I am Cara. Which language is more convenient for you? Bisaya, Tagalog, or English?");
+                        addCaraLanguageChoiceCard();
+                    } else {
+                        // 2. DOUBLE-CHECK: Re-query DB synchronously or ensure atomic insert
+                        String greetingPrefix = getGreetingPrefix();
+                        String welcomeText = greetingPrefix + " " + firstName + "! I am Cara. Unsay matabang nako nimo karon?";
+                        
+                        // Localize generic welcome if needed
+                        if ("English".equalsIgnoreCase(lang)) welcomeText = greetingPrefix + " " + firstName + "! I am Cara. How can I help you today?";
+                        else if ("Tagalog".equalsIgnoreCase(lang)) welcomeText = greetingPrefix + " " + firstName + "! Ako si Cara. Ano ang maitutulong ko sa iyo ngayon?";
+                        
+                        addCaraMessage(welcomeText);
+                    }
                 }
                 
                 botAdapter.notifyDataSetChanged();
@@ -276,6 +287,11 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                 }
             }
         });
+        
+        botAdapter.setOnLanguageClickListener(lang -> {
+            handleLanguageSelected(lang);
+        });
+        
         caraRecyclerView.setAdapter(botAdapter);
         themeLoadingSpinner = view.findViewById(R.id.themeLoadingSpinner);
         ivSmallAvatar = view.findViewById(R.id.ivSmallAvatar);
@@ -747,6 +763,9 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         else if (input.contains("change my name") || (input.contains("ilis") && input.contains("ngalan"))) {
             addCaraMessage("Of course. What would you like your new name to be?");
             currentState = State.AWAITING_NAME_CONFIRM;
+        } else if (input.contains("change language") || input.contains("ilis language") || input.contains("magbisaya") || input.contains("magtagalog") || input.contains("mag-english")) {
+            addCaraMessage("Sure! Which language would you like me to use?");
+            addCaraLanguageChoiceCard();
         } else if (input.contains("edit profile") || (input.contains("tan-aw") && input.contains("profile"))) showProfileCard();
         else if (input.contains("clear") && input.contains("history")) promptClearHistory();
         else generateCaraResponse(input);
@@ -758,6 +777,11 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         if (currentState == State.AWAITING_NOTIF_SELECTION) {
             handleNotificationSelection(input);
             return;
+        } else if (currentState == State.AWAITING_LANGUAGE_SELECTION) {
+             if (input.contains("bisaya")) handleLanguageSelected("Bisaya");
+             else if (input.contains("tagalog")) handleLanguageSelected("Tagalog");
+             else if (input.contains("english")) handleLanguageSelected("English");
+             return;
         }
 
         // 2. REGULAR ACTIONS
@@ -1110,13 +1134,15 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                 
                 botAdapter.notifyDataSetChanged();
                 
-                // FRESH START: Reset AI Internal State, Memory and Welcome Animation (Isolated)
+                // FRESH START: Reset AI Internal State, Language, Memory and Welcome Animation (Isolated)
                 currentState = State.IDLE;
                 pendingValue = "";
                 sessionManager.remove("CARA_WELCOME_ANIMATED");
+                sessionManager.remove("USER_ASSISTANT_LANGUAGE");
                 
-                String greeting = getGreetingPrefix() + " " + firstName + "! I'm Cara, and I'm ready for a fresh start. Unsay matabang nako nimo karon?";
+                String greeting = "Hi " + firstName + "! Convo history cleared. I'm ready for a fresh start! Which language is more convenient for you? Bisaya, Tagalog, or English?";
                 addCaraMessage(greeting);
+                addCaraLanguageChoiceCard();
             });
         }).start();
     }
@@ -1162,6 +1188,34 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         saveAndAddMessage(msg);
     }
 
+    private void addCaraLanguageChoiceCard() {
+        SessionManager sessionManager = SessionManager.getInstance(requireContext());
+        AssistantMessage msg = new AssistantMessage(sessionManager.getCurrentUserUid(), "", true, BotAdapter.TYPE_LANGUAGE_SELECTION, System.currentTimeMillis());
+        currentState = State.AWAITING_LANGUAGE_SELECTION;
+        saveAndAddMessage(msg);
+    }
+
+    private void handleLanguageSelected(String lang) {
+        SessionManager sessionManager = SessionManager.getInstance(requireContext());
+        sessionManager.putString("USER_ASSISTANT_LANGUAGE", lang);
+        currentState = State.IDLE;
+        
+        // Remove the choice card
+        for (int i = chatHistory.size() - 1; i >= 0; i--) {
+            if (chatHistory.get(i).type == BotAdapter.TYPE_LANGUAGE_SELECTION) {
+                chatHistory.remove(i);
+                botAdapter.notifyItemRemoved(i);
+                break;
+            }
+        }
+
+        String confirmation = "Sige, mag-Bisaya na ko sugod karon! Unsa pa'y matabang nako nimo?";
+        if ("English".equalsIgnoreCase(lang)) confirmation = "Alright, I'll use English from now on. How can I help you today?";
+        else if ("Tagalog".equalsIgnoreCase(lang)) confirmation = "Sige, magtatagalog na ako simula ngayon. Ano pa ang maitutulong ko sa iyo?";
+        
+        addCaraMessage(confirmation);
+    }
+
     private void generateCaraResponse(String input) {
         SessionManager sessionManager = SessionManager.getInstance(requireContext());
         if (!isNetworkAvailable()) {
@@ -1190,10 +1244,12 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
             }
 
             String newsKnowledge = com.example.instacare.utils.NewsRepository.getInstance().getNewsContextForAI();
+            String userLang = sessionManager.getString("USER_ASSISTANT_LANGUAGE", "Bisaya");
 
             String systemPrompt = "You are Cara, the official proactive AI assistant for 'InstaCare'.\n" +
-                    "PERSONA: You are a smart, friendly, cool, and HUMOROUS young woman. Treat the user as a valued 'barkada'. Feel free to use witty remarks, lighthearted jokes, and a funny Bisaya tone to keep the conversation lively.\n" +
-                    "STYLE: Speak in a CASUAL BISLISH (English/Bisaya mix). Use natural, modern conversational Bisaya—funny, witty, and barkada-level conversational. ALWAYS address the user ONLY by their first name (User Context below).\n" +
+                    "PERSONA: You are a smart, friendly, cool, and HUMOROUS young woman. Treat the user as a valued 'barkada'. Feel free to use witty remarks, lighthearted jokes, and a funny tone to keep the conversation lively.\n" +
+                    "STRICT LANGUAGE RULE: The user has selected " + userLang + " as their preferred language. You MUST respond EXCLUSIVELY in " + userLang + ". If the language is Bisaya or Tagalog, use a natural, modern, and casual conversational tone (funny and witty). If English, be friendly and professional yet cool.\n" +
+                    "STYLE: ALWAYS address the user ONLY by their first name (User Context below).\n" +
                     "KNOWLEDGE BASE (LIVE NEWS):\n" + newsKnowledge + "\n" +
                     "CONTENT RESTRICTIONS (STRICT):\n" +
                     "1. BAN ALL PROGRAMMING LANGUAGES: Never generate code or discuss programming (Java, Python, C++, HTML, CSS, JS, etc.). If asked, wittily refuse and explain it's unrelated to InstaCare's safety focus.\n" +

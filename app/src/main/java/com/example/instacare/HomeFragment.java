@@ -184,7 +184,7 @@ public class HomeFragment extends Fragment {
             if (isAdded() && !SessionManager.getInstance(requireContext()).getBoolean("HAS_SEEN_TUTORIAL_v2", false)) {
                 startCaraTutorial();
             }
-        }, 300);
+        }, 1000);
 
         // Sync Notification Count when BottomSheet is dismissed or swiped
         getParentFragmentManager().setFragmentResultListener("notification_sync", getViewLifecycleOwner(), (requestKey, bundle) -> {

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.graphics.Color;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
@@ -40,30 +41,28 @@ public class SetupDashboardActivity extends AppCompatActivity {
             if (uri != null) {
                 // Launch UCrop
                 Uri destUri = Uri.fromFile(new File(getCacheDir(), "avatar_cropped.jpg"));
-                boolean isDarkMode = (getResources().getConfiguration().uiMode 
-                    & android.content.res.Configuration.UI_MODE_NIGHT_MASK)
-                    == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+                // Theme Colors - ADAPTIVE Fix
+                boolean isDarkMode = (getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES;
                 
-                int toolbarColor = getResources().getColor(R.color.surface_card, null);
-                int toolbarTextColor = isDarkMode ? android.graphics.Color.WHITE : android.graphics.Color.parseColor("#111827");
-                int activeColor = getResources().getColor(R.color.primary, null);
-                
+                int toolbarColor = isDarkMode ? Color.parseColor("#111827") : Color.WHITE;
+                int textColor = isDarkMode ? Color.WHITE : Color.BLACK;
+                int bgColor = isDarkMode ? Color.BLACK : Color.parseColor("#F9FAFB");
+
                 UCrop.Options options = new UCrop.Options();
                 options.setCircleDimmedLayer(true);
-                options.setShowCropGrid(true);
+                options.setShowCropGrid(false);
                 options.setShowCropFrame(true);
-                options.setToolbarTitle("Crop Photo");
                 options.setCompressionQuality(90);
+
                 options.setToolbarColor(toolbarColor);
                 options.setStatusBarColor(toolbarColor);
-                options.setToolbarWidgetColor(toolbarTextColor);
-                options.setActiveControlsWidgetColor(activeColor);
-                options.setRootViewBackgroundColor(toolbarColor);
-                options.setDimmedLayerColor(isDarkMode ? android.graphics.Color.parseColor("#CC111827") : android.graphics.Color.parseColor("#CCF9FAFB"));
-                options.setLogoColor(android.graphics.Color.parseColor("#9CA3AF")); // Visible Gray Logo
+                options.setToolbarWidgetColor(textColor); 
+                options.setActiveControlsWidgetColor(androidx.core.content.ContextCompat.getColor(this, R.color.primary));
+                options.setRootViewBackgroundColor(bgColor);
+                options.setToolbarTitle("Crop Photo");
                 
                 // Visibility Fix: Bright Gray Rulers (Frame & Grid)
-                int gridColor = android.graphics.Color.parseColor("#80FFFFFF"); // 50% White (Visible Gray)
+                int gridColor = android.graphics.Color.parseColor("#80FFFFFF"); 
                 int frameColor = android.graphics.Color.WHITE; 
                 options.setCropFrameColor(frameColor);
                 options.setCropGridColor(gridColor);

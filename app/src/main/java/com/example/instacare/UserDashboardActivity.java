@@ -56,6 +56,10 @@ public class UserDashboardActivity extends AppCompatActivity {
         
         setContentView(R.layout.activity_user_dashboard);
 
+        // --- PRE-WARM VOICE ENGINE ---
+        // Warm up TTS early so it's ready when the tutorial starts
+        com.example.instacare.utils.VoiceManager.getInstance(this);
+
         // Status bar setup
         android.view.Window window = getWindow();
         int colorBg = androidx.core.content.ContextCompat.getColor(this, R.color.dashboard_background);
@@ -572,6 +576,14 @@ public class UserDashboardActivity extends AppCompatActivity {
                     .start();
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // FORCE CLEANUP: VoiceManager's TTS engine must be shutdown correctly
+        // to prevent "stale" voice threads when the app is reopened/restarted.
+        com.example.instacare.utils.VoiceManager.getInstance(this).shutdown();
     }
 
     private long lastBackPressTime = 0;

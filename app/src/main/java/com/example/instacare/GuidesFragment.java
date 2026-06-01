@@ -30,6 +30,7 @@ public class GuidesFragment extends Fragment {
 
     private GuidesAdapter adapter;
     private DisasterGuidesAdapter disasterAdapter;
+    private GenericGuidesAdapter consolidatedAdapter;
     private RecyclerView guidesRecyclerView;
     private View segmentedControl, segmentedSlider;
     private TextView btnTypeFirstAid, btnTypeDisaster;
@@ -112,6 +113,26 @@ public class GuidesFragment extends Fragment {
         }
     }
 
+    private void updateStickyHeader(boolean isBookmarked) {
+        TextView tvTitle = getView().findViewById(R.id.tvTitleGuides);
+
+        if (isBookmarked) {
+            // Keep segmentedControl VISIBLE but update the title
+            if (tvTitle != null) {
+                String text = "My Saved Guides";
+                android.text.SpannableStringBuilder spannable = new android.text.SpannableStringBuilder(text);
+                int start = text.indexOf("Saved");
+                if (start != -1) {
+                    int color = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.highlight_yellow);
+                    spannable.setSpan(new android.text.style.ForegroundColorSpan(color), start, start + 5, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+                tvTitle.setText(spannable);
+            }
+        } else {
+            if (tvTitle != null) updateHeaderTitle();
+        }
+    }
+
     private void setupRecyclerView() {
         guidesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         
@@ -148,6 +169,8 @@ public class GuidesFragment extends Fragment {
                 disasterAdapter.notifyDataSetChanged();
             }
         });
+
+        consolidatedAdapter = new GenericGuidesAdapter();
 
         // Set initial adapter
         guidesRecyclerView.setAdapter(adapter);
@@ -225,6 +248,7 @@ public class GuidesFragment extends Fragment {
                     ContextCompat.getColor(requireContext(), R.color.emergency_red)));
             }
             
+            updateStickyHeader(isShowingBookmarksOnly);
             applyFilters();
         });
     }
@@ -273,6 +297,7 @@ public class GuidesFragment extends Fragment {
                         searchEditText.getText().toString().toLowerCase().trim() : "";
 
         if (isShowingDisasterReadiness) {
+            guidesRecyclerView.setAdapter(disasterAdapter);
             if (allDisasterGuides == null) return;
             List<com.example.instacare.data.local.DisasterGuide> filtered = new ArrayList<>();
             for (com.example.instacare.data.local.DisasterGuide item : allDisasterGuides) {
@@ -285,6 +310,7 @@ public class GuidesFragment extends Fragment {
             disasterAdapter.updateList(filtered);
             updateEmptyStates(filtered.isEmpty());
         } else {
+            guidesRecyclerView.setAdapter(adapter);
             if (allGuides == null) return;
             List<com.example.instacare.data.local.Guide> filtered = new ArrayList<>();
             for (com.example.instacare.data.local.Guide item : allGuides) {
@@ -306,6 +332,22 @@ public class GuidesFragment extends Fragment {
         if (isEmpty) {
             guidesRecyclerView.setVisibility(View.GONE);
             if (isShowingBookmarksOnly) {
+                // AUTO-REDIRECT: If no bookmarks left in THIS section, check if there are ANY bookmarks at all
+                boolean hasAnyBookmark = false;
+                if (allGuides != null) { for (com.example.instacare.data.local.Guide g : allGuides) { if (g.isBookmarked) { hasAnyBookmark = true; break; } } }
+                if (!hasAnyBookmark && allDisasterGuides != null) { for (com.example.instacare.data.local.DisasterGuide dg : allDisasterGuides) { if (dg.isBookmarked) { hasAnyBookmark = true; break; } } }
+
+                if (!hasAnyBookmark) {
+                    // Switch back to normal First Aid view
+                    isShowingBookmarksOnly = false;
+                    isShowingDisasterReadiness = false;
+                    btnViewBookmarks.setImageResource(R.drawable.ic_bookmark);
+                    btnViewBookmarks.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.emergency_red)));
+                    updateStickyHeader(false);
+                    applyFilters();
+                    return;
+                }
+
                 if (emptyBookmarks != null) emptyBookmarks.setVisibility(View.VISIBLE);
                 if (emptyGuides != null) emptyGuides.setVisibility(View.GONE);
             } else {

@@ -23,7 +23,7 @@ import com.example.instacare.R;
 
 import com.example.instacare.R;
 
-public class TutorialOverlayView extends FrameLayout implements TextToSpeech.OnInitListener {
+public class TutorialOverlayView extends FrameLayout {
 
     private Paint backgroundPaint;
     private Paint erasePaint;
@@ -145,14 +145,19 @@ public class TutorialOverlayView extends FrameLayout implements TextToSpeech.OnI
         }
     }
 
-    @Override
-    public void onInit(int status) {
-        // This is still called if the singleton was created with 'this' context elsewhere, 
-        // but here we primarily rely on VoiceManager's internal onInit.
-        // We keep it to ensure local compatibility if used as a listener.
-        if (status == TextToSpeech.SUCCESS) {
+    // Polling logic to wait for VoiceManager if it's still initializing
+    private void checkVoiceReadiness() {
+        VoiceManager vm = VoiceManager.getInstance(getContext());
+        if (vm.isReady()) {
             isTTSReady = true;
             setupTTSListener();
+            if (pendingText != null) {
+                pendingText = null;
+                startTypewriter();
+            }
+        } else if (isThinking) {
+            // Keep polling while we are in the "Thinking" state
+            typewriterHandler.postDelayed(this::checkVoiceReadiness, 200);
         }
     }
 
@@ -384,16 +389,21 @@ public class TutorialOverlayView extends FrameLayout implements TextToSpeech.OnI
         
         // --- AI VOICE ---
         if (!isMuted) {
-            String cleanText = fullText.replaceAll("[\\x{1F600}-\\x{1F64F}\\x{1F300}-\\x{1F5FF}\\x{1F680}-\\x{1F6FF}\\x{1F1E6}-\\x{1F1FF}]", "");
-            if (isTTSReady && tts != null) {
+            VoiceManager vm = VoiceManager.getInstance(getContext());
+            if (vm.isReady()) {
+                isTTSReady = true;
+                setupTTSListener();
+                
+                String cleanText = fullText.replaceAll("[\\x{1F600}-\\x{1F64F}\\x{1F300}-\\x{1F5FF}\\x{1F680}-\\x{1F6FF}\\x{1F1E6}-\\x{1F1FF}]", "");
                 pendingText = null;
                 voiceTargetIndex = 0;
                 
                 // Track ID to ensure we only react to the current speech
                 tts.speak(cleanText, TextToSpeech.QUEUE_FLUSH, null, "CaraSpeech_" + System.currentTimeMillis());
             } else {
-                // Buffer the voice, it will join the typing once ready
+                // Not ready? Buffer the text and start polling!
                 pendingText = fullText;
+                checkVoiceReadiness();
             }
         }
         
@@ -627,8 +637,9 @@ public class TutorialOverlayView extends FrameLayout implements TextToSpeech.OnI
      */
     private void captureBlurredBackground() {
         try {
-            // Find the activity's decor view (parent of this overlay)
-            ViewGroup parent = (ViewGroup) getParent();
+            // Find the activity's decor view for a clean full-screen snapshot
+            android.app.Activity activity = (android.app.Activity) getContext();
+            ViewGroup parent = (ViewGroup) activity.getWindow().getDecorView();
             if (parent == null) return;
             
             // Temporarily hide this overlay to capture clean background
