@@ -34,8 +34,9 @@
             app:tint="@android:color/white"/>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <LinearLayout
@@ -104,15 +105,34 @@
                     android:lineSpacingExtra="2dp"/>
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/tvIncomingTime"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="10:30 AM"
-                android:textColor="@color/text_tertiary"
-                android:textSize="10sp"
-                android:layout_marginStart="4dp"/>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp">
+
+                <TextView
+                    android:id="@+id/tvIncomingTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10:30 AM"
+                    android:textColor="@color/text_tertiary"
+                    android:textSize="10sp"/>
+
+                <ImageView
+                    android:id="@+id/btnReplyIncoming"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_reply"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp"
+                    android:layout_marginStart="6dp"
+                    android:visibility="visible"
+                    android:clickable="true"
+                    android:focusable="true"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
@@ -131,8 +151,9 @@
         android:paddingVertical="4dp">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="end">
 
@@ -202,15 +223,34 @@
                     android:lineSpacingExtra="2dp"/>
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/tvOutgoingTime"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="10:31 AM"
-                android:textColor="@color/text_tertiary"
-                android:textSize="10sp"
-                android:layout_marginEnd="4dp"/>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginEnd="4dp"
+                android:layout_marginTop="4dp">
+
+                <TextView
+                    android:id="@+id/tvOutgoingTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10:31 AM"
+                    android:textColor="@color/text_tertiary"
+                    android:textSize="10sp"/>
+
+                <ImageView
+                    android:id="@+id/btnReplyOutgoing"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_reply"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp"
+                    android:layout_marginStart="6dp"
+                    android:visibility="visible"
+                    android:clickable="true"
+                    android:focusable="true"/>
+            </LinearLayout>
         </LinearLayout>
 
         <ImageView

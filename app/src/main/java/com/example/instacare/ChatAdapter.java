@@ -140,6 +140,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             chatHolder.layoutOutgoing.setVisibility(View.VISIBLE);
             chatHolder.layoutIncoming.setVisibility(View.GONE);
             chatHolder.tvOutgoingTime.setText(timeFormat.format(new Date(msg.timestamp)));
+            chatHolder.btnReplyOutgoing.setColorFilter(chatHolder.itemView.getContext().getResources().getColor(R.color.text_tertiary), android.graphics.PorterDuff.Mode.SRC_IN);
+            chatHolder.btnReplyOutgoing.setVisibility(View.VISIBLE);
 
             int outgoingColor = "BARANGAY".equals(currentUserRole) ? 
                 chatHolder.itemView.getContext().getResources().getColor(R.color.barangay_primary) : 
@@ -194,6 +196,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 chatHolder.layoutReplyOutgoing.setVisibility(View.GONE);
             }
 
+            // Reply button click
+            chatHolder.btnReplyOutgoing.setOnClickListener(v -> {
+                if (longClickListener != null) {
+                    longClickListener.onMessageLongClick(msg);
+                }
+            });
+
             // Long Press to Reply
             chatHolder.bubbleOutgoing.setOnLongClickListener(v -> {
                 if (longClickListener != null) {
@@ -211,6 +220,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             chatHolder.layoutIncoming.setVisibility(View.VISIBLE);
             chatHolder.layoutOutgoing.setVisibility(View.GONE);
             chatHolder.tvIncomingTime.setText(timeFormat.format(new Date(msg.timestamp)));
+            chatHolder.btnReplyIncoming.setColorFilter(chatHolder.itemView.getContext().getResources().getColor(R.color.text_tertiary), android.graphics.PorterDuff.Mode.SRC_IN);
+            chatHolder.btnReplyIncoming.setVisibility(View.VISIBLE);
 
             if (msg.imagePath != null) {
                 chatHolder.ivIncomingImage.setVisibility(View.VISIBLE);
@@ -265,6 +276,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 chatHolder.layoutReplyIncoming.setVisibility(View.GONE);
             }
 
+            // Reply button click
+            chatHolder.btnReplyIncoming.setOnClickListener(v -> {
+                if (longClickListener != null) {
+                    longClickListener.onMessageLongClick(msg);
+                }
+            });
+
             // Long Press to Reply
             chatHolder.bubbleIncoming.setOnLongClickListener(v -> {
                 if (longClickListener != null) {
@@ -310,6 +328,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         android.widget.ImageView ivAvatarIncoming, ivAvatarOutgoing;
         android.widget.ImageView ivIncomingImage, ivOutgoingImage;
         android.widget.ImageView ivReplyImageIncoming, ivReplyImageOutgoing;
+        android.widget.ImageView btnReplyIncoming, btnReplyOutgoing;
 
         public ChatViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -333,6 +352,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ivOutgoingImage = itemView.findViewById(R.id.ivOutgoingImage);
             ivReplyImageIncoming = itemView.findViewById(R.id.ivReplyImageIncoming);
             ivReplyImageOutgoing = itemView.findViewById(R.id.ivReplyImageOutgoing);
+            btnReplyIncoming = itemView.findViewById(R.id.btnReplyIncoming);
+            btnReplyOutgoing = itemView.findViewById(R.id.btnReplyOutgoing);
         }
     }
 

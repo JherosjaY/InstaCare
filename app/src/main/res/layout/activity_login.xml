@@ -100,10 +100,11 @@
                     android:hint="Username"
                     app:startIconDrawable="@drawable/ic_user"
                     app:startIconTint="@color/text_secondary"
+                    app:boxStrokeColor="@color/input_stroke_selector"
                     app:layout_constraintTop_toTopOf="parent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/usernameEditText"
+ 
+                     <com.google.android.material.textfield.TextInputEditText
+                         android:id="@+id/usernameEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textVisiblePassword"
@@ -121,6 +122,7 @@
                     app:startIconTint="@color/text_secondary"
                     app:passwordToggleEnabled="true"
                     app:passwordToggleTint="@color/text_secondary"
+                    app:boxStrokeColor="@color/input_stroke_selector"
                     app:layout_constraintTop_toBottomOf="@id/usernameInputLayout">
 
                     <com.google.android.material.textfield.TextInputEditText

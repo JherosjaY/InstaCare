@@ -194,6 +194,16 @@ public class EndorsementRequestSheet extends BaseBlurredBottomSheet {
 
             Executors.newSingleThreadExecutor().execute(() -> {
                 if (isMedical) {
+                    // Prevent duplicate pending requests for the same barangay
+                    int pendingCount = db.endorsementDao().getPendingCountByUserAndBarangay(currentUserId, brgy);
+                    if (pendingCount > 0) {
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(() ->
+                                Toast.makeText(requireContext(), "You already have a pending request for this barangay", Toast.LENGTH_SHORT).show()
+                            );
+                        }
+                        return;
+                    }
                     String purpose = spinnerPurpose.getText().toString().trim();
                     String hospital = spinnerHospital.getText().toString().trim();
                     String caseRef = CaseRefGenerator.generate();

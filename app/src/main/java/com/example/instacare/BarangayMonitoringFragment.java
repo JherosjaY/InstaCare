@@ -50,8 +50,8 @@ public class BarangayMonitoringFragment extends Fragment {
         rvLogs.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvLogs.setAdapter(adapter);
 
-        SharedPreferences prefs = requireContext().getSharedPreferences("InstaCarePrefs", Context.MODE_PRIVATE);
-        selectedCommunity = prefs.getString("SELECTED_COMMUNITY", "");
+        SessionManager sessionManager = SessionManager.getInstance(requireContext());
+        selectedCommunity = sessionManager.getString("SELECTED_COMMUNITY", "");
 
         ChipGroup chipGroup = view.findViewById(R.id.chipGroupLogs);
         

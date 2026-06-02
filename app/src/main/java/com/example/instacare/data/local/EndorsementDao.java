@@ -61,4 +61,7 @@ public interface EndorsementDao {
 
     @Query("SELECT COUNT(*) FROM barangay_endorsements WHERE status = :status AND barangayZone = :barangay")
     int getCountByStatusByBarangay(String status, String barangay);
+
+    @Query("SELECT COUNT(*) FROM barangay_endorsements WHERE userId = :userId AND barangayZone = :barangayZone AND status = 'PENDING'")
+    int getPendingCountByUserAndBarangay(int userId, String barangayZone);
 }

@@ -36,6 +36,12 @@ public class BarangayEndorsementsFragment extends Fragment {
     private AppDatabase db;
     private String currentFilter = "ALL";
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadEndorsements();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -161,8 +167,8 @@ public class BarangayEndorsementsFragment extends Fragment {
     }
 
     private void loadEndorsements(String query) {
-        android.content.SharedPreferences prefs = requireContext().getSharedPreferences("InstaCarePrefs", android.content.Context.MODE_PRIVATE);
-        String selectedCommunity = prefs.getString("SELECTED_COMMUNITY", null);
+        SessionManager sessionManager = SessionManager.getInstance(requireContext());
+        String selectedCommunity = sessionManager.getString("SELECTED_COMMUNITY", null);
 
         Executors.newSingleThreadExecutor().execute(() -> {
             List<Endorsement> endorsements;

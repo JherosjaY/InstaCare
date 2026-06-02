@@ -169,13 +169,14 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                     caraRecyclerView.post(() -> caraRecyclerView.scrollToPosition(chatHistory.size() - 1));
                 }
                 
-                // Sync globe + divider visibility with language state
+                // Sync globe + divider + input area visibility with language state
                 boolean hasLang = !savedLang.isEmpty();
                 ivClearHistory.setEnabled(hasLang);
                 ivClearHistory.setAlpha(hasLang ? 1.0f : 0.4f);
                 View divider = getView().findViewById(R.id.vDividerLanguage);
                 btnChangeLanguage.setVisibility(hasLang ? View.VISIBLE : View.GONE);
                 divider.setVisibility(hasLang ? View.VISIBLE : View.GONE);
+                animateInputArea(hasLang);
 
                 isHistoryLoading = false;
             });
@@ -214,7 +215,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         setupNotifications();
         updateBadge();
 
-        btnToggleView.setOnClickListener(v -> toggleView());
+        btnToggleView.setOnClickListener(v -> v.post(() -> toggleView()));
         tvEditAction.setOnClickListener(v -> toggleEditMode());
         btnDeleteSelected.setOnClickListener(v -> {
             java.util.Set<Integer> selected = notificationAdapter.getSelectedPositions();
@@ -272,10 +273,9 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         tvSheetTitle.setText("Notifications");
         ivBellIcon.setVisibility(View.GONE);
         ivMiniCaraToggle.setVisibility(View.VISIBLE);
-        ivClearHistory.setVisibility(View.GONE);
-        if (btnChangeLanguage != null) btnChangeLanguage.setVisibility(View.GONE);
+        view.findViewById(R.id.pillChipContainer).setVisibility(View.GONE);
         tvEditAction.setVisibility(View.VISIBLE);
-        inputArea.setVisibility(View.GONE);
+        animateInputArea(false);
         loadNotifications();
     }
 
@@ -343,6 +343,8 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                     return;
                 }
             }
+
+            animateInputArea(false);
 
             // Remove any existing language card from DB first (in case it's there)
             new Thread(() -> {
@@ -688,11 +690,11 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
             ivMiniCaraToggle.setVisibility(View.VISIBLE);
             tvCharC.setVisibility(View.GONE);
             
-            ivClearHistory.setVisibility(View.GONE);
+            getView().findViewById(R.id.pillChipContainer).setVisibility(View.GONE);
             tvEditAction.setVisibility(View.VISIBLE);
             exitEditMode(); 
 
-            inputArea.setVisibility(View.GONE);
+            animateInputArea(false);
             loadNotifications();
         } else {
             caraView.setVisibility(View.VISIBLE);
@@ -710,11 +712,11 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
             ivMiniCaraToggle.setVisibility(View.GONE);
             tvCharC.setVisibility(View.GONE);
             
-            ivClearHistory.setVisibility(View.VISIBLE);
+            getView().findViewById(R.id.pillChipContainer).setVisibility(View.VISIBLE);
             btnDeleteSelected.setVisibility(View.GONE);
             tvEditAction.setVisibility(View.GONE);
 
-            inputArea.setVisibility(View.VISIBLE);
+            animateInputArea(true);
         }
         updateBadge(); // Ensure badges are synced after toggle
     }
@@ -1248,6 +1250,19 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         }).start();
     }
 
+    private void animateInputArea(boolean show) {
+        if (show) {
+            inputArea.setTranslationY(inputArea.getHeight());
+            inputArea.setVisibility(View.VISIBLE);
+            inputArea.animate().translationY(0).setDuration(300).setInterpolator(new android.view.animation.OvershootInterpolator()).start();
+        } else {
+            inputArea.animate().translationY(inputArea.getHeight()).setDuration(200).setInterpolator(new android.view.animation.AccelerateInterpolator()).withEndAction(() -> {
+                if (!show) inputArea.setVisibility(View.GONE);
+                inputArea.setTranslationY(0);
+            }).start();
+        }
+    }
+
     private void addCaraMessage(String text) {
         SessionManager sessionManager = SessionManager.getInstance(requireContext());
         AssistantMessage msg = new AssistantMessage(sessionManager.getCurrentUserUid(), text, true, 0, System.currentTimeMillis());
@@ -1264,6 +1279,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         SessionManager sessionManager = SessionManager.getInstance(requireContext());
         AssistantMessage msg = new AssistantMessage(sessionManager.getCurrentUserUid(), "", true, BotAdapter.TYPE_LANGUAGE_SELECTION, System.currentTimeMillis());
         currentState = State.AWAITING_LANGUAGE_SELECTION;
+        animateInputArea(false);
         saveAndAddMessage(msg);
     }
 
@@ -1288,6 +1304,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         else if ("Tagalog".equalsIgnoreCase(lang)) confirmation = "Sige, magtatagalog na ako simula ngayon. Ano pa ang maitutulong ko sa iyo?";
         
         addCaraMessage(confirmation);
+        animateInputArea(true);
         
         // Instantly enable the clear history button and slide in globe + divider so they can reset if they picked the wrong language
         ivClearHistory.setEnabled(true);

@@ -166,6 +166,7 @@ public class ChatActivity extends AppCompatActivity {
         
         // Apply Back Button Tint and Reply UI colors
         binding.chatToolbar.setNavigationIconTint(primaryColor);
+        binding.chatToolbar.setNavigationOnClickListener(v -> finish());
         binding.viewReplyIndicator.setBackgroundColor(primaryColor);
         
         // Use primary color for input accents (API 29+)
