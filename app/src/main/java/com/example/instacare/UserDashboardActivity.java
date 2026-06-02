@@ -60,6 +60,26 @@ public class UserDashboardActivity extends AppCompatActivity {
         // Warm up TTS early so it's ready when the tutorial starts
         com.example.instacare.utils.VoiceManager.getInstance(this);
 
+        // Modern Back Navigation Handling
+        getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (currentTabIndex != 0) {
+                    loadFragment(new HomeFragment(), 0, true);
+                } else {
+                    long now = System.currentTimeMillis();
+                    if (now - lastBackPressTime < 2000) {
+                        setEnabled(false);
+                        getOnBackPressedDispatcher().onBackPressed();
+                        // Exit app
+                    } else {
+                        lastBackPressTime = now;
+                        Toast.makeText(UserDashboardActivity.this, "Double tap to exit", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
         // Status bar setup
         android.view.Window window = getWindow();
         int colorBg = androidx.core.content.ContextCompat.getColor(this, R.color.dashboard_background);
@@ -546,18 +566,7 @@ public class UserDashboardActivity extends AppCompatActivity {
         return Bitmap.createBitmap(bitmap, (w - size) / 2, (h - size) / 2, size, size);
     }
 
-    @Override
-    public void onBackPressed() {
-        if (currentTabIndex != 0) loadFragment(new HomeFragment(), 0, true);
-        else {
-            long now = System.currentTimeMillis();
-            if (now - lastBackPressTime < 2000) super.onBackPressed();
-            else {
-                lastBackPressTime = now;
-                Toast.makeText(this, "Double tap to exit", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+    // Removed legacy onBackPressed() to use modern OnBackPressedDispatcher in onCreate()
     
     public void setScrollTopAction(boolean show, View.OnClickListener listener) {
         if (fabScrollTop == null) return;

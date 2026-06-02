@@ -52,6 +52,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
     private EditText etInput;
     private View btnSend;
     private ImageView ivClearHistory;
+    private ImageView btnChangeLanguage;
     private android.widget.ProgressBar themeLoadingSpinner;
     private List<AssistantMessage> chatHistory = new ArrayList<>();
     
@@ -168,10 +169,13 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                     caraRecyclerView.post(() -> caraRecyclerView.scrollToPosition(chatHistory.size() - 1));
                 }
                 
-                // Enable clear history immediately if a language is already selected
-                boolean canClear = !savedLang.isEmpty();
-                ivClearHistory.setEnabled(canClear);
-                ivClearHistory.setAlpha(canClear ? 1.0f : 0.4f);
+                // Sync globe + divider visibility with language state
+                boolean hasLang = !savedLang.isEmpty();
+                ivClearHistory.setEnabled(hasLang);
+                ivClearHistory.setAlpha(hasLang ? 1.0f : 0.4f);
+                View divider = getView().findViewById(R.id.vDividerLanguage);
+                btnChangeLanguage.setVisibility(hasLang ? View.VISIBLE : View.GONE);
+                divider.setVisibility(hasLang ? View.VISIBLE : View.GONE);
 
                 isHistoryLoading = false;
             });
@@ -192,6 +196,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         tvEditAction = view.findViewById(R.id.tvEditAction);
         btnDeleteSelected = view.findViewById(R.id.btnDeleteSelected);
         ivClearHistory = view.findViewById(R.id.btnClearHistory);
+        btnChangeLanguage = view.findViewById(R.id.btnChangeLanguage);
         inputArea = view.findViewById(R.id.inputAreaContainer);
         ivMiniCaraToggle = view.findViewById(R.id.ivMiniCaraToggle);
 
@@ -268,6 +273,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         ivBellIcon.setVisibility(View.GONE);
         ivMiniCaraToggle.setVisibility(View.VISIBLE);
         ivClearHistory.setVisibility(View.GONE);
+        if (btnChangeLanguage != null) btnChangeLanguage.setVisibility(View.GONE);
         tvEditAction.setVisibility(View.VISIBLE);
         inputArea.setVisibility(View.GONE);
         loadNotifications();
@@ -327,6 +333,48 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
 
         btnSend.setOnClickListener(v -> sendMessage());
         ivClearHistory.setOnClickListener(v -> promptClearHistory());
+
+        // Globe Button: Spawn language selection card inline (without clearing convo)
+        btnChangeLanguage.setOnClickListener(v -> {
+            // Guard: prevent duplicate language cards when spammed
+            for (AssistantMessage m : chatHistory) {
+                if (m.type == BotAdapter.TYPE_LANGUAGE_SELECTION) {
+                    caraRecyclerView.smoothScrollToPosition(chatHistory.size() - 1);
+                    return;
+                }
+            }
+
+            // Remove any existing language card from DB first (in case it's there)
+            new Thread(() -> {
+                java.util.List<AssistantMessage> all = AppDatabase.getDatabase(requireContext())
+                    .assistantMessageDao().getAll();
+                for (AssistantMessage msg : all) {
+                    if (msg.type == BotAdapter.TYPE_LANGUAGE_SELECTION) {
+                        AppDatabase.getDatabase(requireContext()).assistantMessageDao().delete(msg);
+                    }
+                }
+            }).start();
+
+            // Add a fresh language selection card at the bottom of the chat
+            AssistantMessage langCard = new AssistantMessage(0, "Piliin ang imong gusto nga pinulongan para sa akoa:\nSalita kang Piliin ang Wika mo:\nChoose your preferred language:", true, BotAdapter.TYPE_LANGUAGE_SELECTION, System.currentTimeMillis());
+
+            new Thread(() -> {
+                long id = AppDatabase.getDatabase(requireContext()).assistantMessageDao().insert(langCard);
+                langCard.id = (int) id;
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        chatHistory.add(langCard);
+                        botAdapter.notifyItemInserted(chatHistory.size() - 1);
+                        caraRecyclerView.post(() -> caraRecyclerView.smoothScrollToPosition(chatHistory.size() - 1));
+                    });
+                }
+            }).start();
+
+            // Animate the button with a quick scale pulse
+            v.animate().scaleX(0.8f).scaleY(0.8f).setDuration(100).withEndAction(() ->
+                v.animate().scaleX(1f).scaleY(1f).setDuration(150).start()
+            ).start();
+        });
         
         etInput.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEND) {
@@ -1159,6 +1207,11 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                 ivClearHistory.setEnabled(false);
                 ivClearHistory.setAlpha(0.4f);
                 
+                // Hide globe + divider since language was reset
+                View divider = getView().findViewById(R.id.vDividerLanguage);
+                btnChangeLanguage.setVisibility(View.GONE);
+                divider.setVisibility(View.GONE);
+                
                 String greeting = "Hi " + firstName + "! Convo history cleared. I'm ready for a fresh start! Which language is more convenient for you? Bisaya, Tagalog, or English?";
                 addCaraMessage(greeting);
                 addCaraLanguageChoiceCard();
@@ -1236,9 +1289,17 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         
         addCaraMessage(confirmation);
         
-        // Instantly enable the clear history button so they can reset if they picked the wrong language
+        // Instantly enable the clear history button and slide in globe + divider so they can reset if they picked the wrong language
         ivClearHistory.setEnabled(true);
         ivClearHistory.setAlpha(1.0f);
+
+        View divider = getView().findViewById(R.id.vDividerLanguage);
+        btnChangeLanguage.setTranslationX(40f);
+        divider.setTranslationX(40f);
+        btnChangeLanguage.setVisibility(View.VISIBLE);
+        divider.setVisibility(View.VISIBLE);
+        btnChangeLanguage.animate().translationX(0f).setDuration(300).setInterpolator(new android.view.animation.OvershootInterpolator()).start();
+        divider.animate().translationX(0f).setDuration(300).setInterpolator(new android.view.animation.OvershootInterpolator()).start();
     }
 
     private void generateCaraResponse(String input) {

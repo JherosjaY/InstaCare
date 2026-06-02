@@ -155,6 +155,23 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         setupImmersiveMode();
         setupCompassSensors();
         
+        // 🔙 Intercept System Back Button for Map Immersive Mode
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new androidx.activity.OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (isImmersiveMode) {
+                    // Restore UI from full-screen map mode
+                    toggleImmersiveMode();
+                } else {
+                    // Normal back button behavior (return to Dashboard)
+                    setEnabled(false);
+                    requireActivity().getOnBackPressedDispatcher().onBackPressed();
+                    // Re-enable so it works again if they reopen the section
+                    setEnabled(true);
+                }
+            }
+        });
+        
         // Dynamic Header Accent
         TextView tvTitle = view.findViewById(R.id.tvTitleHospitals);
         if (tvTitle != null) {

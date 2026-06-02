@@ -9,7 +9,10 @@ import java.util.List;
 @Dao
 public interface AssistantMessageDao {
     @Insert
-    void insert(AssistantMessage message);
+    long insert(AssistantMessage message);
+
+    @Query("SELECT * FROM assistant_messages")
+    List<AssistantMessage> getAll();
 
     @Update
     void update(AssistantMessage message);

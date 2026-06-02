@@ -110,48 +110,88 @@
             android:letterSpacing="0.05"
             android:visibility="gone" />
 
-        <RelativeLayout
+        <!-- RIGHT SIDE: Pill Chip (Globe + Trash) -->
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
+            android:layout_height="36dp"
             android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true">
+            android:layout_alignParentEnd="true"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_pill_chip"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp">
 
-            <TextView
-                android:id="@+id/tvEditAction"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="Edit"
-                android:textColor="@color/primary"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:paddingHorizontal="8dp"
+            <!-- Globe: Change Language -->
+            <ImageView
+                android:id="@+id/btnChangeLanguage"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_language"
+                app:tint="@color/primary"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Change Language"
+                android:visibility="gone" />
+ 
+             <!-- Vertical Divider -->
+            <View
+                android:id="@+id/vDividerLanguage"
+                android:layout_width="1dp"
+                android:layout_height="18dp"
+                android:background="@color/dashboard_card_border"
+                android:layout_marginHorizontal="2dp"
                 android:visibility="gone" />
 
+            <!-- Trash: Clear History -->
             <ImageView
                 android:id="@+id/btnClearHistory"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:padding="12dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="8dp"
                 android:src="@drawable/ic_trash"
                 app:tint="@color/primary"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
+                android:contentDescription="Clear History"
                 android:visibility="visible" />
+        </LinearLayout>
 
-            <ImageView
-                android:id="@+id/btnDeleteSelected"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:padding="12dp"
-                android:src="@drawable/ic_trash"
-                app:tint="@color/primary"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:visibility="gone" />
-        </RelativeLayout>
+        <!-- Edit Action (shown in notifications mode) -->
+        <TextView
+            android:id="@+id/tvEditAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/btnDeleteSelected"
+            android:layout_marginEnd="8dp"
+            android:text="Edit"
+            android:textColor="@color/primary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            android:visibility="gone" />
+
+        <!-- Delete Selected (shown in multi-select mode) -->
+        <ImageView
+            android:id="@+id/btnDeleteSelected"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:padding="12dp"
+            android:src="@drawable/ic_trash"
+            app:tint="@color/primary"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone" />
     </RelativeLayout>
 
     <!-- CONTENT AREA -->
