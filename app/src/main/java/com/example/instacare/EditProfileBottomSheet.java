@@ -413,12 +413,21 @@ public class EditProfileBottomSheet extends BaseBlurredBottomSheet {
         options.setShowCropGrid(false);
         options.setCompressionFormat(Bitmap.CompressFormat.PNG);
         
-        // Theme Colors
-        options.setToolbarColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.dashboard_surface));
-        options.setStatusBarColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.dashboard_background));
-        options.setToolbarWidgetColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.text_primary));
+        // Theme Colors - ADAPTIVE Fix
+        boolean isDarkMode = (getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+        
+        int toolbarColor = isDarkMode ? Color.parseColor("#0F172A") : Color.WHITE; // Navy for dark mode
+        int textColor = isDarkMode ? Color.WHITE : Color.BLACK;
+        int bgColor = isDarkMode ? Color.BLACK : Color.parseColor("#F9FAFB");
+
+        options.setToolbarColor(toolbarColor);
+        options.setStatusBarColor(toolbarColor); // Consistency
+        options.setToolbarWidgetColor(textColor);
         options.setActiveControlsWidgetColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.primary));
-        options.setRootViewBackgroundColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.dashboard_background));
+        options.setRootViewBackgroundColor(bgColor);
+        
+        // --- UNIVERSAL FIX: Use Window Insets if available ---
+        options.setToolbarTitle("Edit Profile Photo");
 
         UCrop uCrop = UCrop.of(uri, destinationUri)
                 .withAspectRatio(1, 1)

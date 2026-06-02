@@ -30,6 +30,7 @@ public class GuidesFragment extends Fragment {
 
     private GuidesAdapter adapter;
     private DisasterGuidesAdapter disasterAdapter;
+    private GenericGuidesAdapter consolidatedAdapter;
     private RecyclerView guidesRecyclerView;
     private View segmentedControl, segmentedSlider;
     private TextView btnTypeFirstAid, btnTypeDisaster;
@@ -69,6 +70,18 @@ public class GuidesFragment extends Fragment {
             androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(appBar, (v, windowInsets) -> {
                 androidx.core.graphics.Insets insets = windowInsets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
                 v.setPadding(v.getPaddingLeft(), insets.top, v.getPaddingRight(), v.getPaddingBottom());
+                // --- PREMIUM UX: Dynamic Status Bar Icon Tinting ---
+                if (getActivity() != null && getActivity().getWindow() != null) {
+                    androidx.core.view.WindowInsetsControllerCompat controller = 
+                        androidx.core.view.WindowCompat.getInsetsController(getActivity().getWindow(), getActivity().getWindow().getDecorView());
+                    if (controller != null) {
+                        boolean isDarkMode = (getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK) 
+                                           == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+                        // Light background (not dark mode) = Dark icons (LightStatusBar = true)
+                        // Dark background (dark mode) = White icons (LightStatusBar = false)
+                        controller.setAppearanceLightStatusBars(!isDarkMode);
+                    }
+                }
                 return windowInsets;
             });
 
@@ -112,6 +125,26 @@ public class GuidesFragment extends Fragment {
         }
     }
 
+    private void updateStickyHeader(boolean isBookmarked) {
+        TextView tvTitle = getView().findViewById(R.id.tvTitleGuides);
+
+        if (isBookmarked) {
+            // Keep segmentedControl VISIBLE but update the title
+            if (tvTitle != null) {
+                String text = "My Saved Guides";
+                android.text.SpannableStringBuilder spannable = new android.text.SpannableStringBuilder(text);
+                int start = text.indexOf("Saved");
+                if (start != -1) {
+                    int color = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.highlight_yellow);
+                    spannable.setSpan(new android.text.style.ForegroundColorSpan(color), start, start + 5, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+                tvTitle.setText(spannable);
+            }
+        } else {
+            if (tvTitle != null) updateHeaderTitle();
+        }
+    }
+
     private void setupRecyclerView() {
         guidesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         
@@ -149,6 +182,8 @@ public class GuidesFragment extends Fragment {
             }
         });
 
+        consolidatedAdapter = new GenericGuidesAdapter();
+
         // Set initial adapter
         guidesRecyclerView.setAdapter(adapter);
 
@@ -158,12 +193,14 @@ public class GuidesFragment extends Fragment {
         db.guideDao().getAllGuides().observe(getViewLifecycleOwner(), guides -> {
             allGuides = guides;
             if (!isShowingDisasterReadiness) applyFilters();
+            checkBookmarkAvailability();
         });
 
         // Observe Disaster Readiness Guides
         db.disasterGuideDao().getAllDisasterGuides().observe(getViewLifecycleOwner(), guides -> {
             allDisasterGuides = guides;
             if (isShowingDisasterReadiness) applyFilters();
+            checkBookmarkAvailability();
         });
     }
 
@@ -211,22 +248,56 @@ public class GuidesFragment extends Fragment {
     }
 
     private void setupBookmarkToggle() {
-        btnViewBookmarks.setOnClickListener(v -> {
-            isShowingBookmarksOnly = !isShowingBookmarksOnly;
+        View bookmarkContainer = getView().findViewById(R.id.bookmarkListCard);
+        if (bookmarkContainer != null) {
+            bookmarkContainer.setOnClickListener(v -> {
+                isShowingBookmarksOnly = !isShowingBookmarksOnly;
+                
+                // Visual feedback
+                if (isShowingBookmarksOnly) {
+                    btnViewBookmarks.setImageResource(R.drawable.ic_bookmark_filled);
+                    btnViewBookmarks.setImageTintList(ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.highlight_yellow)));
+                } else {
+                    btnViewBookmarks.setImageResource(R.drawable.ic_bookmark);
+                    btnViewBookmarks.setImageTintList(ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.emergency_red)));
+                }
+                
+                updateStickyHeader(isShowingBookmarksOnly);
+                applyFilters();
+            });
+        }
+    }
+
+    private void checkBookmarkAvailability() {
+        boolean hasAnyBookmark = false;
+        if (allGuides != null) {
+            for (com.example.instacare.data.local.Guide g : allGuides) {
+                if (g.isBookmarked) { hasAnyBookmark = true; break; }
+            }
+        }
+        if (!hasAnyBookmark && allDisasterGuides != null) {
+            for (com.example.instacare.data.local.DisasterGuide dg : allDisasterGuides) {
+                if (dg.isBookmarked) { hasAnyBookmark = true; break; }
+            }
+        }
+
+        View bookmarkContainer = getView() != null ? getView().findViewById(R.id.bookmarkListCard) : null;
+        if (bookmarkContainer != null) {
+            bookmarkContainer.setEnabled(hasAnyBookmark);
+            bookmarkContainer.setAlpha(hasAnyBookmark ? 1.0f : 0.4f);
             
-            // Visual feedback
-            if (isShowingBookmarksOnly) {
-                btnViewBookmarks.setImageResource(R.drawable.ic_bookmark_filled);
-                btnViewBookmarks.setImageTintList(ColorStateList.valueOf(
-                    ContextCompat.getColor(requireContext(), R.color.highlight_yellow)));
-            } else {
+            // If we are currently showing bookmarks and the last one was removed
+            if (!hasAnyBookmark && isShowingBookmarksOnly) {
+                isShowingBookmarksOnly = false;
                 btnViewBookmarks.setImageResource(R.drawable.ic_bookmark);
                 btnViewBookmarks.setImageTintList(ColorStateList.valueOf(
                     ContextCompat.getColor(requireContext(), R.color.emergency_red)));
+                updateStickyHeader(false);
+                applyFilters();
             }
-            
-            applyFilters();
-        });
+        }
     }
 
     private void setupChips() {
@@ -273,6 +344,7 @@ public class GuidesFragment extends Fragment {
                         searchEditText.getText().toString().toLowerCase().trim() : "";
 
         if (isShowingDisasterReadiness) {
+            guidesRecyclerView.setAdapter(disasterAdapter);
             if (allDisasterGuides == null) return;
             List<com.example.instacare.data.local.DisasterGuide> filtered = new ArrayList<>();
             for (com.example.instacare.data.local.DisasterGuide item : allDisasterGuides) {
@@ -285,6 +357,7 @@ public class GuidesFragment extends Fragment {
             disasterAdapter.updateList(filtered);
             updateEmptyStates(filtered.isEmpty());
         } else {
+            guidesRecyclerView.setAdapter(adapter);
             if (allGuides == null) return;
             List<com.example.instacare.data.local.Guide> filtered = new ArrayList<>();
             for (com.example.instacare.data.local.Guide item : allGuides) {
@@ -306,6 +379,22 @@ public class GuidesFragment extends Fragment {
         if (isEmpty) {
             guidesRecyclerView.setVisibility(View.GONE);
             if (isShowingBookmarksOnly) {
+                // AUTO-REDIRECT: If no bookmarks left in THIS section, check if there are ANY bookmarks at all
+                boolean hasAnyBookmark = false;
+                if (allGuides != null) { for (com.example.instacare.data.local.Guide g : allGuides) { if (g.isBookmarked) { hasAnyBookmark = true; break; } } }
+                if (!hasAnyBookmark && allDisasterGuides != null) { for (com.example.instacare.data.local.DisasterGuide dg : allDisasterGuides) { if (dg.isBookmarked) { hasAnyBookmark = true; break; } } }
+
+                if (!hasAnyBookmark) {
+                    // Switch back to normal First Aid view
+                    isShowingBookmarksOnly = false;
+                    isShowingDisasterReadiness = false;
+                    btnViewBookmarks.setImageResource(R.drawable.ic_bookmark);
+                    btnViewBookmarks.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.emergency_red)));
+                    updateStickyHeader(false);
+                    applyFilters();
+                    return;
+                }
+
                 if (emptyBookmarks != null) emptyBookmarks.setVisibility(View.VISIBLE);
                 if (emptyGuides != null) emptyGuides.setVisibility(View.GONE);
             } else {

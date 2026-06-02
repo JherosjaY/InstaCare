@@ -327,12 +327,19 @@ public class EditProfileActivity extends AppCompatActivity {
         options.setShowCropGrid(false);
         options.setCompressionFormat(Bitmap.CompressFormat.PNG);
         
-        // Theme Colors
-        options.setToolbarColor(androidx.core.content.ContextCompat.getColor(this, R.color.dashboard_surface));
-        options.setStatusBarColor(androidx.core.content.ContextCompat.getColor(this, R.color.dashboard_background));
-        options.setToolbarWidgetColor(androidx.core.content.ContextCompat.getColor(this, R.color.text_primary));
+        // Theme Colors - ADAPTIVE Fix
+        boolean isDarkMode = (getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+        
+        int toolbarColor = isDarkMode ? Color.parseColor("#111827") : Color.WHITE;
+        int textColor = isDarkMode ? Color.WHITE : Color.BLACK;
+        int bgColor = isDarkMode ? Color.BLACK : Color.parseColor("#F9FAFB");
+
+        options.setToolbarColor(toolbarColor);
+        options.setStatusBarColor(toolbarColor);
+        options.setToolbarWidgetColor(textColor); 
         options.setActiveControlsWidgetColor(androidx.core.content.ContextCompat.getColor(this, R.color.primary));
-        options.setRootViewBackgroundColor(androidx.core.content.ContextCompat.getColor(this, R.color.dashboard_background));
+        options.setRootViewBackgroundColor(bgColor);
+        options.setToolbarTitle("Crop Photo");
 
         UCrop uCrop = UCrop.of(uri, destinationUri)
                 .withAspectRatio(1, 1)

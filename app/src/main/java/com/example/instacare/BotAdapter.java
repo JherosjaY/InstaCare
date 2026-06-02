@@ -24,6 +24,7 @@ public class BotAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final int TYPE_NOTIFICATION = 3;
     public static final int TYPE_TYPING = 4;
     public static final int TYPE_HEADER = 5;
+    public static final int TYPE_LANGUAGE_SELECTION = 6;
 
     private List<AssistantMessage> messages;
     private OnCardActionListener actionListener;
@@ -58,6 +59,9 @@ public class BotAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (viewType == TYPE_HEADER) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cara_header, parent, false);
             return new HeaderViewHolder(v);
+        } else if (viewType == TYPE_LANGUAGE_SELECTION) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_bot_language_selection, parent, false);
+            return new LanguageViewHolder(v);
         }
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_bot_message, parent, false);
         return new TextViewHolder(v);
@@ -86,6 +90,8 @@ public class BotAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ((TypingViewHolder) holder).startAnimation();
         } else if (holder instanceof HeaderViewHolder) {
             // Static header for now, no binding needed
+        } else if (holder instanceof LanguageViewHolder) {
+            ((LanguageViewHolder) holder).bind(msg);
         }
     }
 
@@ -262,6 +268,39 @@ public class BotAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     prefs.edit().putBoolean("CARA_WELCOME_ANIMATED", true).apply();
                 }, 400); // Small delay to ensure layout is ready
             }
+        }
+    }
+
+    public interface OnLanguageClickListener {
+        void onLanguageSelected(String lang);
+    }
+
+    private OnLanguageClickListener languageClickListener;
+
+    public void setOnLanguageClickListener(OnLanguageClickListener listener) {
+        this.languageClickListener = listener;
+    }
+
+    class LanguageViewHolder extends RecyclerView.ViewHolder {
+        MaterialButton btnBisaya, btnTagalog, btnEnglish;
+
+        LanguageViewHolder(@NonNull View itemView) {
+            super(itemView);
+            btnBisaya = itemView.findViewById(R.id.btnLangBisaya);
+            btnTagalog = itemView.findViewById(R.id.btnLangTagalog);
+            btnEnglish = itemView.findViewById(R.id.btnLangEnglish);
+        }
+
+        void bind(AssistantMessage msg) {
+            btnBisaya.setOnClickListener(v -> {
+                if (languageClickListener != null) languageClickListener.onLanguageSelected("Bisaya");
+            });
+            btnTagalog.setOnClickListener(v -> {
+                if (languageClickListener != null) languageClickListener.onLanguageSelected("Tagalog");
+            });
+            btnEnglish.setOnClickListener(v -> {
+                if (languageClickListener != null) languageClickListener.onLanguageSelected("English");
+            });
         }
     }
 }

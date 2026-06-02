@@ -1167,11 +1167,24 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
     }
 
     private void setupImmersiveMode() {
-        BottomSheetBehavior<androidx.cardview.widget.CardView> behavior = 
-            BottomSheetBehavior.from((androidx.cardview.widget.CardView) bottomSheet);
+        BottomSheetBehavior<MaterialCardView> behavior = 
+            BottomSheetBehavior.from(bottomSheet);
 
         behavior.setHideable(false);
         navFabContainer.setVisibility(View.GONE);
+        
+        behavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                // Ensure map is ALWAYS interactive
+                if (mapView != null) {
+                    mapView.setOnTouchListener(null);
+                    mapView.setClickable(true);
+                    mapView.setFocusable(true);
+                }
+            }
+            @Override public void onSlide(@NonNull View bottomSheet, float slideOffset) {}
+        });
     }
 
     private void toggleImmersiveMode() {

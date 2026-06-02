@@ -45,8 +45,8 @@ public class OnboardingActivity extends AppCompatActivity {
 
         // Setup ViewPager adapter with premium merged illustrations
         java.util.List<OnboardingItem> items = new java.util.ArrayList<>();
-        items.add(new OnboardingItem(R.drawable.onboarding_merged, "<font color='#E53935'>Health</font> & <font color='#E53935'>Disaster Ready</font>", "First Aid medical guides mixed with vital community Disaster Readiness exactly when you need them."));
-        items.add(new OnboardingItem(R.drawable.onboarding_routing, "<font color='#E53935'>Hospitals</font> & <font color='#E53935'>Evacuation</font>", "Unerringly locate and navigate to the nearest critical hospitals and safe government evacuation centers."));
+        items.add(new OnboardingItem(R.drawable.onboarding_merged, "<font color='#E53935'>Health</font> & <font color='#E53935'>Disaster Ready</font>", "Your Reliable Source for First Aid and Disaster Readiness."));
+        items.add(new OnboardingItem(R.drawable.onboarding_routing, "<font color='#E53935'>Hospitals</font> & <font color='#E53935'>Evacuation</font>", "Find nearby hospitals and safe evacuation centers easily."));
         items.add(new OnboardingItem(R.drawable.onboarding_sos, "<font color='#E53935'>Rescue</font> & <font color='#E53935'>SOS Network</font>", "Trigger instant emergency alerts to your Barangays, responders, and family with a single tap."));
 
         adapter = new OnboardingAdapter(items);

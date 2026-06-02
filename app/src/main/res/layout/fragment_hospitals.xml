@@ -316,7 +316,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:paddingHorizontal="16dp"
-                android:paddingBottom="180dp"
+                android:paddingBottom="130dp"
                 android:clipToPadding="false"
                 tools:listitem="@layout/item_hospital"/>
         </LinearLayout>

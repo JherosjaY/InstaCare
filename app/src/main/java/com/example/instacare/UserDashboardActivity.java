@@ -56,9 +56,17 @@ public class UserDashboardActivity extends AppCompatActivity {
         
         setContentView(R.layout.activity_user_dashboard);
 
+        // --- PRE-WARM VOICE ENGINE ---
+        // Warm up TTS early so it's ready when the tutorial starts
+        com.example.instacare.utils.VoiceManager.getInstance(this);
+
         // Status bar setup
         android.view.Window window = getWindow();
         int colorBg = androidx.core.content.ContextCompat.getColor(this, R.color.dashboard_background);
+        int surfaceColor = androidx.core.content.ContextCompat.getColor(this, R.color.dashboard_surface);
+        
+        // Make the status bar match the header color so it looks seamless
+        window.setStatusBarColor(surfaceColor);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             boolean alreadyAsked = sessionManager.getBoolean("NOTIF_PERMISSION_ASKED", false);
@@ -82,7 +90,7 @@ public class UserDashboardActivity extends AppCompatActivity {
         }
         
         // Use Surface Color for Bottom Nav Bar blending
-        int surfaceColor = androidx.core.content.ContextCompat.getColor(this, R.color.dashboard_surface);
+        surfaceColor = androidx.core.content.ContextCompat.getColor(this, R.color.dashboard_surface);
         getWindow().setNavigationBarColor(surfaceColor);
         
         // Ensure Icons adapt
@@ -500,6 +508,10 @@ public class UserDashboardActivity extends AppCompatActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         if (animate) { if (isForward) ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left); else ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right); }
         ft.replace(R.id.fragmentContainer, fragment).commit();
+        
+        // --- GUIDES ONLY TWEAK ---
+        // Hide scroll button by default on every switch
+        setScrollTopAction(false, null);
     }
 
     public void hideBottomNav() {
@@ -549,6 +561,13 @@ public class UserDashboardActivity extends AppCompatActivity {
     
     public void setScrollTopAction(boolean show, View.OnClickListener listener) {
         if (fabScrollTop == null) return;
+        
+        // --- GUIDES ONLY TWEAK ---
+        // Force hide if not on the Guides tab (Index 2)
+        if (currentTabIndex != 2) {
+            show = false;
+        }
+
         if (show) {
             if (fabScrollTop.getVisibility() != View.VISIBLE) {
                 fabScrollTop.setVisibility(View.VISIBLE);
@@ -572,6 +591,14 @@ public class UserDashboardActivity extends AppCompatActivity {
                     .start();
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // FORCE CLEANUP: VoiceManager's TTS engine must be shutdown correctly
+        // to prevent "stale" voice threads when the app is reopened/restarted.
+        com.example.instacare.utils.VoiceManager.getInstance(this).shutdown();
     }
 
     private long lastBackPressTime = 0;

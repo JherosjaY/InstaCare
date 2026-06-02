@@ -11,7 +11,8 @@
         <item name="android:windowBackground">@color/dashboard_background</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
-        <item name="android:statusBarColor">@color/dashboard_surface</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:navigationBarColor">@color/dashboard_surface</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar">true</item>
@@ -156,15 +157,6 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
-    <style name="Theme.InstaCare.UCrop" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@android:color/white</item>
-        <item name="colorPrimaryDark">@android:color/white</item>
-        <item name="colorAccent">@color/primary</item>
-        <item name="android:statusBarColor">@android:color/white</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:navigationBarColor">@android:color/white</item>
-        <item name="android:windowLightNavigationBar">true</item>
-    </style>
 
     <style name="TextAppearance.InstaCare.HeaderTitle" parent="TextAppearance.Material3.TitleMedium">
         <item name="android:fontFamily">sans-serif-bold</item>
@@ -219,5 +211,11 @@
     <style name="CircleAppearanceOverlay" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
+    </style>
+    <style name="Theme.InstaCare.UCrop" parent="Base.Theme.InstaCare">
+        <item name="android:windowBackground">@color/dashboard_background</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 </resources>

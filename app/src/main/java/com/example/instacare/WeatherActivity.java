@@ -55,7 +55,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     private void setupDynamicWeatherData() {
         Random random = new Random();
-        int baseTemp = 74;
+        int baseTemp = 28; // Celsius standard for PH weather
         
         // Hourly Arrays
         int[] hourIcons = {R.id.hour1Icon, R.id.hour2Icon, R.id.hour3Icon, R.id.hour4Icon, R.id.hour5Icon};
@@ -70,7 +70,8 @@ public class WeatherActivity extends AppCompatActivity {
             
             icon.setImageResource(iconRes);
             icon.setColorFilter(androidx.core.content.ContextCompat.getColor(this, tintRes));
-            temp.setText((baseTemp + random.nextInt(10) - 5) + "°");
+            // Slight variation (±2 degrees)
+            temp.setText((baseTemp + random.nextInt(5) - 2) + "°C");
         }
         
         // Daily Arrays
@@ -87,7 +88,8 @@ public class WeatherActivity extends AppCompatActivity {
             
             icon.setImageResource(iconRes);
             icon.setColorFilter(androidx.core.content.ContextCompat.getColor(this, tintRes));
-            temp.setText((baseTemp + random.nextInt(14) - 4) + "°");
+            // Slight variation (±3 degrees)
+            temp.setText((baseTemp + random.nextInt(7) - 3) + "°C");
         }
     }
 }

@@ -109,7 +109,7 @@
             android:orientation="vertical"
             android:paddingHorizontal="20dp"
             android:paddingTop="24dp"
-            android:paddingBottom="120dp">
+            android:paddingBottom="130dp">
 
             <!-- Motivational Carousel -->
             <com.google.android.material.card.MaterialCardView
