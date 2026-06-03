@@ -225,9 +225,13 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         });
 
         // Expand logic & Keyboard Fix
+        final boolean[] isInitialized = {false};
         view.getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
+                if (isInitialized[0]) return;
+                isInitialized[0] = true;
+
                 com.google.android.material.bottomsheet.BottomSheetDialog dialog = (com.google.android.material.bottomsheet.BottomSheetDialog) getDialog();
                 if (dialog != null) {
                     View bottomSheet = dialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
@@ -332,7 +336,12 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         loadChatHistory();
 
         btnSend.setOnClickListener(v -> sendMessage());
-        ivClearHistory.setOnClickListener(v -> promptClearHistory());
+        ivClearHistory.setOnClickListener(v -> {
+            v.animate().scaleX(0.7f).scaleY(0.7f).setDuration(100).withEndAction(() ->
+                v.animate().scaleX(1f).scaleY(1f).setDuration(150).start()
+            ).start();
+            promptClearHistory();
+        });
 
         // Globe Button: Spawn language selection card inline (without clearing convo)
         btnChangeLanguage.setOnClickListener(v -> {
@@ -607,6 +616,9 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                 notificationList.addAll(list);
                 notificationAdapter.notifyDataSetChanged();
                 
+                // Re-trigger slide-up animation on every data refresh
+                notificationsRecyclerView.scheduleLayoutAnimation();
+                
                 boolean isEmpty = notificationList.isEmpty();
                 emptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
                 notificationsRecyclerView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
@@ -716,7 +728,16 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
             btnDeleteSelected.setVisibility(View.GONE);
             tvEditAction.setVisibility(View.GONE);
 
-            animateInputArea(true);
+            SessionManager sessionManager = SessionManager.getInstance(requireContext());
+            boolean hasLang = !sessionManager.getString("USER_ASSISTANT_LANGUAGE", "").isEmpty();
+            boolean hasLangCard = false;
+            for (AssistantMessage m : chatHistory) {
+                if (m.type == BotAdapter.TYPE_LANGUAGE_SELECTION) {
+                    hasLangCard = true;
+                    break;
+                }
+            }
+            animateInputArea(hasLang && !hasLangCard);
         }
         updateBadge(); // Ensure badges are synced after toggle
     }
@@ -1002,7 +1023,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                     if (isAdded() && getContext() != null) {
                         android.content.Intent intent = new android.content.Intent(getContext(), com.example.instacare.NewsActivity.class);
                         startActivity(intent);
-                        dismiss();
+                        smoothDismiss();
                     }
                 }, 1000);
             } else {
@@ -1096,10 +1117,26 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         addCaraActionCard("Are you sure you want to clear our conversation history? This cannot be undone.");
     }
 
+    private void smoothDismiss() {
+        animateInputArea(false);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (getDialog() != null) {
+                View sheet = getDialog().findViewById(com.google.android.material.R.id.design_bottom_sheet);
+                if (sheet != null) {
+                    com.google.android.material.bottomsheet.BottomSheetBehavior<View> behavior = com.google.android.material.bottomsheet.BottomSheetBehavior.from(sheet);
+                    int targetHeight = (int) (sheet.getHeight() * 0.3f);
+                    sheet.animate().translationY(targetHeight).setDuration(200).withEndAction(() -> dismiss()).start();
+                    return;
+                }
+            }
+            dismiss();
+        }, 200);
+    }
+
     private void navigateTo(String tab) {
         if (getActivity() instanceof UserDashboardActivity) {
             ((UserDashboardActivity) getActivity()).navigateToFragment(tab);
-            dismiss();
+            smoothDismiss();
         }
     }
 

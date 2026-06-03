@@ -212,6 +212,10 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+    <style name="DialogSlideUp">
+        <item name="android:windowEnterAnimation">@anim/slide_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_down</item>
+    </style>
     <style name="Theme.InstaCare.UCrop" parent="Base.Theme.InstaCare">
         <item name="android:windowBackground">@color/dashboard_background</item>
         <item name="android:windowNoTitle">true</item>

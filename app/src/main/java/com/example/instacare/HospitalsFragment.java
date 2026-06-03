@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -63,7 +64,7 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
     private ConstraintLayout topBar;
     private MaterialCardView navFabContainer;
     private ImageView navFabIcon;
-    private View loadingState;
+
     
     // Detailed Compass Views
     private View compassOverlay;
@@ -125,7 +126,6 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         hospitalsRecyclerView = view.findViewById(R.id.hospitalsRecyclerView);
         bottomSheet = view.findViewById(R.id.bottomSheet);
         mapContainer = view.findViewById(R.id.mapContainer);
-        mapView = view.findViewById(R.id.mapView);
         topBar = view.findViewById(R.id.topBar);
         
         if (isRouteOnly) {
@@ -137,9 +137,8 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         navFabIcon = view.findViewById(R.id.navFabIcon);
         compassOverlay = view.findViewById(R.id.compassOverlay);
         compassDial = view.findViewById(R.id.compassDial);
-        loadingState = view.findViewById(R.id.loadingStateHospitals);
         FrameLayout refreshCard = view.findViewById(R.id.refreshCard);
-        
+
         // Edge-to-Edge inset handling for the top bar
         if (topBar != null) {
             androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(topBar, (v, windowInsets) -> {
@@ -151,9 +150,22 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         }
         
         setupRecyclerView();
-        setupMap();
+        showLoading(true);
         setupImmersiveMode();
+        // Init compass sensors immediately (does not depend on MapView)
         setupCompassSensors();
+        // Defer heavy MapView inflation + init to after first frame
+        view.post(() -> {
+            ViewStub stub = view.findViewById(R.id.mapViewStub);
+            if (stub != null) {
+                mapView = (org.osmdroid.views.MapView) stub.inflate();
+            }
+            setupMap();
+        });
+
+        // 🚀 Load cached data immediately (showLoading enforces min 300ms display)
+        loadHospitalData(false);
+        loadEvacuationData(false);
         
         // 🔙 Intercept System Back Button for Map Immersive Mode
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new androidx.activity.OnBackPressedCallback(true) {
@@ -197,18 +209,18 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
 
         if (chipGroup != null) {
             chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
+                currentRoute = null;
                 if (checkedIds.contains(R.id.chipHospitals)) {
                     currentMode = "hospitals";
                     if (disasterScroll != null) disasterScroll.setVisibility(View.GONE);
-                    showLoading(true);
-                    hospitalsRecyclerView.setVisibility(View.VISIBLE);
                     setupRecyclerView();
+                    showLoading(true);
                     loadHospitalData(false);
                 } else if (checkedIds.contains(R.id.chipEvacuation)) {
                     currentMode = "evacuation";
                     if (disasterScroll != null) disasterScroll.setVisibility(View.VISIBLE);
-                    showLoading(true);
                     setupEvacuationRecyclerView();
+                    showLoading(true);
                     loadEvacuationData(false);
                 }
             });
@@ -267,10 +279,6 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
             }
         });
         
-        // 🚀 Instant Persistence: Load cache immediately on launch
-        loadHospitalData(false);
-        loadEvacuationData(false);
-
         // HANDLE REDIRECT: Auto-switch to Evacuation tab if requested
         if (getArguments() != null) {
             if (getArguments().getBoolean("SELECT_EVACUATION", false) || getArguments().getBoolean("SELECT_CHECKIN", false)) {
@@ -434,8 +442,10 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                         return Double.compare(currentUserLocation.distanceToAsDouble(pa), currentUserLocation.distanceToAsDouble(pb));
                     });
                 }
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
+                View root = getView();
+                if (root != null) {
+                    root.postDelayed(() -> {
+                        if (!isAdded()) return;
                         // Purge any existing dummy data if detected
                         boolean hasDummy = false;
                         java.util.Iterator<com.example.instacare.data.local.Hospital> iterator = cached.iterator();
@@ -449,14 +459,18 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                             }
                         }
                         displayHospitalResults(cached);
-                    });
+                    }, 800);
                 }
             } else {
                 if (currentUserLocation != null) {
                     fetchHospitalsViaOverpassAPI(currentUserLocation);
                 } else if (!forceRefresh && cached != null && !cached.isEmpty()) {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> displayHospitalResults(cached));
+                    View root = getView();
+                    if (root != null) {
+                        root.postDelayed(() -> {
+                            if (!isAdded()) return;
+                            displayHospitalResults(cached);
+                        }, 800);
                     }
                 }
             }
@@ -473,7 +487,7 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
             updateMapMarkers(currentHospitals);
         }
         
-        if (autoRouteTarget != null && currentHospitals != null) {
+        if (autoRouteTarget != null && currentHospitals != null && mapView != null) {
             for (com.example.instacare.data.local.Hospital h : currentHospitals) {
                 if (h.name != null && h.name.equalsIgnoreCase(autoRouteTarget)) {
                     drawRouteToHospital(h);
@@ -510,13 +524,44 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
     private void showLoading(boolean show) {
         if (!isAdded()) return;
         requireActivity().runOnUiThread(() -> {
-            if (loadingState != null) {
-                loadingState.setVisibility(show ? View.VISIBLE : View.GONE);
+            RecyclerView.Adapter<?> adapter = hospitalsRecyclerView.getAdapter();
+            if (adapter instanceof HospitalAdapter) {
+                ((HospitalAdapter) adapter).setLoading(show);
+            } else if (adapter instanceof EvacuationAdapter) {
+                ((EvacuationAdapter) adapter).setLoading(show);
             }
             if (show) {
-                hospitalsRecyclerView.setVisibility(View.GONE);
+                hospitalsRecyclerView.setVisibility(View.VISIBLE);
                 View empty = getView() != null ? getView().findViewById(R.id.emptyStateHospitals) : null;
                 if (empty != null) empty.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private View routeLoadingOverlay;
+
+    private void showRouteLoading(boolean show) {
+        if (!isAdded() || mapContainer == null) return;
+        requireActivity().runOnUiThread(() -> {
+            if (show && routeLoadingOverlay == null) {
+                routeLoadingOverlay = new FrameLayout(requireContext());
+                routeLoadingOverlay.setLayoutParams(new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT));
+                routeLoadingOverlay.setBackgroundColor(0x44000000);
+
+                android.widget.ProgressBar pb = new android.widget.ProgressBar(requireContext(), null, android.R.attr.progressBarStyleLarge);
+                FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT);
+                lp.gravity = android.view.Gravity.CENTER;
+                pb.setLayoutParams(lp);
+
+                ((FrameLayout) routeLoadingOverlay).addView(pb);
+                mapContainer.addView(routeLoadingOverlay);
+            } else if (!show && routeLoadingOverlay != null) {
+                mapContainer.removeView(routeLoadingOverlay);
+                routeLoadingOverlay = null;
             }
         });
     }
@@ -530,11 +575,6 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         });
         hospitalsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         hospitalsRecyclerView.setAdapter(adapter);
-
-        // We no longer query the local DB. The UI is populated when fetchHospitalsViaOverpassAPI completes.
-        View emptyState = getView() != null ? getView().findViewById(R.id.emptyStateHospitals) : null;
-        if (emptyState != null) emptyState.setVisibility(View.VISIBLE);
-        hospitalsRecyclerView.setVisibility(View.GONE);
     }
 
     private void setupEvacuationRecyclerView() {
@@ -543,10 +583,6 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         });
         hospitalsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         hospitalsRecyclerView.setAdapter(adapter);
-
-        View emptyState = getView() != null ? getView().findViewById(R.id.emptyStateHospitals) : null;
-        if (emptyState != null) emptyState.setVisibility(View.VISIBLE);
-        hospitalsRecyclerView.setVisibility(View.GONE);
     }
 
     private void loadEvacuationData(boolean forceRefresh) {
@@ -580,10 +616,12 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                         return Double.compare(currentUserLocation.distanceToAsDouble(pa), currentUserLocation.distanceToAsDouble(pb));
                     });
                 }
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
+                View root = getView();
+                if (root != null) {
+                    root.postDelayed(() -> {
+                        if (!isAdded()) return;
                         displayEvacuationResults(merged);
-                    });
+                    }, 800);
                 }
             } else {
                 if (currentUserLocation != null) {
@@ -593,9 +631,13 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                     }
                     fetchEvacuationViaOverpassAPI(currentUserLocation, existingLocalOnly);
                 } else {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> displayEvacuationResults(merged));
-                    }
+                    View root = getView();
+                    if (root != null) {
+                    root.postDelayed(() -> {
+                        if (!isAdded()) return;
+                        displayEvacuationResults(merged);
+                    }, 800);
+                }
                 }
             }
         });
@@ -759,32 +801,32 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
 
         mapView.getOverlays().clear();
 
-        org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer clusterer =
-            new org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer(requireContext());
-        clusterer.setName("Evacuation");
-
         org.osmdroid.util.GeoPoint startPoint = currentUserLocation != null ? currentUserLocation : new org.osmdroid.util.GeoPoint(12.8797, 121.7740);
         addMarkerToMap(startPoint, "Me", "My Current Location", R.drawable.user_location_dot, null, null);
 
+        java.util.ArrayList<org.osmdroid.views.overlay.Marker> evacMarkers = new java.util.ArrayList<>();
         if (centers != null) {
             for (com.example.instacare.data.local.EvacuationCenter c : centers) {
                 if (c == null) continue;
                 
-                // 🚦 Route Isolation: Hide other markers if viewing a specific route
                 if (isRouteOnly && autoRouteTarget != null && !c.name.equalsIgnoreCase(autoRouteTarget)) {
                     continue; 
                 }
                 
                 org.osmdroid.util.GeoPoint p = new org.osmdroid.util.GeoPoint(c.latitude, c.longitude);
-                addEvacMarkerToMap(p, c.name, c.type != null ? c.type : "Shelter", R.drawable.ic_marker_evac, c, clusterer);
+                addEvacMarkerToMap(p, c.name, c.type != null ? c.type : "Shelter", R.drawable.ic_marker_evac, c, evacMarkers);
             }
         }
-
-        mapView.getOverlays().add(clusterer);
 
         if (currentRoute != null && !mapView.getOverlays().contains(currentRoute)) {
             mapView.getOverlays().add(0, currentRoute);
         }
+
+        if (mapView.getZoomLevel() >= 10.0) {
+            animateMarkersDrop(evacMarkers);
+        }
+        
+        updateMarkerVisibilityByZoom(mapView.getZoomLevel());
 
         org.osmdroid.views.overlay.MapEventsOverlay mapEventsOverlay = new org.osmdroid.views.overlay.MapEventsOverlay(new org.osmdroid.events.MapEventsReceiver() {
             @Override public boolean singleTapConfirmedHelper(org.osmdroid.util.GeoPoint p) { toggleImmersiveMode(); return true; }
@@ -796,7 +838,7 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
 
     private void addEvacMarkerToMap(org.osmdroid.util.GeoPoint point, String title, String snippet, int iconRes,
                                      com.example.instacare.data.local.EvacuationCenter center,
-                                     org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer clusterer) {
+                                     java.util.List<org.osmdroid.views.overlay.Marker> markersList) {
         if (mapView == null || !isAdded()) return;
 
         org.osmdroid.views.overlay.Marker marker = new org.osmdroid.views.overlay.Marker(mapView);
@@ -838,7 +880,8 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         };
         marker.setInfoWindow(infoWindow);
 
-        if (clusterer != null) { clusterer.add(marker); } else { mapView.getOverlays().add(marker); }
+        mapView.getOverlays().add(marker);
+        if (markersList != null) markersList.add(marker);
     }
 
     private void redirectMapToEvacuation(com.example.instacare.data.local.EvacuationCenter center) {
@@ -849,15 +892,17 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         mapView.getController().animateTo(loc);
 
         for (org.osmdroid.views.overlay.Overlay overlay : mapView.getOverlays()) {
-            if (overlay instanceof org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer) {
-                org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer clusterer = (org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer) overlay;
-                for (org.osmdroid.views.overlay.Marker marker : clusterer.getItems()) {
-                    if (marker.getPosition().getLatitude() == center.latitude &&
-                        marker.getPosition().getLongitude() == center.longitude) {
-                        for (org.osmdroid.views.overlay.Marker m : clusterer.getItems()) m.closeInfoWindow();
-                        marker.showInfoWindow();
-                        break;
+            if (overlay instanceof org.osmdroid.views.overlay.Marker) {
+                org.osmdroid.views.overlay.Marker marker = (org.osmdroid.views.overlay.Marker) overlay;
+                if (marker.getPosition().getLatitude() == center.latitude &&
+                    marker.getPosition().getLongitude() == center.longitude) {
+                    for (org.osmdroid.views.overlay.Overlay o : mapView.getOverlays()) {
+                        if (o instanceof org.osmdroid.views.overlay.Marker) {
+                            ((org.osmdroid.views.overlay.Marker) o).closeInfoWindow();
+                        }
                     }
+                    marker.showInfoWindow();
+                    break;
                 }
             }
         }
@@ -867,6 +912,7 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
     private void drawRouteToEvacuation(com.example.instacare.data.local.EvacuationCenter center) {
         if (mapView == null || currentUserLocation == null) return;
 
+        showRouteLoading(true);
         executor.execute(() -> {
             try {
                 org.osmdroid.bonuspack.routing.RoadManager roadManager = new org.osmdroid.bonuspack.routing.OSRMRoadManager(requireContext(), "InstaCare-Agent");
@@ -899,12 +945,14 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                                 hospitalsRecyclerView.getAdapter().notifyDataSetChanged();
                             }
                         }
+                        showRouteLoading(false);
                     });
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
+                        showRouteLoading(false);
                     });
                 }
             }
@@ -919,6 +967,7 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
     private void drawRouteToHospital(com.example.instacare.data.local.Hospital hospital) {
         if (mapView == null || currentUserLocation == null) return;
         
+        showRouteLoading(true);
         executor.execute(() -> {
             try {
                 org.osmdroid.bonuspack.routing.RoadManager roadManager = new org.osmdroid.bonuspack.routing.OSRMRoadManager(requireContext(), "InstaCare-Agent");
@@ -955,12 +1004,14 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                                 hospitalsRecyclerView.getAdapter().notifyDataSetChanged();
                             }
                         }
+                        showRouteLoading(false);
                     });
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
+                        showRouteLoading(false);
                     });
                 }
             }
@@ -972,29 +1023,27 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         
         org.osmdroid.util.GeoPoint hospLoc = new org.osmdroid.util.GeoPoint(hospital.latitude, hospital.longitude);
 
-        // 1. Zoom and Center
         mapView.getController().setZoom(17.0);
         mapView.getController().animateTo(hospLoc);
         
-        // 2. Find marker and show InfoWindow
         for (org.osmdroid.views.overlay.Overlay overlay : mapView.getOverlays()) {
-            if (overlay instanceof org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer) {
-                org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer clusterer = (org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer) overlay;
-                for (org.osmdroid.views.overlay.Marker marker : clusterer.getItems()) {
-                    if (marker.getPosition().getLatitude() == hospital.latitude && 
-                        marker.getPosition().getLongitude() == hospital.longitude) {
-                        
-                        // Close other windows first
-                        for (org.osmdroid.views.overlay.Marker m : clusterer.getItems()) m.closeInfoWindow();
-                        
-                        marker.showInfoWindow();
-                        break;
+            if (overlay instanceof org.osmdroid.views.overlay.Marker) {
+                org.osmdroid.views.overlay.Marker marker = (org.osmdroid.views.overlay.Marker) overlay;
+                if (marker.getPosition().getLatitude() == hospital.latitude && 
+                    marker.getPosition().getLongitude() == hospital.longitude) {
+                    
+                    for (org.osmdroid.views.overlay.Overlay o : mapView.getOverlays()) {
+                        if (o instanceof org.osmdroid.views.overlay.Marker) {
+                            ((org.osmdroid.views.overlay.Marker) o).closeInfoWindow();
+                        }
                     }
+                    
+                    marker.showInfoWindow();
+                    break;
                 }
             }
         }
         
-        // 3. Close Bottom Sheet (Optional: immersive view)
         toggleImmersiveMode();
     }
 
@@ -1003,37 +1052,36 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         
         mapView.getOverlays().clear();
         
-        // 1. Create Clusterer with default styling for stability
-        org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer clusterer = 
-            new org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer(requireContext());
-        clusterer.setName("Hospitals");
-        
-        // 2. Add "Me" marker (Always outside clusterer)
+        // 1. Add "Me" marker
         org.osmdroid.util.GeoPoint startPoint = currentUserLocation != null ? currentUserLocation : new org.osmdroid.util.GeoPoint(12.8797, 121.7740);
         addMarkerToMap(startPoint, "Me", "My Current Location", R.drawable.user_location_dot, null, null);
 
-        // 3. Add Hospital Markers to Clusterer
+        // 2. Add Hospital Markers (no clustering)
+        java.util.ArrayList<org.osmdroid.views.overlay.Marker> hospitalMarkers = new java.util.ArrayList<>();
         if (hospitals != null) {
             for (com.example.instacare.data.local.Hospital h : hospitals) {
                 if (h == null) continue;
                 
-                // 🚦 Route Isolation: Hide other markers if viewing a specific route
                 if (isRouteOnly && autoRouteTarget != null && !h.name.equalsIgnoreCase(autoRouteTarget)) {
                     continue; 
                 }
                 
                 org.osmdroid.util.GeoPoint p = new org.osmdroid.util.GeoPoint(h.latitude, h.longitude);
-                addMarkerToMap(p, h.name, h.type, R.drawable.ic_marker_hospital_cool, h, clusterer); 
+                addMarkerToMap(p, h.name, h.type, R.drawable.ic_marker_hospital_cool, h, hospitalMarkers); 
             }
         }
-        
-        mapView.getOverlays().add(clusterer);
         
         if (currentRoute != null && !mapView.getOverlays().contains(currentRoute)) {
             mapView.getOverlays().add(0, currentRoute);
         }
         
-        // 4. Add Map Events Overlay
+        if (mapView.getZoomLevel() >= 10.0) {
+            animateMarkersDrop(hospitalMarkers);
+        }
+        
+        updateMarkerVisibilityByZoom(mapView.getZoomLevel());
+        
+        // 3. Add Map Events Overlay
         org.osmdroid.views.overlay.MapEventsOverlay mapEventsOverlay = new org.osmdroid.views.overlay.MapEventsOverlay(new org.osmdroid.events.MapEventsReceiver() {
             @Override
             public boolean singleTapConfirmedHelper(org.osmdroid.util.GeoPoint p) {
@@ -1052,10 +1100,9 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
 
     private void setupMap() {
         mapView.setMultiTouchControls(true);
-        mapView.getController().setZoom(6.0); 
-        
-        org.osmdroid.util.GeoPoint phCenter = new org.osmdroid.util.GeoPoint(12.8797, 121.7740);
-        mapView.getController().setCenter(phCenter);
+
+        mapView.getController().setZoom(6.0);
+        mapView.getController().setCenter(new org.osmdroid.util.GeoPoint(12.8797, 121.7740));
 
         org.osmdroid.views.overlay.MapEventsOverlay mapEventsOverlay = new org.osmdroid.views.overlay.MapEventsOverlay(new org.osmdroid.events.MapEventsReceiver() {
             @Override
@@ -1070,10 +1117,19 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
             }
         });
         mapView.getOverlays().add(0, mapEventsOverlay);
+
+        mapView.addMapListener(new org.osmdroid.events.MapListener() {
+            @Override public boolean onScroll(org.osmdroid.events.ScrollEvent event) { return false; }
+            @Override public boolean onZoom(org.osmdroid.events.ZoomEvent event) {
+                updateMarkerVisibilityByZoom(event.getZoomLevel());
+                return false;
+            }
+        });
     }
 
     private void addMarkerToMap(org.osmdroid.util.GeoPoint point, String title, String snippet, int iconRes, 
-                             com.example.instacare.data.local.Hospital hospital, org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer clusterer) {
+                             com.example.instacare.data.local.Hospital hospital,
+                             java.util.List<org.osmdroid.views.overlay.Marker> markersList) {
         if (mapView == null || !isAdded()) return;
         
         boolean isUser = "Me".equals(title);
@@ -1166,9 +1222,10 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
             
             marker.setOnMarkerClickListener((m, mv) -> {
                 if (m == null || mv == null) return true;
-                // Close others in clusterer
-                if (clusterer != null) {
-                    for (org.osmdroid.views.overlay.Marker cm : clusterer.getItems()) cm.closeInfoWindow();
+                for (org.osmdroid.views.overlay.Overlay o : mapView.getOverlays()) {
+                    if (o instanceof org.osmdroid.views.overlay.Marker) {
+                        ((org.osmdroid.views.overlay.Marker) o).closeInfoWindow();
+                    }
                 }
                 m.showInfoWindow();
                 mv.getController().animateTo(m.getPosition());
@@ -1176,11 +1233,60 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
             });
         }
         
-        if (clusterer != null) {
-            clusterer.add(marker);
-        } else {
-            mapView.getOverlays().add(marker);
+        mapView.getOverlays().add(marker);
+        if (markersList != null) markersList.add(marker);
+    }
+
+    private void animateMarkersDrop(java.util.List<org.osmdroid.views.overlay.Marker> markers) {
+        if (mapView == null || !isAdded() || markers == null || markers.isEmpty()) return;
+        int total = markers.size();
+        for (int i = 0; i < total; i++) {
+            org.osmdroid.views.overlay.Marker marker = markers.get(i);
+            org.osmdroid.util.GeoPoint finalPos = marker.getPosition();
+            double finalLat = finalPos.getLatitude();
+            double finalLng = finalPos.getLongitude();
+            double latOffset = 0.008;
+            marker.setPosition(new org.osmdroid.util.GeoPoint(finalLat + latOffset, finalLng));
+            marker.setAlpha(0f);
+            long delay = i * 100L;
+            mapView.postDelayed(() -> {
+                if (!isAdded() || mapView == null) return;
+                marker.setAlpha(1f);
+                android.animation.ValueAnimator anim = android.animation.ValueAnimator.ofFloat(0f, 1f);
+                anim.setDuration(400);
+                anim.setInterpolator(new android.view.animation.BounceInterpolator());
+                anim.addUpdateListener(animation -> {
+                    float t = (float) animation.getAnimatedValue();
+                    marker.setPosition(new org.osmdroid.util.GeoPoint(
+                        finalLat + latOffset * (1f - t), finalLng));
+                    mapView.invalidate();
+                });
+                anim.addListener(new android.animation.AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(android.animation.Animator animation) {
+                        if (!isAdded() || mapView == null) return;
+                        marker.setPosition(finalPos);
+                        marker.setAlpha(1f);
+                        mapView.invalidate();
+                    }
+                });
+                anim.start();
+            }, delay);
         }
+    }
+
+    private void updateMarkerVisibilityByZoom(double zoomLevel) {
+        if (mapView == null) return;
+        boolean visible = zoomLevel >= 10.0;
+        for (org.osmdroid.views.overlay.Overlay o : mapView.getOverlays()) {
+            if (o instanceof org.osmdroid.views.overlay.Marker) {
+                org.osmdroid.views.overlay.Marker m = (org.osmdroid.views.overlay.Marker) o;
+                if (!"Me".equals(m.getTitle())) {
+                    m.setAlpha(visible ? 1f : 0f);
+                }
+            }
+        }
+        mapView.invalidate();
     }
 
     private void setupImmersiveMode() {
@@ -1322,10 +1428,6 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
             
             if (lastLoc != null) {
                 updateUserLocation(new org.osmdroid.util.GeoPoint(lastLoc.getLatitude(), lastLoc.getLongitude()));
-                if (mapView != null) {
-                    mapView.getController().setCenter(currentUserLocation);
-                    mapView.getController().setZoom(15.0);
-                }
             }
         } catch (SecurityException e) {
             e.printStackTrace();
@@ -1384,17 +1486,27 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         }
         
         // 🗺️ Refresh Active Markers
-        if ("evacuation".equals(currentMode)) {
+        if ("hospitals".equals(currentMode)) {
+            updateMapMarkers(currentHospitals);
+        } else if ("evacuation".equals(currentMode)) {
             updateMapMarkersEvacuation(currentEvacCenters);
         } else if ("checkin".equals(currentMode)) {
-            loadCheckInData(false); // Refresh check-in markers
-        } else {
-            updateMapMarkers(currentHospitals);
+            loadCheckInData(false);
         }
         
-        if (isFirstLock && mapView != null) {
-            mapView.getController().animateTo(currentUserLocation);
-            mapView.getController().setZoom(15.0);
+        if (mapView != null) {
+            boolean hasMe = false;
+            for (org.osmdroid.views.overlay.Overlay o : mapView.getOverlays()) {
+                if (o instanceof org.osmdroid.views.overlay.Marker && "Me".equals(((org.osmdroid.views.overlay.Marker) o).getTitle())) {
+                    ((org.osmdroid.views.overlay.Marker) o).setPosition(currentUserLocation);
+                    hasMe = true;
+                    break;
+                }
+            }
+            if (!hasMe) {
+                addMarkerToMap(currentUserLocation, "Me", "My Current Location", R.drawable.user_location_dot, null, null);
+            }
+            mapView.invalidate();
         }
     }
 

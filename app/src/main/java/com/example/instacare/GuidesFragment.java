@@ -43,6 +43,10 @@ public class GuidesFragment extends Fragment {
     private String currentCategory = "All";
     private String currentDisasterCategory = "All";
     private float cornerRadiusPx;
+    private View loadingState;
+    private boolean isInitialLoadDelayed = false;
+    private android.os.Handler searchHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private Runnable searchRunnable;
 
     @Nullable
     @Override
@@ -63,6 +67,7 @@ public class GuidesFragment extends Fragment {
         disasterCategoryChips = view.findViewById(R.id.disasterCategoryChips);
         searchEditText = view.findViewById(R.id.searchEditText);
         btnViewBookmarks = view.findViewById(R.id.btnViewBookmarks);
+        loadingState = view.findViewById(R.id.loadingStateGuides);
 
         // Edge-to-Edge inset handling for the AppBarLayout
         com.google.android.material.appbar.AppBarLayout appBar = view.findViewById(R.id.appBarLayout);
@@ -97,6 +102,7 @@ public class GuidesFragment extends Fragment {
         setupBookmarkToggle();
 
         updateHeaderTitle();
+        showLoading(true);
 
         // Handle deep-link from Home screen card
         if (getArguments() != null && getArguments().getBoolean("SELECT_DISASTER", false)) {
@@ -192,14 +198,36 @@ public class GuidesFragment extends Fragment {
         // Observe First Aid Guides
         db.guideDao().getAllGuides().observe(getViewLifecycleOwner(), guides -> {
             allGuides = guides;
-            if (!isShowingDisasterReadiness) applyFilters();
+            if (!isShowingDisasterReadiness) {
+                if (!isInitialLoadDelayed) {
+                    isInitialLoadDelayed = true;
+                    guidesRecyclerView.postDelayed(() -> {
+                        showLoading(false);
+                        applyFilters();
+                        checkBookmarkAvailability();
+                    }, 800);
+                } else {
+                    applyFilters();
+                }
+            }
             checkBookmarkAvailability();
         });
 
         // Observe Disaster Readiness Guides
         db.disasterGuideDao().getAllDisasterGuides().observe(getViewLifecycleOwner(), guides -> {
             allDisasterGuides = guides;
-            if (isShowingDisasterReadiness) applyFilters();
+            if (isShowingDisasterReadiness) {
+                if (!isInitialLoadDelayed) {
+                    isInitialLoadDelayed = true;
+                    guidesRecyclerView.postDelayed(() -> {
+                        showLoading(false);
+                        applyFilters();
+                        checkBookmarkAvailability();
+                    }, 800);
+                } else {
+                    applyFilters();
+                }
+            }
             checkBookmarkAvailability();
         });
     }
@@ -244,7 +272,11 @@ public class GuidesFragment extends Fragment {
         guidesRecyclerView.setAdapter(isDisaster ? disasterAdapter : adapter);
         
         updateHeaderTitle();
-        applyFilters();
+        showLoading(true);
+        guidesRecyclerView.postDelayed(() -> {
+            showLoading(false);
+            applyFilters();
+        }, 300);
     }
 
     private void setupBookmarkToggle() {
@@ -265,7 +297,11 @@ public class GuidesFragment extends Fragment {
                 }
                 
                 updateStickyHeader(isShowingBookmarksOnly);
-                applyFilters();
+                showLoading(true);
+                guidesRecyclerView.postDelayed(() -> {
+                    showLoading(false);
+                    applyFilters();
+                }, 200);
             });
         }
     }
@@ -312,7 +348,11 @@ public class GuidesFragment extends Fragment {
             else if (checkedId == R.id.chipBurn) currentCategory = "Burn";
             else if (checkedId == R.id.chipChoking) currentCategory = "Choking";
             
-            applyFilters();
+            showLoading(true);
+            guidesRecyclerView.postDelayed(() -> {
+                showLoading(false);
+                applyFilters();
+            }, 200);
         });
 
         // Disaster sub-categories
@@ -325,7 +365,11 @@ public class GuidesFragment extends Fragment {
             else if (checkedId == R.id.chipEarthquake) currentDisasterCategory = "Earthquake";
             else if (checkedId == R.id.chipFire) currentDisasterCategory = "Fire";
             
-            applyFilters();
+            showLoading(true);
+            guidesRecyclerView.postDelayed(() -> {
+                showLoading(false);
+                applyFilters();
+            }, 200);
         });
     }
 
@@ -333,10 +377,40 @@ public class GuidesFragment extends Fragment {
         if (searchEditText != null) {
             searchEditText.addTextChangedListener(new android.text.TextWatcher() {
                 @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-                @Override public void onTextChanged(CharSequence s, int start, int before, int count) { applyFilters(); }
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (searchRunnable != null) searchHandler.removeCallbacks(searchRunnable);
+                    showLoading(true);
+                    searchRunnable = () -> {
+                        showLoading(false);
+                        applyFilters();
+                    };
+                    searchHandler.postDelayed(searchRunnable, 300);
+                }
                 @Override public void afterTextChanged(android.text.Editable s) {}
             });
         }
+    }
+
+    private void showLoading(boolean show) {
+        if (!isAdded()) return;
+        requireActivity().runOnUiThread(() -> {
+            if (loadingState != null) {
+                loadingState.setVisibility(show ? View.VISIBLE : View.GONE);
+                if (show) {
+                    android.view.animation.Animation pulse = android.view.animation.AnimationUtils.loadAnimation(requireContext(), R.anim.pulse_shimmer);
+                    loadingState.startAnimation(pulse);
+                } else {
+                    loadingState.clearAnimation();
+                }
+            }
+            if (show) {
+                guidesRecyclerView.setVisibility(View.GONE);
+                View emptyGuides = getView() != null ? getView().findViewById(R.id.emptyStateGuides) : null;
+                if (emptyGuides != null) emptyGuides.setVisibility(View.GONE);
+                View emptyBookmarks = getView() != null ? getView().findViewById(R.id.emptyStateBookmarks) : null;
+                if (emptyBookmarks != null) emptyBookmarks.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void applyFilters() {
@@ -429,6 +503,7 @@ public class GuidesFragment extends Fragment {
             updateBackgroundCorners(guidesRecyclerView, currentRadius);
             if (emptyGuides != null) updateBackgroundCorners(emptyGuides, currentRadius);
             if (emptyBookmarks != null) updateBackgroundCorners(emptyBookmarks, currentRadius);
+            if (loadingState != null) updateBackgroundCorners(loadingState, currentRadius);
 
             // Show/Hide Scroll-to-Top based on scroll progress
             if (getActivity() instanceof UserDashboardActivity) {

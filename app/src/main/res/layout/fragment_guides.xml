@@ -338,7 +338,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="center"
+        android:gravity="center_horizontal|top"
+        android:paddingTop="120dp"
         android:paddingBottom="130dp"
         android:clipToPadding="false"
         android:background="@drawable/bg_top_rounded"
@@ -373,7 +374,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="center"
+        android:gravity="center_horizontal|top"
+        android:paddingTop="120dp"
         android:paddingBottom="130dp"
         android:clipToPadding="false"
         android:background="@drawable/bg_top_rounded"
@@ -400,6 +402,28 @@
             android:textSize="14sp"
             android:textColor="@color/text_secondary"
             android:gravity="center"/>
+    </LinearLayout>
+
+    <!-- Skeleton Loading State -->
+    <LinearLayout
+        android:id="@+id/loadingStateGuides"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="20dp"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="130dp"
+        android:clipToPadding="false"
+        android:background="@drawable/bg_top_rounded"
+        android:elevation="12dp"
+        android:visibility="gone"
+        app:behavior_overlapTop="24dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <include layout="@layout/item_guide_skeleton" />
+        <include layout="@layout/item_guide_skeleton" />
+        <include layout="@layout/item_guide_skeleton" />
+        <include layout="@layout/item_guide_skeleton" />
+        <include layout="@layout/item_guide_skeleton" />
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

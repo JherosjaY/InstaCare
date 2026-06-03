@@ -105,6 +105,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     static class NotificationViewHolder extends RecyclerView.ViewHolder {
         private TextView title, message, time;
         private ImageView icon, ivSelect;
+        private View unreadDot;
 
         NotificationViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -113,6 +114,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             time = itemView.findViewById(R.id.notificationTime);
             icon = itemView.findViewById(R.id.notificationIcon);
             ivSelect = itemView.findViewById(R.id.ivSelect);
+            unreadDot = itemView.findViewById(R.id.unreadDot);
         }
 
         void bind(Notification item, boolean isSelected, boolean inSelectionMode) {
@@ -186,6 +188,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                 time.setText(timeAgo);
             }
             
+            // --- Red Dot Indicator for Unread Items ---
+            unreadDot.setVisibility(!item.isRead() ? View.VISIBLE : View.GONE);
+
             // --- Vibrating Alarm Bell for Unread Items ---
             if (!item.isRead()) {
                 icon.setImageResource(R.drawable.avd_bell_ringing);
