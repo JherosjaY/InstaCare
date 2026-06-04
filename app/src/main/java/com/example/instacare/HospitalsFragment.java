@@ -843,10 +843,9 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
 
         org.osmdroid.views.overlay.Marker marker = new org.osmdroid.views.overlay.Marker(mapView);
         marker.setPosition(point);
-        try {
-            android.graphics.drawable.Drawable icon = androidx.core.content.ContextCompat.getDrawable(requireContext(), iconRes);
-            if (icon != null) marker.setIcon(icon);
-        } catch (Exception e) { /* fallback */ }
+        String distanceText = center != null ? center.distance : null;
+        android.graphics.drawable.Drawable icon = createDistanceMarkerIcon(iconRes, distanceText, false);
+        if (icon != null) marker.setIcon(icon);
         marker.setTitle(title);
         marker.setSnippet(snippet);
         marker.setAnchor(org.osmdroid.views.overlay.Marker.ANCHOR_CENTER, org.osmdroid.views.overlay.Marker.ANCHOR_BOTTOM);
@@ -1136,12 +1135,10 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         
         org.osmdroid.views.overlay.Marker marker = new org.osmdroid.views.overlay.Marker(mapView);
         marker.setPosition(point);
-        try {
-            android.graphics.drawable.Drawable icon = androidx.core.content.ContextCompat.getDrawable(requireContext(), iconRes);
-            if (icon != null) marker.setIcon(icon);
-        } catch (Exception e) {
-            // Fallback
-        }
+        
+        String distanceText = hospital != null ? hospital.distance : null;
+        android.graphics.drawable.Drawable icon = createDistanceMarkerIcon(iconRes, distanceText, isUser);
+        if (icon != null) marker.setIcon(icon);
         marker.setTitle(title);
         marker.setSnippet(snippet);
         marker.setAnchor(org.osmdroid.views.overlay.Marker.ANCHOR_CENTER, org.osmdroid.views.overlay.Marker.ANCHOR_BOTTOM);
@@ -1606,6 +1603,63 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
             ((EvacuationAdapter) hospitalsRecyclerView.getAdapter()).setCenters(filtered);
         }
         updateMapMarkersEvacuation(filtered);
+    }
+
+    private android.graphics.drawable.Drawable createDistanceMarkerIcon(int iconRes, String distanceText, boolean isUser) {
+        if (isUser || distanceText == null || distanceText.isEmpty()) {
+            try {
+                return androidx.core.content.ContextCompat.getDrawable(requireContext(), iconRes);
+            } catch (Exception e) { return null; }
+        }
+        try {
+            android.graphics.drawable.Drawable base = androidx.core.content.ContextCompat.getDrawable(requireContext(), iconRes);
+            if (base == null) return null;
+
+            float d = getResources().getDisplayMetrics().density;
+            int iconW = (int)(36 * d);
+            int iconH = (int)(42 * d);
+            int badgeH = (int)(18 * d);
+            int totalH = iconH + badgeH + (int)(4 * d);
+
+            int canvasW = Math.max(iconW + (int)(16 * d), (int)(90 * d));
+            android.graphics.Bitmap bmp = android.graphics.Bitmap.createBitmap(canvasW, totalH, android.graphics.Bitmap.Config.ARGB_8888);
+            android.graphics.Canvas canvas = new android.graphics.Canvas(bmp);
+
+            int iconLeft = (canvasW - iconW) / 2;
+            base.setBounds(iconLeft, badgeH + (int)(2 * d), iconLeft + iconW, badgeH + (int)(2 * d) + iconH);
+            base.draw(canvas);
+
+            String display = distanceText.replaceAll("\\s*(km|miles)$", "").trim();
+
+            android.graphics.Paint paint = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+            paint.setTextSize(11f * d);
+            paint.setFakeBoldText(true);
+            paint.setTextAlign(android.graphics.Paint.Align.CENTER);
+
+            float textW = paint.measureText(display + " km");
+            float badgeW = Math.max(textW + (14 * d), (int)(50 * d));
+            float cx = canvasW / 2f;
+            int badgeTop = (int)(1 * d);
+            int badgeBottom = badgeTop + badgeH;
+            android.graphics.RectF badgeRect = new android.graphics.RectF(cx - badgeW / 2f, badgeTop, cx + badgeW / 2f, badgeBottom);
+
+            boolean isEvac = iconRes == R.drawable.ic_marker_evac;
+            android.graphics.Paint bgPaint = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+            bgPaint.setColor(isEvac ? 0xCCF97316 : 0xCCEF4444);
+            bgPaint.setStyle(android.graphics.Paint.Style.FILL);
+            canvas.drawRoundRect(badgeRect, badgeRect.height() / 2f, badgeRect.height() / 2f, bgPaint);
+
+            paint.setColor(0xFFFFFFFF);
+            android.graphics.Paint.FontMetrics fm = paint.getFontMetrics();
+            float textY = badgeRect.centerY() - (fm.ascent + fm.descent) / 2f;
+            canvas.drawText(display + " km", cx, textY, paint);
+
+            return new android.graphics.drawable.BitmapDrawable(getResources(), bmp);
+        } catch (Exception e) {
+            try {
+                return androidx.core.content.ContextCompat.getDrawable(requireContext(), iconRes);
+            } catch (Exception e2) { return null; }
+        }
     }
 
     @Override
