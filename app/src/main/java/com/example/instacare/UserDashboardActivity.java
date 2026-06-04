@@ -1,5 +1,6 @@
 package com.example.instacare;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -525,6 +526,12 @@ public class UserDashboardActivity extends AppCompatActivity {
         isFirstLoad = false;
         boolean isForward = index > currentTabIndex;
         currentTabIndex = index; updateTabUI();
+        // Hide keyboard before switching fragments
+        View currentFocus = getCurrentFocus();
+        if (currentFocus != null) {
+            android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) imm.hideSoftInputFromWindow(currentFocus.getWindowToken(), 0);
+        }
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         if (animate) { if (isForward) ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left); else ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right); }
         ft.replace(R.id.fragmentContainer, fragment).commit();

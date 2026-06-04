@@ -148,6 +148,20 @@
                         app:chipStrokeColor="@color/dashboard_card_border"
                         app:chipStrokeWidth="1dp"
                         app:checkedIconVisible="false"/>
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipFavorites"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Favorites"
+                        android:textColor="@color/chip_text_selector"
+                        app:chipIcon="@drawable/ic_heart_filled"
+                        app:chipIconTint="@color/chip_text_selector"
+                        app:chipBackgroundColor="@color/chip_background_selector"
+                        app:chipStrokeColor="@color/dashboard_card_border"
+                        app:chipStrokeWidth="1dp"
+                        app:checkedIconVisible="false"/>
                 </com.google.android.material.chip.ChipGroup>
             </LinearLayout>
 
@@ -256,6 +270,34 @@
                         app:checkedIconVisible="false"/>
                 </com.google.android.material.chip.ChipGroup>
             </HorizontalScrollView>
+
+            <!-- Search Bar -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/searchCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1.5dp"
+                app:strokeColor="@color/dashboard_card_border"
+                app:cardBackgroundColor="@color/surface_card">
+
+                <EditText
+                    android:id="@+id/etSearchFacilities"
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp"
+                    android:paddingHorizontal="16dp"
+                    android:gravity="center_vertical"
+                    android:hint="Search Hospital"
+                    android:textSize="14sp"
+                    android:background="@null"
+                    android:drawableEnd="@drawable/ic_search"
+                    android:drawablePadding="10dp"
+                    android:inputType="text"
+                    android:maxLines="1"/>
+            </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
                 android:id="@+id/emptyStateHospitals"

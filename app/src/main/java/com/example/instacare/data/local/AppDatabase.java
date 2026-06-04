@@ -17,8 +17,9 @@ import java.util.List;
         AlertNotification.class, ChatMessage.class, EvacuationCenter.class,
         DisasterGuide.class, AssistantMessage.class,
         EvacuationResource.class, EvacueeCheckIn.class, EvacuationAnnouncement.class,
-        EvacuationEndorsement.class, EvacuationEndorsementStatusLog.class
-}, version = 33, exportSchema = false)
+        EvacuationEndorsement.class, EvacuationEndorsementStatusLog.class,
+        FavoriteCenter.class
+}, version = 34, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
 
@@ -41,6 +42,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract EvacueeCheckInDao evacueeCheckInDao();
     public abstract EvacuationAnnouncementDao evacuationAnnouncementDao();
     public abstract EvacuationEndorsementDao evacuationEndorsementDao();
+    public abstract FavoriteCenterDao favoriteCenterDao();
 
     public static AppDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {

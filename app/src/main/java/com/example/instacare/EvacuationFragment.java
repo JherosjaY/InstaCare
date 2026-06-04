@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.instacare.data.local.AppDatabase;
 import com.example.instacare.data.local.EvacuationCenter;
+import com.example.instacare.data.local.FavoriteCenter;
 import com.example.instacare.utils.DistanceUtils;
 import com.google.android.material.chip.ChipGroup;
 import org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer;
@@ -145,6 +146,11 @@ public class EvacuationFragment extends Fragment {
 
         showLoading(true);
         loadEvacuationData(false);
+
+        // Close any lingering info windows after initial render
+        if (mapView != null) {
+            mapView.postDelayed(this::closeAllInfoWindows, 500);
+        }
     }
 
     @Override
@@ -178,6 +184,18 @@ public class EvacuationFragment extends Fragment {
 
     private void setupRecyclerView() {
         EvacuationAdapter adapter = new EvacuationAdapter(new ArrayList<>(), this::onCenterClicked);
+        adapter.setFavoriteDb(AppDatabase.getDatabase(requireContext()), executor);
+        adapter.setOnViewDetailsClickListener(center -> {
+            if (isAdded()) {
+                String distance = center.distance != null ? center.distance : "";
+                EvacuationDetailsBottomSheet sheet = EvacuationDetailsBottomSheet.newInstance(
+                    center.name, center.address, center.type, center.status,
+                    center.capacity, center.occupied, center.contact,
+                    center.amenities, distance, center.latitude, center.longitude,
+                    center.photoPath != null ? center.photoPath : "");
+                sheet.show(getParentFragmentManager(), "EvacuationDetails");
+            }
+        });
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
     }
@@ -357,7 +375,9 @@ public class EvacuationFragment extends Fragment {
     private void updateUI(List<EvacuationCenter> centers) {
         if (!isAdded()) return;
         if (recyclerView.getAdapter() instanceof EvacuationAdapter) {
-            ((EvacuationAdapter) recyclerView.getAdapter()).setCenters(centers);
+            EvacuationAdapter adapter = (EvacuationAdapter) recyclerView.getAdapter();
+            adapter.setCenters(centers);
+            loadFavoriteNamesForAdapter(adapter);
         }
         updateMapMarkers(centers);
         boolean empty = centers == null || centers.isEmpty();
@@ -577,16 +597,19 @@ public class EvacuationFragment extends Fragment {
      * Feature D: Also pan map to center.
      */
     private void onCenterClicked(EvacuationCenter center) {
-        // Pan map to tapped center
         if (mapView != null) {
             GeoPoint pt = new GeoPoint(center.latitude, center.longitude);
             mapView.getController().animateTo(pt);
             mapView.getController().setZoom(16.0);
         }
-        // Open detail bottom sheet (Feature A + B)
         if (isAdded() && getParentFragmentManager() != null) {
-            CenterDetailBottomSheet sheet = CenterDetailBottomSheet.newInstance(center);
-            sheet.show(getParentFragmentManager(), "CenterDetail");
+            String distance = center.distance != null ? center.distance : "";
+            EvacuationDetailsBottomSheet sheet = EvacuationDetailsBottomSheet.newInstance(
+                center.name, center.address, center.type, center.status,
+                center.capacity, center.occupied, center.contact,
+                center.amenities, distance, center.latitude, center.longitude,
+                center.photoPath != null ? center.photoPath : "");
+            sheet.show(getParentFragmentManager(), "EvacuationDetails");
         }
     }
 
@@ -689,5 +712,33 @@ public class EvacuationFragment extends Fragment {
                 } catch (Exception e) { /* silent fail — route preview is optional */ }
             });
         }
+    }
+
+    private void closeAllInfoWindows() {
+        if (mapView == null) return;
+        for (org.osmdroid.views.overlay.Overlay overlay : mapView.getOverlays()) {
+            if (overlay instanceof org.osmdroid.views.overlay.Marker) {
+                ((org.osmdroid.views.overlay.Marker) overlay).closeInfoWindow();
+            }
+        }
+    }
+
+    private void loadFavoriteNamesForAdapter(EvacuationAdapter adapter) {
+        if (adapter == null) return;
+        executor.execute(() -> {
+            try {
+                AppDatabase d = AppDatabase.getDatabase(requireContext());
+                java.util.List<FavoriteCenter> favs = d.favoriteCenterDao().getAll();
+                final java.util.Set<String> favNames = new java.util.HashSet<>();
+                if (favs != null) for (FavoriteCenter f : favs) favNames.add(f.centerName);
+                requireActivity().runOnUiThread(() -> {
+                    if (!isAdded()) return;
+                    adapter.setFavoriteNames(favNames);
+                    adapter.notifyDataSetChanged();
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

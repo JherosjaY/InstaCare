@@ -1,6 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
@@ -14,88 +16,192 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="12dp"
-        android:gravity="center_vertical">
+        android:orientation="vertical"
+        android:padding="12dp">
 
-        <!-- Evacuation Center Icon -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="0dp">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/glossy_orange_gradient">
-
-                <ImageView
-                    android:id="@+id/evacImage"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_marker_evac"
-                    app:tint="@android:color/white"/>
-            </FrameLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Details -->
+        <!-- Top row: icon + details + distance -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="8dp">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/evacName"
+            <!-- Evacuation Center Icon -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/glossy_orange_gradient">
+
+                    <ImageView
+                        android:id="@+id/evacImage"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_marker_evac"
+                        app:tint="@android:color/white"/>
+                </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Details -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="8dp">
+
+                <TextView
+                    android:id="@+id/evacName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Evacuation Center"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:maxLines="2"
+                    android:ellipsize="end"/>
+
+                <TextView
+                    android:id="@+id/evacAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Address"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginTop="2dp"
+                    android:maxLines="1"
+                    android:ellipsize="end"/>
+
+                <!-- Status Badge -->
+                <TextView
+                    android:id="@+id/evacStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Open"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="3dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/bg_badge_pill"/>
+
+                <!-- Capacity Progress Bar -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center_vertical">
+
+                    <ProgressBar
+                        android:id="@+id/evacCapacityBar"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="6dp"
+                        android:layout_weight="1"
+                        android:max="100"
+                        android:progress="0"/>
+
+                    <TextView
+                        android:id="@+id/evacCapacityText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="10sp"
+                        android:textColor="#64748B"
+                        android:layout_marginStart="6dp"
+                        android:text="0/0"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Favorite toggle -->
+            <ImageButton
+                android:id="@+id/btnFavorite"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_heart_outline"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="center"
+                android:contentDescription="Favorite"
+                android:layout_marginEnd="4dp"/>
+
+            <!-- Distance -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Evacuation Center"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:maxLines="2"
-                android:ellipsize="end"/>
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
 
-            <TextView
-                android:id="@+id/evacAddress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Address"
-                android:textSize="12sp"
-                android:textColor="@color/text_secondary"
-                android:layout_marginTop="2dp"
-                android:maxLines="1"
-                android:ellipsize="end"/>
+                <TextView
+                    android:id="@+id/evacDistance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0.0 km"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="#FF6D00"/>
 
-            <!-- ─── STATUS BADGE ─── -->
-            <TextView
-                android:id="@+id/evacStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Open"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="3dp"
-                android:layout_marginTop="6dp"
-                android:background="@drawable/bg_badge_pill"/>
+                <TextView
+                    android:id="@+id/nearestBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nearest to You"
+                    android:textSize="9sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/bg_nearest_badge"
+                    android:paddingHorizontal="6dp"
+                    android:paddingVertical="2dp"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"/>
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- Distance -->
-        <TextView
-            android:id="@+id/evacDistance"
-            android:layout_width="wrap_content"
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="0.0 km"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="#FF6D00"/>
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:gravity="end">
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnViewDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:text="View Details"
+                android:textSize="11sp"
+                app:cornerRadius="16dp"
+                app:backgroundTint="#F59E0B"
+                android:textColor="@android:color/white"
+                app:icon="@drawable/ic_chevron_right"
+                app:iconSize="16dp"
+                app:iconGravity="textStart"
+                android:paddingHorizontal="12dp"
+                android:layout_marginEnd="8dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDirections"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:text="Get Directions"
+                android:textSize="11sp"
+                app:cornerRadius="16dp"
+                app:backgroundTint="#2563EB"
+                android:textColor="@android:color/white"
+                app:icon="@drawable/ic_direction"
+                app:iconSize="16dp"
+                app:iconGravity="textStart"
+                android:paddingHorizontal="12dp"/>
+        </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

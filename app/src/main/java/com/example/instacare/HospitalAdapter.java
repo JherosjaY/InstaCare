@@ -3,6 +3,8 @@ package com.example.instacare;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -124,7 +126,15 @@ public class HospitalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
 
             itemView.setOnClickListener(v -> {
-                if (listener != null) listener.onHospitalClick(item);
+                ScaleAnimation scale = new ScaleAnimation(1f, 0.95f, 1f, 0.95f,
+                        Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                scale.setDuration(80);
+                scale.setRepeatMode(Animation.REVERSE);
+                scale.setRepeatCount(1);
+                v.startAnimation(scale);
+                v.postDelayed(() -> {
+                    if (listener != null) listener.onHospitalClick(item);
+                }, 160);
             });
 
             try {

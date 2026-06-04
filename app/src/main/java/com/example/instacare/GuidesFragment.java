@@ -1,5 +1,6 @@
 package com.example.instacare;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -525,6 +526,16 @@ public class GuidesFragment extends Fragment {
         if (background instanceof android.graphics.drawable.GradientDrawable) {
             float[] radii = {radius, radius, radius, radius, 0, 0, 0, 0};
             ((android.graphics.drawable.GradientDrawable) background).setCornerRadii(radii);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (searchEditText != null) {
+            searchEditText.clearFocus();
+            android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) imm.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
         }
     }
 }

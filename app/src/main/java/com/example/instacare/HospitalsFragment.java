@@ -85,6 +85,10 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
     private List<com.example.instacare.data.local.Hospital> currentHospitals = new ArrayList<>();
     private List<com.example.instacare.data.local.EvacuationCenter> currentEvacCenters = new ArrayList<>();
     private String currentMode = "hospitals"; // "hospitals" or "evacuation"
+    private String searchQuery = "";
+    private android.widget.EditText etSearch;
+    private List<com.example.instacare.data.local.Hospital> allHospitals = new ArrayList<>();
+    private List<com.example.instacare.data.local.EvacuationCenter> allEvacCenters = new ArrayList<>();
     private String autoRouteTarget = null;
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private LocationListener locationListener;
@@ -161,6 +165,8 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                 mapView = (org.osmdroid.views.MapView) stub.inflate();
             }
             setupMap();
+            // Ensure no info window is open on initial zoomed-out view
+            mapView.postDelayed(this::closeAllInfoWindows, 500);
         });
 
         // 🚀 Load cached data immediately (showLoading enforces min 300ms display)
@@ -210,18 +216,28 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         if (chipGroup != null) {
             chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
                 currentRoute = null;
+                closeAllInfoWindows();
                 if (checkedIds.contains(R.id.chipHospitals)) {
                     currentMode = "hospitals";
                     if (disasterScroll != null) disasterScroll.setVisibility(View.GONE);
                     setupRecyclerView();
                     showLoading(true);
                     loadHospitalData(false);
+                    updateSearchHint();
                 } else if (checkedIds.contains(R.id.chipEvacuation)) {
                     currentMode = "evacuation";
                     if (disasterScroll != null) disasterScroll.setVisibility(View.VISIBLE);
                     setupEvacuationRecyclerView();
                     showLoading(true);
                     loadEvacuationData(false);
+                    updateSearchHint();
+                } else if (checkedIds.contains(R.id.chipFavorites)) {
+                    currentMode = "favorites";
+                    if (disasterScroll != null) disasterScroll.setVisibility(View.GONE);
+                    setupEvacuationRecyclerView();
+                    showLoading(true);
+                    loadFavoriteCenters();
+                    updateSearchHint();
                 }
             });
         }
@@ -239,6 +255,35 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
             });
         }
         
+        // Search bar TextWatcher + Focus outline
+        etSearch = view.findViewById(R.id.etSearchFacilities);
+        if (etSearch != null) {
+            MaterialCardView searchCard = view.findViewById(R.id.searchCard);
+            android.graphics.drawable.Drawable searchIcon = getResources().getDrawable(R.drawable.ic_search);
+            if (searchIcon != null) searchIcon.setTint(getResources().getColor(R.color.dashboard_card_border));
+            etSearch.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, searchIcon, null);
+            etSearch.setOnFocusChangeListener((v, hasFocus) -> {
+                int color = getResources().getColor(hasFocus ? R.color.emergency_red : R.color.dashboard_card_border);
+                if (searchCard != null) {
+                    searchCard.setStrokeColor(android.content.res.ColorStateList.valueOf(color));
+                }
+                android.graphics.drawable.Drawable icon = getResources().getDrawable(R.drawable.ic_search);
+                if (icon != null) {
+                    icon.setTint(color);
+                    etSearch.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, icon, null);
+                }
+            });
+            etSearch.addTextChangedListener(new android.text.TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                @Override
+                public void afterTextChanged(android.text.Editable s) {
+                    searchQuery = s != null ? s.toString().trim().toLowerCase() : "";
+                    applySearchFilter();
+                }
+            });
+        }
+
         if (isRouteOnly) {
             if (navFabContainer != null) navFabContainer.setVisibility(View.GONE);
         }
@@ -247,6 +292,10 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         checkAndRequestLocationPermission();
         
         navFabContainer.setOnClickListener(v -> {
+            if (currentUserLocation != null && mapView != null) {
+                mapView.getController().animateTo(currentUserLocation);
+                mapView.getController().setZoom(17.0);
+            }
             toggleDetailedCompass();
         });
         
@@ -262,23 +311,20 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         });
         
         refreshCard.setOnClickListener(v -> {
-            // Animate refresh icon rotation
-            v.animate().rotationBy(360f).setDuration(500).start();
+            v.animate().rotationBy(360f).setDuration(350).withLayer().start();
             showLoading(true);
-            
+            checkAndRequestLocationPermission();
             if (currentUserLocation != null) {
                 if ("evacuation".equals(currentMode)) {
                     loadEvacuationData(true);
                 } else {
                     loadHospitalData(true);
                 }
-                if (mapView != null) {
-                    mapView.getController().animateTo(currentUserLocation);
-                    mapView.getController().setZoom(15.0);
-                }
             }
         });
         
+        updateSearchHint();
+
         // HANDLE REDIRECT: Auto-switch to Evacuation tab if requested
         if (getArguments() != null) {
             if (getArguments().getBoolean("SELECT_EVACUATION", false) || getArguments().getBoolean("SELECT_CHECKIN", false)) {
@@ -479,6 +525,10 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
 
     private void displayHospitalResults(List<com.example.instacare.data.local.Hospital> hospitals) {
         if (!isAdded()) return;
+        allHospitals = new ArrayList<>(hospitals);
+        if (!searchQuery.isEmpty()) {
+            hospitals = filterHospitals(hospitals);
+        }
         currentHospitals = hospitals;
         if (hospitalsRecyclerView.getAdapter() instanceof HospitalAdapter) {
             ((HospitalAdapter) hospitalsRecyclerView.getAdapter()).setHospitals(currentHospitals);
@@ -579,10 +629,91 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
 
     private void setupEvacuationRecyclerView() {
         EvacuationAdapter adapter = new EvacuationAdapter(new ArrayList<>(), center -> {
-            redirectMapToEvacuation(center);
+            if (!"favorites".equals(currentMode)) {
+                redirectMapToEvacuation(center);
+            }
+        });
+        adapter.setFavoriteDb(com.example.instacare.data.local.AppDatabase.getDatabase(requireContext()), executor);
+        adapter.setOnViewDetailsClickListener(center -> {
+            if (isAdded()) {
+                String distance = center.distance != null ? center.distance : "";
+                EvacuationDetailsBottomSheet sheet = EvacuationDetailsBottomSheet.newInstance(
+                    center.name, center.address, center.type, center.status,
+                    center.capacity, center.occupied, center.contact,
+                    center.amenities, distance, center.latitude, center.longitude,
+                    center.photoPath != null ? center.photoPath : "");
+                sheet.show(getParentFragmentManager(), "EvacuationDetails");
+            }
+        });
+        adapter.setOnFavoriteToggleListener((center, isFav) -> {
+            if ("favorites".equals(currentMode) && !isFav) {
+                loadFavoriteCenters();
+            }
         });
         hospitalsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         hospitalsRecyclerView.setAdapter(adapter);
+    }
+
+    private void loadFavoriteCenters() {
+        if (!isAdded()) return;
+        executor.execute(() -> {
+            com.example.instacare.data.local.AppDatabase db = com.example.instacare.data.local.AppDatabase.getDatabase(requireContext());
+            java.util.List<com.example.instacare.data.local.FavoriteCenter> favs = db.favoriteCenterDao().getAll();
+            if (favs == null) favs = new java.util.ArrayList<>();
+            List<com.example.instacare.data.local.EvacuationCenter> favCenters = new ArrayList<>();
+            for (com.example.instacare.data.local.FavoriteCenter f : favs) {
+                com.example.instacare.data.local.EvacuationCenter ec = new com.example.instacare.data.local.EvacuationCenter(
+                    "fav_" + f.id, f.centerName, "", f.latitude, f.longitude, "Evacuation Center", "Open"
+                );
+                ec.source = "favorite";
+                if (currentUserLocation != null) {
+                    org.osmdroid.util.GeoPoint pt = new org.osmdroid.util.GeoPoint(f.latitude, f.longitude);
+                    double distKm = currentUserLocation.distanceToAsDouble(pt) / 1000.0;
+                    ec.distance = com.example.instacare.utils.DistanceUtils.formatDistance(distKm);
+                }
+                favCenters.add(ec);
+            }
+            requireActivity().runOnUiThread(() -> {
+                displayEvacuationResults(favCenters);
+            });
+        });
+    }
+
+    private void closeAllInfoWindows() {
+        if (mapView == null) return;
+        for (org.osmdroid.views.overlay.Overlay overlay : mapView.getOverlays()) {
+            if (overlay instanceof org.osmdroid.views.overlay.Marker) {
+                ((org.osmdroid.views.overlay.Marker) overlay).closeInfoWindow();
+            }
+        }
+    }
+
+    private void updateSearchHint() {
+        if (etSearch == null) return;
+        if ("hospitals".equals(currentMode)) {
+            etSearch.setHint("Search Hospital... ");
+        } else {
+            etSearch.setHint("Search Evacuation... ");
+        }
+    }
+
+    private void loadFavoriteNamesForAdapter(EvacuationAdapter adapter) {
+        if (adapter == null) return;
+        executor.execute(() -> {
+            try {
+                com.example.instacare.data.local.AppDatabase d = com.example.instacare.data.local.AppDatabase.getDatabase(requireContext());
+                java.util.List<com.example.instacare.data.local.FavoriteCenter> favs = d.favoriteCenterDao().getAll();
+                final java.util.Set<String> favNames = new java.util.HashSet<>();
+                if (favs != null) for (com.example.instacare.data.local.FavoriteCenter f : favs) favNames.add(f.centerName);
+                requireActivity().runOnUiThread(() -> {
+                    if (!isAdded()) return;
+                    adapter.setFavoriteNames(favNames);
+                    adapter.notifyDataSetChanged();
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void loadEvacuationData(boolean forceRefresh) {
@@ -771,10 +902,16 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
 
     private void displayEvacuationResults(List<com.example.instacare.data.local.EvacuationCenter> centers) {
         if (!isAdded()) return;
+        allEvacCenters = new ArrayList<>(centers);
+        if (!searchQuery.isEmpty()) {
+            centers = filterEvacuationCenters(centers);
+        }
         currentEvacCenters = centers;
 
         if (hospitalsRecyclerView.getAdapter() instanceof EvacuationAdapter) {
-            ((EvacuationAdapter) hospitalsRecyclerView.getAdapter()).setCenters(currentEvacCenters);
+            EvacuationAdapter adapter = (EvacuationAdapter) hospitalsRecyclerView.getAdapter();
+            adapter.setCenters(currentEvacCenters);
+            loadFavoriteNamesForAdapter(adapter);
         }
         if ("evacuation".equals(currentMode)) {
             updateMapMarkersEvacuation(currentEvacCenters);
@@ -1280,6 +1417,7 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                 org.osmdroid.views.overlay.Marker m = (org.osmdroid.views.overlay.Marker) o;
                 if (!"Me".equals(m.getTitle())) {
                     m.setAlpha(visible ? 1f : 0f);
+                    m.setEnabled(visible);
                 }
             }
         }
@@ -1521,6 +1659,11 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
     @Override
     public void onPause() {
         super.onPause();
+        if (etSearch != null) {
+            etSearch.clearFocus();
+            android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+        }
         if (sensorManager != null) {
             sensorManager.unregisterListener(this);
         }
@@ -1665,6 +1808,69 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // Not needed
+    }
+
+    // ── Search ───────────────────────────────────────────────────────────────
+
+    private void applySearchFilter() {
+        if (!isAdded()) return;
+        if ("hospitals".equals(currentMode) || "evacuation".equals(currentMode) || "favorites".equals(currentMode)) {
+            String mode = currentMode;
+            if ("evacuation".equals(mode) || "favorites".equals(mode)) {
+                List<com.example.instacare.data.local.EvacuationCenter> source = allEvacCenters != null ? allEvacCenters : currentEvacCenters;
+                if (source == null) source = new ArrayList<>();
+                currentEvacCenters = new ArrayList<>(searchQuery.isEmpty() ? source : filterEvacuationCenters(source));
+                if (hospitalsRecyclerView.getAdapter() instanceof EvacuationAdapter) {
+                    EvacuationAdapter adapter = (EvacuationAdapter) hospitalsRecyclerView.getAdapter();
+                    adapter.setCenters(currentEvacCenters);
+                    loadFavoriteNamesForAdapter(adapter);
+                }
+                updateMapMarkersEvacuation(currentEvacCenters);
+                updateEmptyState(currentEvacCenters.isEmpty());
+            } else {
+                List<com.example.instacare.data.local.Hospital> source = allHospitals != null ? allHospitals : currentHospitals;
+                if (source == null) source = new ArrayList<>();
+                currentHospitals = new ArrayList<>(searchQuery.isEmpty() ? source : filterHospitals(source));
+                if (hospitalsRecyclerView.getAdapter() instanceof HospitalAdapter) {
+                    ((HospitalAdapter) hospitalsRecyclerView.getAdapter()).setHospitals(currentHospitals);
+                }
+                updateMapMarkers(currentHospitals);
+                updateEmptyState(currentHospitals.isEmpty());
+            }
+        }
+    }
+
+    private List<com.example.instacare.data.local.Hospital> filterHospitals(List<com.example.instacare.data.local.Hospital> list) {
+        List<com.example.instacare.data.local.Hospital> result = new ArrayList<>();
+        if (list == null) return result;
+        for (com.example.instacare.data.local.Hospital h : list) {
+            if ((h.name != null && h.name.toLowerCase().contains(searchQuery))
+                || (h.address != null && h.address.toLowerCase().contains(searchQuery))) {
+                result.add(h);
+            }
+        }
+        return result;
+    }
+
+    private List<com.example.instacare.data.local.EvacuationCenter> filterEvacuationCenters(List<com.example.instacare.data.local.EvacuationCenter> list) {
+        List<com.example.instacare.data.local.EvacuationCenter> result = new ArrayList<>();
+        if (list == null) return result;
+        for (com.example.instacare.data.local.EvacuationCenter c : list) {
+            if ((c.name != null && c.name.toLowerCase().contains(searchQuery))
+                || (c.address != null && c.address.toLowerCase().contains(searchQuery))
+                || (c.barangay != null && c.barangay.toLowerCase().contains(searchQuery))) {
+                result.add(c);
+            }
+        }
+        return result;
+    }
+
+    private void updateEmptyState(boolean empty) {
+        View emptyState = getView() != null ? getView().findViewById(R.id.emptyStateHospitals) : null;
+        if (emptyState != null) {
+            emptyState.setVisibility(empty ? View.VISIBLE : View.GONE);
+        }
+        hospitalsRecyclerView.setVisibility(empty ? View.GONE : View.VISIBLE);
     }
 }
 
