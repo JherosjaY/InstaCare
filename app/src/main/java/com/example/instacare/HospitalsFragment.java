@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -90,6 +91,9 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
     private List<com.example.instacare.data.local.Hospital> allHospitals = new ArrayList<>();
     private List<com.example.instacare.data.local.EvacuationCenter> allEvacCenters = new ArrayList<>();
     private String autoRouteTarget = null;
+    private String sortMode = "nearest";
+    private ImageButton btnSortFilter;
+    private ImageView ivSearchIcon;
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private LocationListener locationListener;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -257,22 +261,11 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         
         // Search bar TextWatcher + Focus outline
         etSearch = view.findViewById(R.id.etSearchFacilities);
+        ivSearchIcon = view.findViewById(R.id.ivSearchIcon);
+        btnSortFilter = view.findViewById(R.id.btnSortFilter);
+        setSearchActive(false);
         if (etSearch != null) {
-            MaterialCardView searchCard = view.findViewById(R.id.searchCard);
-            android.graphics.drawable.Drawable searchIcon = getResources().getDrawable(R.drawable.ic_search);
-            if (searchIcon != null) searchIcon.setTint(getResources().getColor(R.color.dashboard_card_border));
-            etSearch.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, searchIcon, null);
-            etSearch.setOnFocusChangeListener((v, hasFocus) -> {
-                int color = getResources().getColor(hasFocus ? R.color.emergency_red : R.color.dashboard_card_border);
-                if (searchCard != null) {
-                    searchCard.setStrokeColor(android.content.res.ColorStateList.valueOf(color));
-                }
-                android.graphics.drawable.Drawable icon = getResources().getDrawable(R.drawable.ic_search);
-                if (icon != null) {
-                    icon.setTint(color);
-                    etSearch.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, icon, null);
-                }
-            });
+            etSearch.setOnFocusChangeListener((v, hasFocus) -> setSearchActive(hasFocus));
             etSearch.addTextChangedListener(new android.text.TextWatcher() {
                 @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
                 @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -282,6 +275,10 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                     applySearchFilter();
                 }
             });
+        }
+
+        if (btnSortFilter != null) {
+            btnSortFilter.setOnClickListener(this::showSortMenu);
         }
 
         if (isRouteOnly) {
@@ -568,6 +565,7 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
             if (emptyState != null) emptyState.setVisibility(View.GONE);
             hospitalsRecyclerView.setVisibility(View.VISIBLE);
         }
+        applySortToCurrentData();
         showLoading(false);
     }
 
@@ -688,12 +686,83 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         }
     }
 
+    private void showSortMenu(View anchor) {
+        setSearchActive(true);
+        android.widget.PopupMenu popup = new android.widget.PopupMenu(requireContext(), anchor);
+        android.view.MenuItem nearest = popup.getMenu().add(0, 1, 0, "Nearest");
+        android.view.MenuItem farthest = popup.getMenu().add(0, 2, 0, "Farthest");
+        nearest.setCheckable(true);
+        farthest.setCheckable(true);
+        if ("nearest".equals(sortMode)) nearest.setChecked(true);
+        else farthest.setChecked(true);
+        popup.setOnMenuItemClickListener(item -> {
+            String newMode = item.getItemId() == 1 ? "nearest" : "farthest";
+            sortMode = newMode;
+            applySortToCurrentData();
+            return true;
+        });
+        popup.setOnDismissListener(d -> {
+            if (etSearch != null && !etSearch.isFocused()) {
+                setSearchActive(false);
+            }
+        });
+        popup.show();
+    }
+
+    private void setSearchActive(boolean active) {
+        MaterialCardView card = getView() != null ? getView().findViewById(R.id.searchCard) : null;
+        int color = getResources().getColor(active ? R.color.emergency_red : R.color.dashboard_card_border);
+        if (card != null) {
+            card.setStrokeColor(android.content.res.ColorStateList.valueOf(color));
+        }
+        if (ivSearchIcon != null && ivSearchIcon.getDrawable() != null) {
+            ivSearchIcon.getDrawable().setTint(color);
+        }
+        if (btnSortFilter != null && btnSortFilter.getDrawable() != null) {
+            btnSortFilter.getDrawable().setTint(color);
+        }
+    }
+
+    private void applySortToCurrentData() {
+        if (currentUserLocation == null) return;
+        boolean nearest = "nearest".equals(sortMode);
+        if ("hospitals".equals(currentMode)) {
+            if (currentHospitals == null || currentHospitals.isEmpty()) return;
+            Collections.sort(currentHospitals, (a, b) -> {
+                org.osmdroid.util.GeoPoint pa = new org.osmdroid.util.GeoPoint(a.latitude, a.longitude);
+                org.osmdroid.util.GeoPoint pb = new org.osmdroid.util.GeoPoint(b.latitude, b.longitude);
+                double da = currentUserLocation.distanceToAsDouble(pa);
+                double db = currentUserLocation.distanceToAsDouble(pb);
+                return nearest ? Double.compare(da, db) : Double.compare(db, da);
+            });
+            if (hospitalsRecyclerView.getAdapter() instanceof HospitalAdapter) {
+                ((HospitalAdapter) hospitalsRecyclerView.getAdapter()).setHospitals(currentHospitals);
+            }
+            updateMapMarkers(currentHospitals);
+        } else {
+            if (currentEvacCenters == null || currentEvacCenters.isEmpty()) return;
+            Collections.sort(currentEvacCenters, (a, b) -> {
+                org.osmdroid.util.GeoPoint pa = new org.osmdroid.util.GeoPoint(a.latitude, a.longitude);
+                org.osmdroid.util.GeoPoint pb = new org.osmdroid.util.GeoPoint(b.latitude, b.longitude);
+                double da = currentUserLocation.distanceToAsDouble(pa);
+                double db = currentUserLocation.distanceToAsDouble(pb);
+                return nearest ? Double.compare(da, db) : Double.compare(db, da);
+            });
+            if (hospitalsRecyclerView.getAdapter() instanceof EvacuationAdapter) {
+                EvacuationAdapter adapter = (EvacuationAdapter) hospitalsRecyclerView.getAdapter();
+                adapter.setCenters(currentEvacCenters);
+                loadFavoriteNamesForAdapter(adapter);
+            }
+            updateMapMarkersEvacuation(currentEvacCenters);
+        }
+    }
+
     private void updateSearchHint() {
         if (etSearch == null) return;
         if ("hospitals".equals(currentMode)) {
-            etSearch.setHint("Search Hospital... ");
+            etSearch.setHint("Search Hospital");
         } else {
-            etSearch.setHint("Search Evacuation... ");
+            etSearch.setHint("Search Evacuation");
         }
     }
 
@@ -930,6 +999,7 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
             updateMapMarkersCheckIn(currentEvacCenters);
         }
 
+        applySortToCurrentData();
         showLoading(false);
     }
 

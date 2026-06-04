@@ -284,19 +284,43 @@
                 app:strokeColor="@color/dashboard_card_border"
                 app:cardBackgroundColor="@color/surface_card">
 
-                <EditText
-                    android:id="@+id/etSearchFacilities"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="42dp"
-                    android:paddingHorizontal="16dp"
+                    android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:hint="Search Hospital"
-                    android:textSize="14sp"
-                    android:background="@null"
-                    android:drawableEnd="@drawable/ic_search"
-                    android:drawablePadding="10dp"
-                    android:inputType="text"
-                    android:maxLines="1"/>
+                    android:paddingHorizontal="12dp">
+
+                    <ImageView
+                        android:id="@+id/ivSearchIcon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_search"
+                        android:importantForAccessibility="no"/>
+
+                    <EditText
+                        android:id="@+id/etSearchFacilities"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:paddingHorizontal="10dp"
+                        android:gravity="center_vertical"
+                        android:hint="Search Hospital"
+                        android:textSize="14sp"
+                        android:background="@null"
+                        android:inputType="text"
+                        android:maxLines="1"/>
+
+                    <ImageButton
+                        android:id="@+id/btnSortFilter"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_tune"
+                        android:background="@null"
+                        android:scaleType="centerInside"
+                        android:importantForAccessibility="no"/>
+
+                </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
