@@ -179,7 +179,7 @@
                         android:id="@+id/spinnerHospital"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Target Hospital / Facility"
+                        android:hint="Select Hospital"
                         android:inputType="none"
                         android:textCursorDrawable="@drawable/bg_cursor_red"
                         android:popupBackground="@color/dashboard_surface"

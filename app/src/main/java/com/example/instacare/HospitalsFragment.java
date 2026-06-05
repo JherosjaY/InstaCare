@@ -214,8 +214,6 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
 
         // Chip filter listener
         com.google.android.material.chip.ChipGroup chipGroup = view.findViewById(R.id.chipGroupFilter);
-        final View disasterScroll = view.findViewById(R.id.scrollDisasterFilters);
-        com.google.android.material.chip.ChipGroup disasterGroup = view.findViewById(R.id.chipGroupDisasterFilter);
 
         if (chipGroup != null) {
             chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
@@ -223,21 +221,18 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                 closeAllInfoWindows();
                 if (checkedIds.contains(R.id.chipHospitals)) {
                     currentMode = "hospitals";
-                    if (disasterScroll != null) disasterScroll.setVisibility(View.GONE);
                     setupRecyclerView();
                     showLoading(true);
                     loadHospitalData(false);
                     updateSearchHint();
                 } else if (checkedIds.contains(R.id.chipEvacuation)) {
                     currentMode = "evacuation";
-                    if (disasterScroll != null) disasterScroll.setVisibility(View.VISIBLE);
                     setupEvacuationRecyclerView();
                     showLoading(true);
                     loadEvacuationData(false);
                     updateSearchHint();
                 } else if (checkedIds.contains(R.id.chipFavorites)) {
                     currentMode = "favorites";
-                    if (disasterScroll != null) disasterScroll.setVisibility(View.GONE);
                     setupEvacuationRecyclerView();
                     showLoading(true);
                     loadFavoriteCenters();
@@ -246,19 +241,6 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
             });
         }
 
-        if (disasterGroup != null) {
-            disasterGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
-                String disaster = "all";
-                if (checkedIds.contains(R.id.chipDisasterFlood)) disaster = "flood";
-                else if (checkedIds.contains(R.id.chipDisasterEarthquake)) disaster = "earthquake";
-                else if (checkedIds.contains(R.id.chipDisasterFire)) disaster = "fire";
-                else if (checkedIds.contains(R.id.chipDisasterTyphoon)) disaster = "typhoon";
-                else if (checkedIds.contains(R.id.chipDisasterVolcano)) disaster = "volcano";
-                
-                filterEvacuationByDisaster(disaster);
-            });
-        }
-        
         // Search bar TextWatcher + Focus outline
         etSearch = view.findViewById(R.id.etSearchFacilities);
         ivSearchIcon = view.findViewById(R.id.ivSearchIcon);
@@ -1814,27 +1796,6 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
             }
         }
         mapView.invalidate();
-    }
-
-    private void filterEvacuationByDisaster(String disaster) {
-        if (!isAdded() || currentEvacCenters == null) return;
-        
-        if ("all".equalsIgnoreCase(disaster)) {
-            displayEvacuationResults(currentEvacCenters);
-            return;
-        }
-
-        List<com.example.instacare.data.local.EvacuationCenter> filtered = new ArrayList<>();
-        for (com.example.instacare.data.local.EvacuationCenter c : currentEvacCenters) {
-            if (c.disasterTypes != null && c.disasterTypes.toLowerCase().contains(disaster.toLowerCase())) {
-                filtered.add(c);
-            }
-        }
-        
-        if (hospitalsRecyclerView.getAdapter() instanceof EvacuationAdapter) {
-            ((EvacuationAdapter) hospitalsRecyclerView.getAdapter()).setCenters(filtered);
-        }
-        updateMapMarkersEvacuation(filtered);
     }
 
     private android.graphics.drawable.Drawable createDistanceMarkerIcon(int iconRes, String distanceText, boolean isUser) {

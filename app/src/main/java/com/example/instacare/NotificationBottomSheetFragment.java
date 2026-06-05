@@ -788,10 +788,13 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
             }
             
             final String finalMsg = personalized;
+            final String rawTitle = n.getTitle();
             requireActivity().runOnUiThread(() -> {
                 String type = n.getType() != null ? n.getType().toUpperCase() : "";
                 if ("WELCOME".equals(type) || "TUTORIAL".equals(type)) {
                     showWelcomeDialog(n.getTitle(), finalMsg, timeAgo);
+                } else if ("EVAC_ALERT".equals(type) || "DISASTER".equals(type) || "BROADCAST".equals(type)) {
+                    showNotificationDetailDialog(rawTitle, finalMsg, timeAgo, type);
                 } else {
                     // Non-welcome notifications just handle normally
                     AssistantMessage assistantMsg = new AssistantMessage(0, rawMsg, true, 3, 0);
@@ -1208,10 +1211,54 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
             .create();
         if (dialog.getWindow() != null) dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
         btn.setOnClickListener(v -> dialog.dismiss());
-        
+
         // --- PREMIUM AESTHETIC: Deep Dim + Frosted Glass Blur ---
         com.example.instacare.utils.BlurUtils.applyBlur(dialog);
-        
+
+        dialog.show();
+    }
+
+    private void showNotificationDetailDialog(String titleText, String msgContent, String timeAgo, String type) {
+        android.view.View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_notification_detail, null);
+        TextView title = dialogView.findViewById(R.id.dialogTitle);
+        TextView message = dialogView.findViewById(R.id.dialogMessage);
+        TextView tvTime = dialogView.findViewById(R.id.dialogTime);
+        ImageView icon = dialogView.findViewById(R.id.dialogIcon);
+        Button btn = dialogView.findViewById(R.id.btnDone);
+
+        tvTime.setText(timeAgo != null ? timeAgo : "Just now");
+
+        // Set icon based on type
+        if ("EVAC_ALERT".equals(type)) {
+            icon.setImageResource(R.drawable.ic_home);
+            icon.getDrawable().setTint(android.graphics.Color.parseColor("#E53935"));
+        } else {
+            icon.setImageResource(R.drawable.ic_shield_alert);
+            icon.getDrawable().setTint(android.graphics.Color.parseColor("#FB8C00"));
+        }
+
+        // Title
+        title.setText(android.text.Html.fromHtml(
+            titleText != null ? titleText : "Notification",
+            android.text.Html.FROM_HTML_MODE_LEGACY
+        ));
+
+        // Message
+        message.setText(android.text.Html.fromHtml(
+            msgContent != null ? msgContent : "",
+            android.text.Html.FROM_HTML_MODE_LEGACY
+        ));
+
+        btn.setText("Got it");
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(new android.view.ContextThemeWrapper(requireContext(), R.style.CustomAlertDialog))
+            .setView(dialogView)
+            .create();
+        if (dialog.getWindow() != null) dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        btn.setOnClickListener(v -> dialog.dismiss());
+
+        // --- PREMIUM AESTHETIC: Deep Dim + Frosted Glass Blur ---
+        com.example.instacare.utils.BlurUtils.applyBlur(dialog);
+
         dialog.show();
     }
 
@@ -1468,7 +1515,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
             case "THEME_DARK": promptThemeChange(true); break;
             case "THEME_LIGHT": promptThemeChange(false); break;
             case "NAV_HOSPITALS": navigateWithAction("Hospitals", "Navigate to Hospitals?"); break;
-            case "NAV_EVACUATION": navigateWithAction("Evacuation", "Navigate to Evacuation Centers?"); break;
+            case "NAV_EVACUATION": navigateWithAction("Hospitals", "Navigate to Evacuation Centers?"); break;
             case "SHOW_PROFILE": showProfileCard(); break;
             case "CLEAR_HISTORY": promptClearHistory(); break;
             case "OPEN_NOTIFICATIONS":

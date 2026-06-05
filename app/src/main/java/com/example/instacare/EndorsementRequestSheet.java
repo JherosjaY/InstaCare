@@ -106,27 +106,16 @@ public class EndorsementRequestSheet extends BaseBlurredBottomSheet {
         spinnerPurpose.setOnClickListener(v -> showBottomSheetDropdown("Select Purpose", java.util.Arrays.asList(purposes), spinnerPurpose));
         spinnerPurpose.setOnFocusChangeListener((v, f) -> { if(f) showBottomSheetDropdown("Select Purpose", java.util.Arrays.asList(purposes), spinnerPurpose); });
 
-        // Hospital Dropdown (Dynamic)
+        // Hospital Dropdown (from cached Locations data)
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                // Simplified Overpass fetch
-                String query = "[out:json];node[\"amenity\"=\"hospital\"](around:50000,7.9065,125.0938);out;";
-                String urlString = "https://overpass-api.de/api/interpreter?data=" + java.net.URLEncoder.encode(query, "UTF-8");
-                java.net.URL url = new java.net.URL(urlString);
-                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
-                java.io.BufferedReader in = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = in.readLine()) != null) response.append(line);
-                in.close();
-                org.json.JSONObject jsonResponse = new org.json.JSONObject(response.toString());
-                org.json.JSONArray elements = jsonResponse.getJSONArray("elements");
+                List<com.example.instacare.data.local.Hospital> cached = db.hospitalDao().getAllHospitalsDirect();
                 List<String> names = new ArrayList<>();
-                for (int i = 0; i < elements.length(); i++) {
-                    org.json.JSONObject tags = elements.getJSONObject(i).optJSONObject("tags");
-                    if (tags != null && tags.has("name")) names.add(tags.getString("name"));
+                if (cached != null && !cached.isEmpty()) {
+                    for (com.example.instacare.data.local.Hospital h : cached) {
+                        if (h.name != null && !h.name.isEmpty()) names.add(h.name);
+                    }
                 }
-                if (names.isEmpty()) names.add("Valencia City General Hospital");
                 final List<String> finalHospitals = names;
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {

@@ -284,7 +284,6 @@ public class UserDashboardActivity extends AppCompatActivity {
         switch (tag) {
             case "Home":       selectedFragment = new HomeFragment();       tabIndex = 0; break;
             case "Hospitals": selectedFragment = new HospitalsFragment();  tabIndex = 1; break;
-            case "Evacuation": selectedFragment = new EvacuationFragment(); tabIndex = 1; break;
             case "EvacAlerts": selectedFragment = new EvacuationAnnouncementsFragment(); tabIndex = 1; break;
             case "Guides":    selectedFragment = new GuidesFragment();     tabIndex = 2; break;
             case "Profile":   selectedFragment = new ProfileFragment();    tabIndex = 3; break;
