@@ -1074,7 +1074,9 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                     ((org.osmdroid.views.overlay.Marker) o).closeInfoWindow();
                 }
             }
-            return false;
+            m.showInfoWindow();
+            mv.getController().animateTo(m.getPosition());
+            return true;
         });
 
         mapView.getOverlays().add(marker);
