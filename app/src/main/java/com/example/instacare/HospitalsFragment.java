@@ -381,24 +381,7 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                         String phone = "N/A";
                         if (element.has("tags")) {
                             JSONObject tags = element.getJSONObject("tags");
-                            
-                            // Extensive fallback for real name
-                            if (tags.has("name")) {
-                                name = tags.getString("name");
-                            } else if (tags.has("official_name")) {
-                                name = tags.getString("official_name");
-                            } else if (tags.has("alt_name")) {
-                                name = tags.getString("alt_name");
-                            } else if (tags.has("short_name")) {
-                                name = tags.getString("short_name");
-                            } else if (tags.has("operator")) {
-                                name = tags.getString("operator") + " Hospital";
-                            } else if (tags.has("brand")) {
-                                String brand = tags.getString("brand");
-                                name = brand.toLowerCase().contains("hospital") ? brand : brand + " Hospital";
-                            }
-                            
-                            // Address parsing
+                            name = tags.optString("name", "General Hospital");
                             if (tags.has("addr:street")) {
                                 addr = tags.getString("addr:street");
                                 if (tags.has("addr:housenumber")) {
@@ -408,13 +391,16 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                                     addr += ", " + tags.getString("addr:city");
                                 }
                             }
-                            
-                            // Phone parsing
                             if (tags.has("phone")) {
                                 phone = tags.getString("phone");
                             } else if (tags.has("contact:phone")) {
                                 phone = tags.getString("contact:phone");
                             }
+                        }
+
+                        if ("General Hospital".equals(name) || name == null || name.isEmpty()) {
+                            String zoneName = getBarangayZoneName(lat, lon);
+                            if (zoneName != null) name = zoneName;
                         }
                         
                         org.osmdroid.util.GeoPoint hospLoc = new org.osmdroid.util.GeoPoint(lat, lon);
@@ -472,6 +458,14 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         
         executor.execute(() -> {
             List<com.example.instacare.data.local.Hospital> cached = db.hospitalDao().getAllHospitalsDirect();
+            if (cached != null) {
+                for (com.example.instacare.data.local.Hospital h : cached) {
+                    if (h.name == null || h.name.isEmpty() || "General Hospital".equals(h.name)) {
+                        String zoneName = getBarangayZoneName(h.latitude, h.longitude);
+                        if (zoneName != null) h.name = zoneName + " Hospital";
+                    }
+                }
+            }
             if (!forceRefresh && cached != null && !cached.isEmpty()) {
                 if (currentUserLocation != null) {
                     for(com.example.instacare.data.local.Hospital h : cached) {
@@ -660,8 +654,13 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
             if (favs == null) favs = new java.util.ArrayList<>();
             List<com.example.instacare.data.local.EvacuationCenter> favCenters = new ArrayList<>();
             for (com.example.instacare.data.local.FavoriteCenter f : favs) {
+                String resolvedName = f.centerName;
+                if (resolvedName == null || resolvedName.isEmpty() || "Evacuation Center".equals(resolvedName) || "Shelter".equals(resolvedName)) {
+                    String zoneName = getBarangayZoneName(f.latitude, f.longitude);
+                    if (zoneName != null) resolvedName = zoneName;
+                }
                 com.example.instacare.data.local.EvacuationCenter ec = new com.example.instacare.data.local.EvacuationCenter(
-                    "fav_" + f.id, f.centerName, "", f.latitude, f.longitude, "Evacuation Center", "Open"
+                    "fav_" + f.id, resolvedName, "", f.latitude, f.longitude, "Evacuation Center", "Open"
                 );
                 ec.source = "favorite";
                 if (currentUserLocation != null) {
@@ -792,6 +791,12 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
         executor.execute(() -> {
             List<com.example.instacare.data.local.EvacuationCenter> localCenters = db.evacuationCenterDao().getActiveCenters();
             if (localCenters == null) localCenters = new ArrayList<>();
+            for (com.example.instacare.data.local.EvacuationCenter c : localCenters) {
+                if (c.name == null || c.name.isEmpty() || "Evacuation Center".equals(c.name) || "Shelter".equals(c.name)) {
+                    String zoneName = getBarangayZoneName(c.latitude, c.longitude);
+                    if (zoneName != null) c.name = zoneName;
+                }
+            }
 
             boolean hasApiCache = false;
             for (com.example.instacare.data.local.EvacuationCenter c : localCenters) {
@@ -895,27 +900,17 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                     String cType = "Shelter";
                     if (element.has("tags")) {
                         JSONObject tags = element.getJSONObject("tags");
-                        
-                        // Extensive fallback for finding a real name
-                        if (tags.has("name")) {
-                            name = tags.getString("name");
-                        } else if (tags.has("official_name")) {
-                            name = tags.getString("official_name");
-                        } else if (tags.has("alt_name")) {
-                            name = tags.getString("alt_name");
-                        } else if (tags.has("short_name")) {
-                            name = tags.getString("short_name");
-                        } else if (tags.has("operator")) {
-                            name = tags.getString("operator") + " Evacuation Center";
-                        } else if (tags.has("brand")) {
-                            name = tags.getString("brand") + " Center";
-                        } else if (tags.has("description")) {
-                            name = tags.getString("description");
+                        name = tags.optString("name", "Evacuation Center");
+                        if (tags.has("addr:street")) {
+                            addr = tags.optString("addr:street", "");
                         }
-                        
-                        if (tags.has("addr:street")) addr = tags.optString("addr:street", "");
                         if (tags.has("amenity")) cType = capitalizeStr(tags.getString("amenity"));
                         if (tags.has("building")) cType = capitalizeStr(tags.getString("building"));
+                    }
+
+                    if ("Evacuation Center".equals(name) || "General Hospital".equals(name) || name == null || name.isEmpty()) {
+                        String zoneName = getBarangayZoneName(lat, lon);
+                        if (zoneName != null) name = zoneName;
                     }
 
                     org.osmdroid.util.GeoPoint pt = new org.osmdroid.util.GeoPoint(lat, lon);
@@ -1068,6 +1063,7 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
 
                 TextView nameTv = view.findViewById(R.id.infoWindowName);
                 TextView detailsTv = view.findViewById(R.id.infoWindowDetails);
+                TextView coordsTv = view.findViewById(R.id.infoWindowCoords);
                 TextView capacityTv = view.findViewById(R.id.infoWindowCapacity);
                 com.google.android.material.button.MaterialButton routeBtn = view.findViewById(R.id.infoWindowRouteBtn);
 
@@ -1076,6 +1072,9 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                 }
                 if (nameTv != null) nameTv.setText(title);
                 if (detailsTv != null) detailsTv.setText(snippet);
+                if (coordsTv != null && center != null) {
+                    coordsTv.setText(String.format("%.5f, %.5f", center.latitude, center.longitude));
+                }
                 if (capacityTv != null) {
                     String cap = center != null && center.status != null ? center.status : "Open";
                     capacityTv.setText(cap);
@@ -1163,6 +1162,22 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                 }
             }
         });
+    }
+
+    private String getBarangayZoneName(double lat, double lon) {
+        try {
+            com.example.instacare.data.local.AppDatabase db = com.example.instacare.data.local.AppDatabase.getDatabase(requireContext());
+            java.util.List<com.example.instacare.data.local.BarangayZone> zones = db.barangayZoneDao().getAllZones();
+            if (zones != null && !zones.isEmpty()) {
+                String zoneName = com.example.instacare.utils.ZoneLookupHelper.findZone(lat, lon, zones);
+                if (zoneName != null && !"Unknown Zone".equals(zoneName)) {
+                    return zoneName;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private String capitalizeStr(String s) {
@@ -1365,6 +1380,7 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                     
                     TextView nameTv = view.findViewById(R.id.infoWindowName);
                     TextView detailsTv = view.findViewById(R.id.infoWindowDetails);
+                    TextView coordsTv = view.findViewById(R.id.infoWindowCoords);
                     ImageView imageIv = view.findViewById(R.id.infoWindowImage);
                     TextView dismissTv = view.findViewById(R.id.infoWindowDismiss);
                     TextView capacityTv = view.findViewById(R.id.infoWindowCapacity);
@@ -1380,6 +1396,9 @@ public class HospitalsFragment extends Fragment implements SensorEventListener {
                     
                     if (nameTv != null) nameTv.setText(title);
                     if (detailsTv != null) detailsTv.setText(snippet);
+                    if (coordsTv != null && hospital != null) {
+                        coordsTv.setText(String.format("%.5f, %.5f", hospital.latitude, hospital.longitude));
+                    }
                     
                     if (capacityTv != null && hospital != null) {
                         String cap = hospital.capacityStatus != null ? hospital.capacityStatus : "Available";

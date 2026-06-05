@@ -256,6 +256,12 @@ public class EvacuationFragment extends Fragment {
         executor.execute(() -> {
             List<EvacuationCenter> local = db.evacuationCenterDao().getActiveCenters();
             if (local == null) local = new ArrayList<>();
+            for (EvacuationCenter c : local) {
+                if (c.name == null || c.name.isEmpty() || "Evacuation Center".equals(c.name) || "Shelter".equals(c.name)) {
+                    String zoneName = getBarangayZoneName(c.latitude, c.longitude);
+                    if (zoneName != null) c.name = zoneName;
+                }
+            }
 
             boolean hasApi = false;
             for (EvacuationCenter c : local) {
@@ -323,10 +329,14 @@ public class EvacuationFragment extends Fragment {
                     String name = "Evacuation Center", addr = "", cType = "Shelter";
                     if (el.has("tags")) {
                         JSONObject tags = el.getJSONObject("tags");
-                        if (tags.has("name"))           name = tags.getString("name");
-                        else if (tags.has("operator"))  name = tags.getString("operator") + " Center";
+                        name = tags.optString("name", "Evacuation Center");
                         if (tags.has("addr:street"))    addr = tags.optString("addr:street", "");
                         if (tags.has("amenity"))        cType = capitalize(tags.getString("amenity"));
+                    }
+
+                    if ("Evacuation Center".equals(name) || name == null || name.isEmpty()) {
+                        String zoneName = getBarangayZoneName(lat, lon);
+                        if (zoneName != null) name = zoneName;
                     }
 
                     GeoPoint pt = new GeoPoint(lat, lon);
@@ -740,5 +750,21 @@ public class EvacuationFragment extends Fragment {
                 e.printStackTrace();
             }
         });
+    }
+
+    private String getBarangayZoneName(double lat, double lon) {
+        try {
+            com.example.instacare.data.local.AppDatabase db = com.example.instacare.data.local.AppDatabase.getDatabase(requireContext());
+            java.util.List<com.example.instacare.data.local.BarangayZone> zones = db.barangayZoneDao().getAllZones();
+            if (zones != null && !zones.isEmpty()) {
+                String zoneName = com.example.instacare.utils.ZoneLookupHelper.findZone(lat, lon, zones);
+                if (zoneName != null && !"Unknown Zone".equals(zoneName)) {
+                    return zoneName;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -84,7 +84,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Full Name"
+                android:hint="Your Name"
                 style="@style/InstaInput"
                 app:hintTextColor="@color/primary"
                 android:layout_marginBottom="12dp">

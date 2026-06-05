@@ -150,6 +150,15 @@
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/primary_light"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:id="@+id/evacDetailCoords"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="12sp"
+                android:textColor="@color/text_tertiary"
                 android:layout_marginBottom="12dp"/>
 
             <TextView

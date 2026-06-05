@@ -100,7 +100,7 @@
                     android:id="@+id/editPatientName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Full Name"
+                    android:hint="Your Name"
                     android:inputType="textPersonName|textCapWords"
                     android:textCursorDrawable="@drawable/bg_cursor_red"
                     android:textColor="@color/text_primary"

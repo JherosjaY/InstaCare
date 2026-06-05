@@ -208,7 +208,7 @@ public class SetupDashboardActivity extends AppCompatActivity {
             if (currentStep == 3) { // Personal Info
                 String fullName = binding.setupNameInput.getText().toString().trim();
                 if (fullName.isEmpty()) {
-                    binding.setupNameLayout.setError("Full Name is required");
+                    binding.setupNameLayout.setError("Your Name is required");
                     shakeView(binding.setupNameLayout);
                     vibratePhone();
                     binding.setupNameInput.requestFocus();

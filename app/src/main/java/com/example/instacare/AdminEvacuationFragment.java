@@ -73,7 +73,7 @@ public class AdminEvacuationFragment extends Fragment {
     }
 
     private void updateList(List<EvacuationCenter> list) {
-        // Simple adapter using item views
+        String[] zoneCache = {null};
         rvEvacuation.setAdapter(new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             @NonNull
             @Override
@@ -88,7 +88,8 @@ public class AdminEvacuationFragment extends Fragment {
                 android.widget.TextView tvTitle = holder.itemView.findViewById(R.id.tvItemTitle);
                 android.widget.TextView tvSubtitle = holder.itemView.findViewById(R.id.tvItemSubtitle);
                 tvTitle.setText(center.name);
-                tvSubtitle.setText(center.address + " • " + center.type);
+                String coords = String.format("%.5f, %.5f", center.latitude, center.longitude);
+                tvSubtitle.setText(center.address + " • " + center.type + " • " + coords);
 
                 holder.itemView.findViewById(R.id.btnEdit).setOnClickListener(v -> showAddEditDialog(center));
                 holder.itemView.findViewById(R.id.btnDelete).setOnClickListener(v -> confirmDelete(center));

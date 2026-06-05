@@ -72,6 +72,7 @@ public class EvacuationDetailsBottomSheet extends BaseBlurredBottomSheet {
         TextView detailType = view.findViewById(R.id.evacDetailType);
         TextView detailAddress = view.findViewById(R.id.evacDetailAddress);
         TextView detailDistance = view.findViewById(R.id.evacDetailDistance);
+        TextView detailCoords = view.findViewById(R.id.evacDetailCoords);
         TextView detailContact = view.findViewById(R.id.evacDetailContact);
         TextView detailAmenities = view.findViewById(R.id.evacDetailAmenities);
         TextView detailCapacityText = view.findViewById(R.id.evacDetailCapacityText);
@@ -122,6 +123,9 @@ public class EvacuationDetailsBottomSheet extends BaseBlurredBottomSheet {
 
             detailAddress.setText(address != null && !address.trim().isEmpty() ? address : "Address not available");
             detailDistance.setText(distance != null ? distance + " away" : "");
+            if (detailCoords != null) {
+                detailCoords.setText(String.format("%.5f, %.5f", lat, lng));
+            }
 
             // Status badge
             String st = status != null ? status : "Open";
