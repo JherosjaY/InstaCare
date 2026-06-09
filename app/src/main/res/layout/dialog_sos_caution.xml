@@ -78,9 +78,6 @@
                 android:textSize="15sp"
                 android:textStyle="bold"
                 android:backgroundTint="#EF4444"
-                app:icon="@drawable/ic_baseline_warning_24"
-                app:iconTint="@null"
-                app:iconGravity="textStart"
                 app:cornerRadius="16dp"/>
 
             <com.google.android.material.button.MaterialButton
