@@ -1870,6 +1870,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         );
         SessionManager sm = SessionManager.getInstance(requireContext());
         sm.putInt("CARATIP_BADGE", 1);
+        if (isAdded()) updateBadge();
         if (isAdded() && isNotificationsView) {
             requireActivity().runOnUiThread(() -> {
                 int existingIdx = -1;
