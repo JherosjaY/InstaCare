@@ -1740,9 +1740,8 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
             "1. Press the red **SOS** button sa Home page or Locations page\n" +
             "2. Mo-gawas ang **Caution Dialog** — basaha ang warning, and if need jud nimo og help, click **\"I NEED HELP — PROCEED\"**\n" +
             "3. Kung wala ka pay Emergency Contacts, mangayo ka'g setup first\n" +
-            "4. Kung naa na, mu-appear ang **5-second countdown** before ma-send ang alert\n" +
-            "5. Maka-pili ka ug emergency type: Medical, Fire, Flood, etc.\n" +
-            "6. Your real-time location will be shared with your contacts\n\n" +
+            "4. Kung naa na, pili-a dayon ang emergency type: Medical, Fire, Flood, etc.\n" +
+            "5. Your real-time location will be shared with your contacts\n\n" +
             "**Important:** Make sure you have at least 1 emergency contact set up! ✅");
     }
 
