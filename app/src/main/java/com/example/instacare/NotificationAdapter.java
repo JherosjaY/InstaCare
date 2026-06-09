@@ -191,18 +191,41 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             // --- Red Dot Indicator for Unread Items ---
             unreadDot.setVisibility(!item.isRead() ? View.VISIBLE : View.GONE);
 
-            // --- Vibrating Alarm Bell for Unread Items ---
-            if (!item.isRead()) {
-                icon.setImageResource(R.drawable.avd_bell_ringing);
-                android.graphics.drawable.Drawable drawable = icon.getDrawable();
-                if (drawable instanceof android.graphics.drawable.Animatable) {
-                    ((android.graphics.drawable.Animatable) drawable).start();
-                }
-                icon.setAlpha(1.0f);
+            // --- Icon by Type ---
+            String type = item.getType();
+            int iconRes;
+            int tintColor = android.graphics.Color.parseColor("#E53935"); // default red
+            if ("CARATIP".equals(type)) {
+                iconRes = R.drawable.ic_baseline_warning_24;
+                tintColor = android.graphics.Color.parseColor("#FFB300");
+            } else if ("EVAC_ALERT".equals(type)) {
+                iconRes = R.drawable.ic_megaphone;
+                tintColor = android.graphics.Color.parseColor("#EF4444");
+            } else if ("BROADCAST".equals(type)) {
+                iconRes = R.drawable.ic_megaphone;
+                tintColor = android.graphics.Color.parseColor("#3B82F6");
             } else {
-                icon.setImageResource(R.drawable.ic_bell);
-                icon.setAlpha(1.0f); // Reverted alpha reduction (User Request)
+                iconRes = R.drawable.ic_bell;
+                tintColor = android.graphics.Color.parseColor("#E53935");
+            }
+
+            if (!item.isRead()) {
+                if ("CARATIP".equals(type) || "EVAC_ALERT".equals(type) || "BROADCAST".equals(type)) {
+                    icon.setImageResource(iconRes);
+                    icon.setColorFilter(tintColor, android.graphics.PorterDuff.Mode.SRC_IN);
+                    icon.setAlpha(1.0f);
+                } else {
+                    icon.setImageResource(R.drawable.avd_bell_ringing);
+                    icon.clearColorFilter();
+                    icon.setAlpha(1.0f);
+                    android.graphics.drawable.Drawable drawable = icon.getDrawable();
+                    if (drawable instanceof android.graphics.drawable.Animatable) {
+                        ((android.graphics.drawable.Animatable) drawable).start();
+                    }
+                }
+            } else {
+                icon.setImageResource(iconRes);
+                icon.setColorFilter(tintColor, android.graphics.PorterDuff.Mode.SRC_IN);
+                icon.setAlpha(1.0f);
             }
         }
-    }
-}

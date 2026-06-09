@@ -32,10 +32,11 @@ public class NotificationHelper {
             NotificationChannel tipChannel = new NotificationChannel(
                     TIP_CHANNEL_ID,
                     TIP_CHANNEL_NAME,
-                    NotificationManager.IMPORTANCE_LOW
+                    NotificationManager.IMPORTANCE_HIGH
             );
             tipChannel.setDescription(TIP_CHANNEL_DESC);
             tipChannel.setShowBadge(false);
+            tipChannel.enableVibration(false);
 
             NotificationManager manager = context.getSystemService(NotificationManager.class);
             if (manager != null) {
@@ -82,7 +83,7 @@ public class NotificationHelper {
                 .setContentTitle("Tip from Cara")
                 .setContentText(tipText)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(tipText))
-                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
