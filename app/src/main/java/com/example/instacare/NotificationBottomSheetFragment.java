@@ -1260,7 +1260,10 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(new android.view.ContextThemeWrapper(requireContext(), R.style.CustomAlertDialog))
             .setView(dialogView)
             .create();
-        if (dialog.getWindow() != null) dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+            dialog.getWindow().setWindowAnimations(R.style.DialogPopAnimation);
+        }
         btn.setOnClickListener(v -> dialog.dismiss());
 
         // --- PREMIUM AESTHETIC: Deep Dim + Frosted Glass Blur ---
@@ -1307,10 +1310,12 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(new android.view.ContextThemeWrapper(requireContext(), R.style.CustomAlertDialog))
             .setView(dialogView)
             .create();
-        if (dialog.getWindow() != null) dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+            dialog.getWindow().setWindowAnimations(R.style.DialogPopAnimation);
+        }
         btn.setOnClickListener(v -> dialog.dismiss());
 
-        // --- PREMIUM AESTHETIC: Deep Dim + Frosted Glass Blur ---
         com.example.instacare.utils.BlurUtils.applyBlur(dialog);
 
         dialog.show();
