@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.example.instacare.utils.SwipeHelper;
 import com.example.instacare.data.local.AppDatabase;
+import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import java.util.ArrayList;
 import java.util.List;
@@ -703,8 +704,18 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                 } else {
                     tvNotifBadge.setVisibility(View.GONE);
                 }
+                refreshHomeBadge();
             });
         }).start();
+    }
+
+    private void refreshHomeBadge() {
+        try {
+            Fragment homeFrag = getParentFragmentManager().findFragmentById(R.id.fragmentContainer);
+            if (homeFrag instanceof HomeFragment && homeFrag.isAdded() && homeFrag.getView() != null) {
+                ((HomeFragment) homeFrag).loadNotificationCount(homeFrag.getView());
+            }
+        } catch (Exception ignored) {}
     }
 
     private void startBellAnimation() {

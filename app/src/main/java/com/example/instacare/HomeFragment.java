@@ -567,7 +567,7 @@ public class HomeFragment extends Fragment {
         }).start();
     }
 
-    private void loadNotificationCount(View view) {
+    public void loadNotificationCount(View view) {
         if (getContext() == null) return;
         android.content.Context appContext = getContext().getApplicationContext();
         
