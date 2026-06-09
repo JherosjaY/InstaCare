@@ -1462,6 +1462,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                     "- [ACTION: SOS_GUIDE] -> To explain how the SOS button works and what happens during an emergency alert\n" +
                     "- [ACTION: ENDORSEMENT_GUIDE] -> To explain the Medical & Evacuation endorsement request process\n" +
                     "- [ACTION: EVACUATION_NEAREST] -> To find and suggest the nearest evacuation centers based on user location\n" +
+                    "- [ACTION: HOSPITALS_NEAREST] -> To find and suggest the nearest hospitals based on user location\n" +
                     "- [ACTION: DRILL_TIPS] -> To give emergency preparedness and safety drill tips based on disaster type\n" +
                     "STRICT BUSINESS RULES:\n" +
                     "- The SOS button will ONLY proceed to the emergency flow if the user has added at least one Emergency Contact. If the list is empty, the app will automatically open the 'Setup Required' dialog. Explain this clearly if Jj asks why SOS isn't working.\n" +
@@ -1592,6 +1593,9 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                 break;
             case "EVACUATION_NEAREST":
                 suggestNearestEvacuation();
+                break;
+            case "HOSPITALS_NEAREST":
+                suggestNearestHospital();
                 break;
             case "DRILL_TIPS":
                 showDrillTips();
@@ -1731,6 +1735,33 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                     addCaraMessage(sb.toString());
                 } else {
                     addCaraMessage("Wala koy nakita nga active evacuation centers sa pagkakaron, " + getFirstName() + ". Try checking the Locations page for updates.");
+                }
+            });
+        }).start();
+    }
+
+    private void suggestNearestHospital() {
+        addCaraMessage("Checking the nearest hospitals for you, " + getFirstName() + "...");
+        addCaraTypingIndicator();
+
+        new Thread(() -> {
+            AppDatabase db = AppDatabase.getDatabase(requireContext());
+            List<com.example.instacare.data.local.Hospital> hospitals = db.hospitalDao().getAllHospitalsDirect();
+            requireActivity().runOnUiThread(() -> {
+                removeTypingIndicator();
+                if (hospitals != null && !hospitals.isEmpty()) {
+                    StringBuilder sb = new StringBuilder("Diri ang mga hospitals nga available:\n");
+                    int limit = Math.min(hospitals.size(), 5);
+                    for (int i = 0; i < limit; i++) {
+                        com.example.instacare.data.local.Hospital h = hospitals.get(i);
+                        sb.append("\n").append(i+1).append(". **").append(h.name).append("**");
+                        if (h.distance != null) sb.append(" — ").append(h.distance);
+                        if (h.capacityStatus != null) sb.append(" (").append(h.capacityStatus).append(")");
+                    }
+                    sb.append("\n\nGusto nimo i-navigate sa Locations page para makita sa map?");
+                    addCaraMessage(sb.toString());
+                } else {
+                    addCaraMessage("Wala koy nakita nga hospitals sa pagkakaron, " + getFirstName() + ". Try checking the Locations page for updates.");
                 }
             });
         }).start();
