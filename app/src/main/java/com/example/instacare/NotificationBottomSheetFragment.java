@@ -1850,7 +1850,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
             uid = sm.getCurrentUserUid();
         }
         currentTipNotification = new com.example.instacare.data.local.Notification(
-                "Tip from Cara",
+                "<font color='#FFB300'>Tip</font> from <font color='#FFB300'>Cara</font>",
             tip,
             System.currentTimeMillis(),
             false,
