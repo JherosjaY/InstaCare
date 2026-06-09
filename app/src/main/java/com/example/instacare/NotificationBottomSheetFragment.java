@@ -1842,11 +1842,14 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
     private Runnable notifTipRunnable = new Runnable() {
         @Override
         public void run() {
-            if (!isNotifTipRunning || getContext() == null) return;
+            if (!isNotifTipRunning) return;
             java.util.Random rnd = new java.util.Random();
             String tip = notifTips[rnd.nextInt(notifTips.length)];
-            SessionManager sm = SessionManager.getInstance(requireContext());
-            int uid = sm.getCurrentUserUid();
+            int uid = 0;
+            if (getContext() != null) {
+                SessionManager sm = SessionManager.getInstance(requireContext());
+                uid = sm.getCurrentUserUid();
+            }
             currentTipNotification = new com.example.instacare.data.local.Notification(
                 "💡 Tip from Cara",
                 tip,
@@ -1857,25 +1860,27 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                 "SYSTEM",
                 uid
             );
-            requireActivity().runOnUiThread(() -> {
-                int existingIdx = -1;
-                for (int i = 0; i < notificationList.size(); i++) {
-                    if ("CARATIP".equals(notificationList.get(i).getType())) {
-                        existingIdx = i;
-                        break;
+            if (isAdded() && isNotificationsView) {
+                requireActivity().runOnUiThread(() -> {
+                    int existingIdx = -1;
+                    for (int i = 0; i < notificationList.size(); i++) {
+                        if ("CARATIP".equals(notificationList.get(i).getType())) {
+                            existingIdx = i;
+                            break;
+                        }
                     }
-                }
-                if (existingIdx >= 0) {
-                    notificationList.set(existingIdx, currentTipNotification);
-                    notificationAdapter.notifyItemChanged(existingIdx);
-                } else {
-                    notificationList.add(0, currentTipNotification);
-                    notificationAdapter.notifyItemInserted(0);
-                    notificationsRecyclerView.scheduleLayoutAnimation();
-                }
-                emptyState.setVisibility(View.GONE);
-                notificationsRecyclerView.setVisibility(View.VISIBLE);
-            });
+                    if (existingIdx >= 0) {
+                        notificationList.set(existingIdx, currentTipNotification);
+                        notificationAdapter.notifyItemChanged(existingIdx);
+                    } else {
+                        notificationList.add(0, currentTipNotification);
+                        notificationAdapter.notifyItemInserted(0);
+                        notificationsRecyclerView.scheduleLayoutAnimation();
+                    }
+                    emptyState.setVisibility(View.GONE);
+                    notificationsRecyclerView.setVisibility(View.VISIBLE);
+                });
+            }
             notifTipHandler.postDelayed(this, 30000);
         }
     };
@@ -1931,6 +1936,11 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
     @Override
     public void onDismiss(@NonNull android.content.DialogInterface dialog) {
         super.onDismiss(dialog);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
         stopNotifTips();
     }
 
