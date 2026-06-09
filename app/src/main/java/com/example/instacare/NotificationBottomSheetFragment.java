@@ -1838,9 +1838,51 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
     }
 
     // ─── Notification Tip Reminder ──────────────────────────────
+    private void showNotifTip() {
+        java.util.Random rnd = new java.util.Random();
+        String tip = notifTips[rnd.nextInt(notifTips.length)];
+        int uid = 0;
+        if (getContext() != null) {
+            SessionManager sm = SessionManager.getInstance(requireContext());
+            uid = sm.getCurrentUserUid();
+        }
+        currentTipNotification = new com.example.instacare.data.local.Notification(
+            "💡 Tip from Cara",
+            tip,
+            System.currentTimeMillis(),
+            false,
+            "CARATIP",
+            0,
+            "SYSTEM",
+            uid
+        );
+        if (isAdded() && isNotificationsView) {
+            requireActivity().runOnUiThread(() -> {
+                int existingIdx = -1;
+                for (int i = 0; i < notificationList.size(); i++) {
+                    if ("CARATIP".equals(notificationList.get(i).getType())) {
+                        existingIdx = i;
+                        break;
+                    }
+                }
+                if (existingIdx >= 0) {
+                    notificationList.set(existingIdx, currentTipNotification);
+                    notificationAdapter.notifyItemChanged(existingIdx);
+                } else {
+                    notificationList.add(0, currentTipNotification);
+                    notificationAdapter.notifyItemInserted(0);
+                    notificationsRecyclerView.scheduleLayoutAnimation();
+                }
+                emptyState.setVisibility(View.GONE);
+                notificationsRecyclerView.setVisibility(View.VISIBLE);
+            });
+        }
+    }
+
     private void startNotifTips() {
         if (isNotifTipRunning) return;
         isNotifTipRunning = true;
+        showNotifTip();
         notifTipHandler.postDelayed(notifTipRunnable, 30000);
     }
 
@@ -1853,44 +1895,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         @Override
         public void run() {
             if (!isNotifTipRunning) return;
-            java.util.Random rnd = new java.util.Random();
-            String tip = notifTips[rnd.nextInt(notifTips.length)];
-            int uid = 0;
-            if (getContext() != null) {
-                SessionManager sm = SessionManager.getInstance(requireContext());
-                uid = sm.getCurrentUserUid();
-            }
-            currentTipNotification = new com.example.instacare.data.local.Notification(
-                "💡 Tip from Cara",
-                tip,
-                System.currentTimeMillis(),
-                false,
-                "CARATIP",
-                0,
-                "SYSTEM",
-                uid
-            );
-            if (isAdded() && isNotificationsView) {
-                requireActivity().runOnUiThread(() -> {
-                    int existingIdx = -1;
-                    for (int i = 0; i < notificationList.size(); i++) {
-                        if ("CARATIP".equals(notificationList.get(i).getType())) {
-                            existingIdx = i;
-                            break;
-                        }
-                    }
-                    if (existingIdx >= 0) {
-                        notificationList.set(existingIdx, currentTipNotification);
-                        notificationAdapter.notifyItemChanged(existingIdx);
-                    } else {
-                        notificationList.add(0, currentTipNotification);
-                        notificationAdapter.notifyItemInserted(0);
-                        notificationsRecyclerView.scheduleLayoutAnimation();
-                    }
-                    emptyState.setVisibility(View.GONE);
-                    notificationsRecyclerView.setVisibility(View.VISIBLE);
-                });
-            }
+            showNotifTip();
             notifTipHandler.postDelayed(this, 30000);
         }
     };
