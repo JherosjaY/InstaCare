@@ -144,11 +144,11 @@ public class AdminOverviewFragment extends Fragment {
     }
 
     private void sendBroadcastNotification(String title, String message) {
-        // 1. Save to Room Database
+        String orangeTitle = "<font color='#FB8C00'>" + title + "</font>";
         AppDatabase db = AppDatabase.getDatabase(requireContext());
         new Thread(() -> {
             com.example.instacare.data.local.Notification notification = new com.example.instacare.data.local.Notification(
-                    title, message, System.currentTimeMillis(), false, "BROADCAST", 0, "SYSTEM", 0
+                    orangeTitle, message, System.currentTimeMillis(), false, "BROADCAST", 0, "SYSTEM", 0
             );
             db.notificationDao().insert(notification);
             
