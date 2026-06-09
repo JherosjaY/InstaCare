@@ -751,6 +751,9 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
             ivMiniCaraToggle.setVisibility(View.VISIBLE);
             tvCharC.setVisibility(View.GONE);
             
+            // Hide badge — only shows on bell icon
+            tvNotifBadge.setVisibility(View.GONE);
+            
             getView().findViewById(R.id.pillChipContainer).setVisibility(View.GONE);
             tvEditAction.setVisibility(View.VISIBLE);
             exitEditMode(); 
@@ -774,6 +777,9 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
             ivBellIcon.setVisibility(View.VISIBLE);
             ivMiniCaraToggle.setVisibility(View.GONE);
             tvCharC.setVisibility(View.GONE);
+            
+            // Restore badge — now shows on bell icon
+            updateBadge();
             
             getView().findViewById(R.id.pillChipContainer).setVisibility(View.VISIBLE);
             btnDeleteSelected.setVisibility(View.GONE);
