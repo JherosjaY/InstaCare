@@ -840,7 +840,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                 String type = n.getType() != null ? n.getType().toUpperCase() : "";
                 if ("WELCOME".equals(type) || "TUTORIAL".equals(type)) {
                     showWelcomeDialog(n.getTitle(), finalMsg, timeAgo);
-                } else if ("EVAC_ALERT".equals(type) || "DISASTER".equals(type) || "BROADCAST".equals(type)) {
+                } else if ("EVAC_ALERT".equals(type) || "DISASTER".equals(type) || "BROADCAST".equals(type) || "CARATIP".equals(type)) {
                     showNotificationDetailDialog(rawTitle, finalMsg, timeAgo, type);
                 } else {
                     // Non-welcome notifications just handle normally
@@ -1279,6 +1279,9 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         if ("EVAC_ALERT".equals(type)) {
             icon.setImageResource(R.drawable.ic_home);
             icon.getDrawable().setTint(android.graphics.Color.parseColor("#E53935"));
+        } else if ("CARATIP".equals(type)) {
+            icon.setImageResource(R.drawable.ic_lightbulb);
+            icon.getDrawable().setTint(android.graphics.Color.parseColor("#FFB300"));
         } else {
             icon.setImageResource(R.drawable.ic_shield_alert);
             icon.getDrawable().setTint(android.graphics.Color.parseColor("#FB8C00"));
@@ -1847,7 +1850,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
             uid = sm.getCurrentUserUid();
         }
         currentTipNotification = new com.example.instacare.data.local.Notification(
-            "💡 Tip from Cara",
+                "Tip from Cara",
             tip,
             System.currentTimeMillis(),
             false,
