@@ -15,6 +15,7 @@ import com.example.instacare.data.local.AppDatabase;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import android.content.SharedPreferences;
 import android.widget.TextView;
 import android.widget.Button;
@@ -71,6 +72,24 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
     private boolean isNotificationsView = false;
     private boolean isHistoryLoading = false; // Guard flag
     private boolean isHeaderCollapsed = false;
+
+    // Tip Reminder
+    private Handler tipHandler = new Handler(Looper.getMainLooper());
+    private boolean isTipRunning = false;
+    private String[] caraTips = {
+        "Did you know? Pwede nako i-guide ka mag-set up sa imong Emergency Contacts! Just ask me.",
+        "Tip: Ang SOS button kay magamit nimo bisan asa sa app para sa emergency.",
+        "Did you know? Naa tay First Aid guides sa Guides page! Pwede nako i-explain ang basic first aid.",
+        "Tip: Pwede nimo ko ingnan ug 'show me hospitals' para ma-navigate ka sa Locations page.",
+        "Did you know? Pwede ka mag-endorse og Medical Assistance pinaagi sa My Endorsements page.",
+        "Tip: If duna kay unread notifications, pwede nako i-summarize for you!",
+        "Did you know? Ang Locations page kay naay Hospitals ug Evacuation Centers sa isa ka map.",
+        "Tip: Pwede nimo ko ingnan 'what can you do?' para makita ang akong mga capabilities.",
+        "Did you know? Pwede nimo usbon ang language nako anytime! Bisaya, Tagalog, or English.",
+        "Tip: Always keep your emergency contacts updated para ready ka anytime.",
+        "Did you know? Pwede nako i-suggest ang nearest evacuation centers for you!",
+        "Tip: Check the Guides page for disaster preparedness tips before, during, and after."
+    };
 
     @Override
     public void onResume() {
@@ -160,6 +179,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                         else if ("Tagalog".equalsIgnoreCase(lang)) welcomeText = greetingPrefix + " " + firstName + "! Ako si Cara. Ano ang maitutulong ko sa iyo ngayon?";
                         
                         addCaraMessage(welcomeText);
+                        startTipReminder();
                     }
                 }
                 
@@ -1790,6 +1810,35 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         return fullName.contains(" ") ? fullName.split(" ")[0] : fullName;
     }
 
+    // ─── Tip Reminder ──────────────────────────────────────────
+    private void startTipReminder() {
+        if (isTipRunning) return;
+        isTipRunning = true;
+        tipHandler.postDelayed(tipRunnable, 30000);
+    }
+
+    private void stopTipReminder() {
+        isTipRunning = false;
+        tipHandler.removeCallbacks(tipRunnable);
+    }
+
+    private Runnable tipRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!isTipRunning || getContext() == null) return;
+            if (isNotificationsView) {
+                tipHandler.postDelayed(this, 30000);
+                return;
+            }
+            Random rnd = new Random();
+            String tip = caraTips[rnd.nextInt(caraTips.length)];
+            // Add via feedback card para dili ma-save sa history
+            addCaraFeedbackCard("💡 **Tip:** " + tip);
+            caraRecyclerView.post(() -> caraRecyclerView.scrollToPosition(chatHistory.size() - 1));
+            tipHandler.postDelayed(this, 30000);
+        }
+    };
+
     private String getOfflineMessage(String lang, String firstName) {
         if ("Bisaya".equalsIgnoreCase(lang)) {
             return "Oops, sorry " + firstName + "! Nawala man atong internet connection. Need ta ug connection para makatabang nimo. Palihog check sa imong data or Wi-Fi, okay? Stay safe!";
@@ -1841,7 +1890,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
     @Override
     public void onDismiss(@NonNull android.content.DialogInterface dialog) {
         super.onDismiss(dialog);
-        getParentFragmentManager().setFragmentResult("notification_sync", new Bundle());
+        stopTipReminder();
     }
 
     @Override
