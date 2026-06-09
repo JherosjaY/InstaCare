@@ -113,6 +113,7 @@ public class SOSFlowManager {
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+            dialog.getWindow().setWindowAnimations(R.style.DialogPopAnimation);
         }
         
         dialogView.findViewById(R.id.btnAddContactNow).setOnClickListener(v -> {

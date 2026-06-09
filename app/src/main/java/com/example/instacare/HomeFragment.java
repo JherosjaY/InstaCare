@@ -440,6 +440,7 @@ public class HomeFragment extends Fragment {
             
             if (dialog.getWindow() != null) {
                 dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+                dialog.getWindow().setWindowAnimations(R.style.DialogPopAnimation);
             }
             
             // Setup "Later" button based on context
@@ -460,10 +461,6 @@ public class HomeFragment extends Fragment {
                     requestPermissionsLauncher.launch(permissions);
                  }
             });
-            
-            // Animate Dialog Appearance
-            android.view.animation.Animation scaleUp = android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_up);
-            dialogView.startAnimation(scaleUp);
             
             // --- PREMIUM AESTHETIC: Deep Dim + Frosted Glass Blur ---
             com.example.instacare.utils.BlurUtils.applyBlur(dialog);
@@ -864,6 +861,7 @@ public class HomeFragment extends Fragment {
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+            dialog.getWindow().setWindowAnimations(R.style.DialogPopAnimation);
         }
 
         btnCancel.setOnClickListener(v -> dialog.dismiss());
@@ -874,10 +872,6 @@ public class HomeFragment extends Fragment {
 
         // --- PREMIUM AESTHETIC: Deep Dim + Frosted Glass Blur ---
         com.example.instacare.utils.BlurUtils.applyBlur(dialog);
-
-        // Animate Dialog Appearance (Same as Safety Setup Recommended)
-        android.view.animation.Animation scaleUp = android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_up);
-        dialogView.startAnimation(scaleUp);
 
         dialog.show();
     }
