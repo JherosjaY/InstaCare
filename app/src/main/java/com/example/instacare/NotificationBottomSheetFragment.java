@@ -1408,8 +1408,8 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         if (!isNetworkAvailable()) {
             String fullName = sessionManager.getString("USER_NAME", "User");
             String firstName = fullName.split(" ")[0];
-            addCaraMessage("Oops, sorry " + firstName + 
-                    "! I think we're offline. I need an internet connection para makatabang nimo karon. Please check your connection sa, okay? Stay safe!");
+            String lang = sessionManager.getString("USER_ASSISTANT_LANGUAGE", "Bisaya");
+            addCaraMessage(getOfflineMessage(lang, firstName));
             return;
         }
 
@@ -1423,9 +1423,11 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
             List<com.example.instacare.data.local.Notification> unreadList = db.notificationDao().getUnreadNotificationsForUser(userId);
             String notices = "";
             if (unreadList != null && !unreadList.isEmpty()) {
-                StringBuilder sb = new StringBuilder("Current unread details: ");
+                StringBuilder sb = new StringBuilder("Current unread notifications: ");
                 for (com.example.instacare.data.local.Notification n : unreadList) {
-                    sb.append("[").append(n.getMessage()).append("] ");
+                    String notifType = n.getType() != null ? n.getType() : "GENERAL";
+                    String notifTitle = n.getTitle() != null ? n.getTitle() : "Untitled";
+                    sb.append("[Type:").append(notifType).append(" | ").append(notifTitle).append(": ").append(n.getMessage()).append("] ");
                 }
                 notices = sb.toString();
             }
@@ -1487,10 +1489,13 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                     if (isAdded()) {
                         requireActivity().runOnUiThread(() -> {
                             removeTypingIndicator();
+                            SessionManager sm = SessionManager.getInstance(requireContext());
+                            String lang = sm.getString("USER_ASSISTANT_LANGUAGE", "Bisaya");
+                            String firstName = sm.getString("USER_NAME", "User").split(" ")[0];
                             if (!isNetworkAvailable()) {
-                                addCaraMessage("Oops, sorry " + userName.split(" ")[0] + "! Nawala man atong internet connectivity. Please check sa, okay?");
+                                addCaraMessage(getOfflineMessage(lang, firstName));
                             } else {
-                                addCaraMessage("Dara ang technical error, men: " + message);
+                                addCaraMessage(getErrorMessage(lang, firstName, message));
                             }
                         });
                     }
@@ -1752,6 +1757,24 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         SessionManager sessionManager = SessionManager.getInstance(requireContext());
         String fullName = sessionManager.getString("USER_NAME", "User");
         return fullName.contains(" ") ? fullName.split(" ")[0] : fullName;
+    }
+
+    private String getOfflineMessage(String lang, String firstName) {
+        if ("Bisaya".equalsIgnoreCase(lang)) {
+            return "Oops, sorry " + firstName + "! Nawala man atong internet connection. Need ta ug connection para makatabang nimo. Palihog check sa imong data or Wi-Fi, okay? Stay safe!";
+        } else if ("Tagalog".equalsIgnoreCase(lang)) {
+            return "Oops, sorry " + firstName + "! Nawawala ang internet connection. Kailangan ko ng connection para makatulong sa iyo. Pakicheck ang iyong data or Wi-Fi, okay? Stay safe!";
+        }
+        return "Oops, sorry " + firstName + "! I think we're offline. I need an internet connection to help you. Please check your data or Wi-Fi, okay? Stay safe!";
+    }
+
+    private String getErrorMessage(String lang, String firstName, String error) {
+        if ("Bisaya".equalsIgnoreCase(lang)) {
+            return "Sorry " + firstName + ", naay technical issue sa akong connection: " + error + ". Try daw balik later, men!";
+        } else if ("Tagalog".equalsIgnoreCase(lang)) {
+            return "Sorry " + firstName + ", may technical issue sa connection ko: " + error + ". Subukan mo lang ulit mamaya!";
+        }
+        return "Sorry " + firstName + ", I hit a technical issue: " + error + ". Please try again later!";
     }
 
     private void addCaraTypingIndicator() {
