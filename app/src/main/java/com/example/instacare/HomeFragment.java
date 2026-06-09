@@ -425,7 +425,7 @@ public class HomeFragment extends Fragment {
                 tvTitle.setText(android.text.Html.fromHtml(titleText, android.text.Html.FROM_HTML_MODE_LEGACY));
             }
 
-            androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(getContext())
+            androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(new android.view.ContextThemeWrapper(getContext(), R.style.CustomAlertDialog))
                 .setView(dialogView)
                 .setCancelable(!isForceMandatory)
                 .create();
@@ -855,7 +855,7 @@ public class HomeFragment extends Fragment {
         if (btnDelete != null) btnDelete.setText("Delete Now");
         if (btnCancel != null) btnCancel.setVisibility(View.VISIBLE);
 
-        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(getContext())
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(new android.view.ContextThemeWrapper(getContext(), R.style.CustomAlertDialog))
             .setView(dialogView)
             .create();
 

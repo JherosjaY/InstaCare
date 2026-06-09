@@ -15,7 +15,7 @@ public class SOSFlowManager {
     }
 
     private static void showCautionDialog(Context context) {
-        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(context);
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(new android.view.ContextThemeWrapper(context, R.style.CustomAlertDialog));
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_sos_caution, null);
         builder.setView(view);
         builder.setCancelable(false);
@@ -97,7 +97,7 @@ public class SOSFlowManager {
             tvTitle.setText(android.text.Html.fromHtml(titleText, android.text.Html.FROM_HTML_MODE_LEGACY));
         }
 
-        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(context)
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(new android.view.ContextThemeWrapper(context, R.style.CustomAlertDialog))
             .setView(dialogView)
             .setCancelable(false)
             .create();
