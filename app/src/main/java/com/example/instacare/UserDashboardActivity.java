@@ -216,6 +216,7 @@ public class UserDashboardActivity extends AppCompatActivity {
 
         setupFAB();
         loadProfileImage();
+        startSystemTips();
         
         // --- SOS Label Gradient (White Sheen) ---
         TextView tvSOS = findViewById(R.id.tvSOSLabel);
@@ -611,10 +612,48 @@ public class UserDashboardActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // FORCE CLEANUP: VoiceManager's TTS engine must be shutdown correctly
-        // to prevent "stale" voice threads when the app is reopened/restarted.
+        stopSystemTips();
         com.example.instacare.utils.VoiceManager.getInstance(this).shutdown();
     }
 
     private long lastBackPressTime = 0;
+
+    // ─── System Tip Notifications ────────────────────────────────
+    private android.os.Handler tipHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private String[] systemTips = {
+        "You can set up your Emergency Contacts by asking Cara AI in chat!",
+        "SOS button sends alerts to your contacts and responders — use only in real emergencies.",
+        "First Aid guides are available in the Guides page!",
+        "Ask Cara 'show me hospitals' to navigate to the Locations page.",
+        "You can endorse Medical Assistance via My Endorsements page.",
+        "Locations page has Hospitals and Evacuation Centers in one map.",
+        "You can change Cara's language anytime — Bisaya, Tagalog, or English.",
+        "Cara AI can suggest the nearest evacuation center for you!",
+        "Keep your emergency contacts updated for your safety.",
+        "Ask Cara 'what can you do?' to see all her capabilities.",
+        "Check the Guides page for disaster preparedness tips."
+    };
+    private boolean isTipSystemRunning = false;
+
+    private void startSystemTips() {
+        if (isTipSystemRunning) return;
+        isTipSystemRunning = true;
+        tipHandler.postDelayed(systemTipRunnable, 30000);
+    }
+
+    private void stopSystemTips() {
+        isTipSystemRunning = false;
+        tipHandler.removeCallbacks(systemTipRunnable);
+    }
+
+    private Runnable systemTipRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!isTipSystemRunning) return;
+            java.util.Random rnd = new java.util.Random();
+            String tip = systemTips[rnd.nextInt(systemTips.length)];
+            NotificationHelper.sendTipNotification(UserDashboardActivity.this, tip);
+            tipHandler.postDelayed(this, 30000);
+        }
+    };
 }
