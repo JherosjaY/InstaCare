@@ -216,6 +216,10 @@
         <item name="android:windowEnterAnimation">@anim/slide_up</item>
         <item name="android:windowExitAnimation">@anim/slide_down</item>
     </style>
+    <style name="DialogPopAnimation">
+        <item name="android:windowEnterAnimation">@anim/scale_pop_in</item>
+        <item name="android:windowExitAnimation">@anim/scale_pop_out</item>
+    </style>
     <style name="Theme.InstaCare.UCrop" parent="Base.Theme.InstaCare">
         <item name="android:windowBackground">@color/dashboard_background</item>
         <item name="android:windowNoTitle">true</item>
