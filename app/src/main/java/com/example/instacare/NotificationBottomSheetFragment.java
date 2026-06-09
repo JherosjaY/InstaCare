@@ -15,7 +15,6 @@ import com.example.instacare.data.local.AppDatabase;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import android.content.SharedPreferences;
 import android.widget.TextView;
 import android.widget.Button;
@@ -73,22 +72,23 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
     private boolean isHistoryLoading = false; // Guard flag
     private boolean isHeaderCollapsed = false;
 
-    // Tip Reminder
-    private Handler tipHandler = new Handler(Looper.getMainLooper());
-    private boolean isTipRunning = false;
-    private String[] caraTips = {
-        "Did you know? Pwede nako i-guide ka mag-set up sa imong Emergency Contacts! Just ask me.",
-        "Tip: Ang SOS button kay magamit nimo bisan asa sa app para sa emergency.",
-        "Did you know? Naa tay First Aid guides sa Guides page! Pwede nako i-explain ang basic first aid.",
-        "Tip: Pwede nimo ko ingnan ug 'show me hospitals' para ma-navigate ka sa Locations page.",
-        "Did you know? Pwede ka mag-endorse og Medical Assistance pinaagi sa My Endorsements page.",
-        "Tip: If duna kay unread notifications, pwede nako i-summarize for you!",
-        "Did you know? Ang Locations page kay naay Hospitals ug Evacuation Centers sa isa ka map.",
-        "Tip: Pwede nimo ko ingnan 'what can you do?' para makita ang akong mga capabilities.",
-        "Did you know? Pwede nimo usbon ang language nako anytime! Bisaya, Tagalog, or English.",
-        "Tip: Always keep your emergency contacts updated para ready ka anytime.",
-        "Did you know? Pwede nako i-suggest ang nearest evacuation centers for you!",
-        "Tip: Check the Guides page for disaster preparedness tips before, during, and after."
+    // Notification Tip Reminder
+    private Handler notifTipHandler = new Handler(Looper.getMainLooper());
+    private boolean isNotifTipRunning = false;
+    private com.example.instacare.data.local.Notification currentTipNotification = null;
+    private String[] notifTips = {
+        "Did you know? You can set up your Emergency Contacts by asking me in chat!",
+        "Tip: SOS button sends alerts to your contacts and responders — use only in real emergencies.",
+        "Did you know? First Aid guides are available in the Guides page!",
+        "Tip: Ask me 'show me hospitals' to navigate to the Locations page.",
+        "Did you know? You can endorse Medical Assistance via My Endorsements page.",
+        "Tip: I can summarize your unread notifications in chat.",
+        "Did you know? Locations page has Hospitals and Evacuation Centers in one map.",
+        "Tip: You can change my language anytime — Bisaya, Tagalog, or English.",
+        "Did you know? I can suggest the nearest evacuation center for you!",
+        "Tip: Keep your emergency contacts updated for your safety.",
+        "Did you know? You can ask 'what can you do?' to see all my capabilities.",
+        "Tip: Check the Guides page for disaster preparedness tips."
     };
 
     @Override
@@ -179,7 +179,6 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
                         else if ("Tagalog".equalsIgnoreCase(lang)) welcomeText = greetingPrefix + " " + firstName + "! Ako si Cara. Ano ang maitutulong ko sa iyo ngayon?";
                         
                         addCaraMessage(welcomeText);
-                        startTipReminder();
                     }
                 }
                 
@@ -301,6 +300,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         tvEditAction.setVisibility(View.VISIBLE);
         animateInputArea(false);
         loadNotifications();
+        startNotifTips();
     }
 
     private void setupCara(View view) {
@@ -634,6 +634,9 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
             requireActivity().runOnUiThread(() -> {
                 notificationList.clear();
                 notificationList.addAll(list);
+                if (currentTipNotification != null) {
+                    notificationList.add(0, currentTipNotification);
+                }
                 notificationAdapter.notifyDataSetChanged();
                 
                 // Re-trigger slide-up animation on every data refresh
@@ -655,6 +658,17 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
     }
 
     private void deleteNotification(com.example.instacare.data.local.Notification item, int pos) {
+        if ("CARATIP".equals(item.getType())) {
+            currentTipNotification = null;
+            notificationAdapter.removeItem(pos);
+            if (notificationList.isEmpty()) {
+                emptyState.setVisibility(View.VISIBLE);
+                notificationsRecyclerView.setVisibility(View.GONE);
+                startBellAnimation();
+            }
+            updateBadge();
+            return;
+        }
         new Thread(() -> {
             AppDatabase db = AppDatabase.getDatabase(requireContext());
             if ("EVAC_ALERT".equals(item.getType())) {
@@ -728,7 +742,9 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
 
             animateInputArea(false);
             loadNotifications();
+            startNotifTips();
         } else {
+            stopNotifTips();
             caraView.setVisibility(View.VISIBLE);
             // No need to reset scroll/alpha manually here, 
             // scroll listener will handle it when view is shown
@@ -1811,32 +1827,56 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         return fullName.contains(" ") ? fullName.split(" ")[0] : fullName;
     }
 
-    // ─── Tip Reminder ──────────────────────────────────────────
-    private void startTipReminder() {
-        if (isTipRunning) return;
-        isTipRunning = true;
-        tipHandler.postDelayed(tipRunnable, 30000);
+    // ─── Notification Tip Reminder ──────────────────────────────
+    private void startNotifTips() {
+        if (isNotifTipRunning) return;
+        isNotifTipRunning = true;
+        notifTipHandler.postDelayed(notifTipRunnable, 30000);
     }
 
-    private void stopTipReminder() {
-        isTipRunning = false;
-        tipHandler.removeCallbacks(tipRunnable);
+    private void stopNotifTips() {
+        isNotifTipRunning = false;
+        notifTipHandler.removeCallbacks(notifTipRunnable);
     }
 
-    private Runnable tipRunnable = new Runnable() {
+    private Runnable notifTipRunnable = new Runnable() {
         @Override
         public void run() {
-            if (!isTipRunning || getContext() == null) return;
-            if (isNotificationsView) {
-                tipHandler.postDelayed(this, 30000);
-                return;
-            }
-            Random rnd = new Random();
-            String tip = caraTips[rnd.nextInt(caraTips.length)];
-            // Add via feedback card para dili ma-save sa history
-            addCaraFeedbackCard("💡 **Tip:** " + tip);
-            caraRecyclerView.post(() -> caraRecyclerView.scrollToPosition(chatHistory.size() - 1));
-            tipHandler.postDelayed(this, 30000);
+            if (!isNotifTipRunning || getContext() == null) return;
+            java.util.Random rnd = new java.util.Random();
+            String tip = notifTips[rnd.nextInt(notifTips.length)];
+            SessionManager sm = SessionManager.getInstance(requireContext());
+            int uid = sm.getCurrentUserUid();
+            currentTipNotification = new com.example.instacare.data.local.Notification(
+                "💡 Tip from Cara",
+                tip,
+                System.currentTimeMillis(),
+                false,
+                "CARATIP",
+                0,
+                "SYSTEM",
+                uid
+            );
+            requireActivity().runOnUiThread(() -> {
+                int existingIdx = -1;
+                for (int i = 0; i < notificationList.size(); i++) {
+                    if ("CARATIP".equals(notificationList.get(i).getType())) {
+                        existingIdx = i;
+                        break;
+                    }
+                }
+                if (existingIdx >= 0) {
+                    notificationList.set(existingIdx, currentTipNotification);
+                    notificationAdapter.notifyItemChanged(existingIdx);
+                } else {
+                    notificationList.add(0, currentTipNotification);
+                    notificationAdapter.notifyItemInserted(0);
+                    notificationsRecyclerView.scheduleLayoutAnimation();
+                }
+                emptyState.setVisibility(View.GONE);
+                notificationsRecyclerView.setVisibility(View.VISIBLE);
+            });
+            notifTipHandler.postDelayed(this, 30000);
         }
     };
 
@@ -1891,7 +1931,7 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
     @Override
     public void onDismiss(@NonNull android.content.DialogInterface dialog) {
         super.onDismiss(dialog);
-        stopTipReminder();
+        stopNotifTips();
     }
 
     @Override

@@ -39,7 +39,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="⚠️ DANGER ZONE"
+                android:text="DANGER ZONE"
                 android:textColor="#EF4444"
                 android:textSize="22sp"
                 android:textStyle="bold"
