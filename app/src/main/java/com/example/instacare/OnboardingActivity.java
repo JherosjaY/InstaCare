@@ -88,8 +88,7 @@ public class OnboardingActivity extends AppCompatActivity {
         });
 
         setupIndicators(items.size());
-        setupIndicators(items.size());
-        
+
         // Initial state
         updateIndicators(0, 0f);
 
@@ -254,18 +253,18 @@ public class OnboardingActivity extends AppCompatActivity {
             android.widget.LinearLayout.LayoutParams lp = (android.widget.LinearLayout.LayoutParams) imageView.getLayoutParams();
             
             float width = inactiveSize;
-            float alpha = 0.5f;
+            float alpha = 1.0f;
             boolean isActive = false;
 
             if (i == position) {
                 // Current position: shrinking as we scroll away (offset 0 -> 1)
                 width = activeWidth - (diff * positionOffset);
-                alpha = 1.0f - (0.5f * positionOffset);
+                alpha = 1.0f - (0.3f * positionOffset);
                 isActive = true; // Still considered active/transitioning
             } else if (i == position + 1) {
                 // Next position: growing as we scroll towards (offset 0 -> 1)
                 width = inactiveSize + (diff * positionOffset);
-                alpha = 0.5f + (0.5f * positionOffset);
+                alpha = 0.7f + (0.3f * positionOffset);
                 isActive = true; // Transitioning to active
             }
 

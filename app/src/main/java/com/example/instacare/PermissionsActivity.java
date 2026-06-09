@@ -67,6 +67,28 @@ public class PermissionsActivity extends AppCompatActivity {
 
         allowButton.setOnClickListener(v -> requestPermissions());
         skipButton.setOnClickListener(v -> navigateToLogin());
+
+        // ─── Entry Animations ────────────────────────────────────
+        View headerGroup = findViewById(R.id.headerGroup);
+        View permissionsList = findViewById(R.id.permissionsList);
+        View bottomActions = findViewById(R.id.bottomActions);
+
+        if (headerGroup != null) {
+            headerGroup.setAlpha(0f);
+            headerGroup.setTranslationY(-60f);
+            headerGroup.animate().alpha(1f).translationY(0f).setDuration(600).setInterpolator(new android.view.animation.OvershootInterpolator()).start();
+        }
+
+        if (permissionsList != null) {
+            permissionsList.setAlpha(0f);
+            permissionsList.setTranslationY(80f);
+            permissionsList.animate().alpha(1f).translationY(0f).setDuration(700).setStartDelay(300).setInterpolator(new android.view.animation.OvershootInterpolator()).start();
+        }
+
+        if (bottomActions != null) {
+            bottomActions.setAlpha(0f);
+            bottomActions.animate().alpha(1f).setDuration(500).setStartDelay(600).start();
+        }
     }
 
     private void requestPermissions() {
