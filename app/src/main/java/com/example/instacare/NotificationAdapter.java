@@ -196,7 +196,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             int iconRes;
             int tintColor = android.graphics.Color.parseColor("#E53935"); // default red
             if ("CARATIP".equals(type)) {
-                iconRes = R.drawable.ic_baseline_warning_24;
+                iconRes = R.drawable.ic_lightbulb;
                 tintColor = android.graphics.Color.parseColor("#FFB300");
             } else if ("EVAC_ALERT".equals(type)) {
                 iconRes = R.drawable.ic_megaphone;

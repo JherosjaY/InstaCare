@@ -79,7 +79,7 @@ public class NotificationHelper {
         );
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, TIP_CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_bell)
+                .setSmallIcon(R.drawable.ic_lightbulb)
                 .setContentTitle("Tip from Cara")
                 .setContentText(tipText)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(tipText))
