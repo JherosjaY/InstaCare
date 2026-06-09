@@ -229,3 +229,5 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                 icon.setAlpha(1.0f);
             }
         }
+    }
+}
