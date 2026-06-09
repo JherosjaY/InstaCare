@@ -576,8 +576,10 @@ public class HomeFragment extends Fragment {
             boolean notificationsEnabled = sessionManager.getBoolean("NOTIFICATIONS_ENABLED", true);
             int currentUid = sessionManager.getCurrentUserUid();
             int unreadCount = com.example.instacare.data.local.AppDatabase.getDatabase(appContext).notificationDao().getUnreadCountForUser(currentUid);
+            int tipCount = sessionManager.getInt("CARATIP_BADGE", 0);
+            int totalUnread = unreadCount + tipCount;
             
-            int finalUnreadCount = unreadCount;
+            int finalUnreadCount = totalUnread;
             if (getActivity() != null) {
                 getActivity().runOnUiThread(() -> {
                     if (!isAdded()) return;

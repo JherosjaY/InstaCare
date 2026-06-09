@@ -661,6 +661,8 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
     private void deleteNotification(com.example.instacare.data.local.Notification item, int pos) {
         if ("CARATIP".equals(item.getType())) {
             currentTipNotification = null;
+            SessionManager sm = SessionManager.getInstance(requireContext());
+            sm.putInt("CARATIP_BADGE", 0);
             notificationAdapter.removeItem(pos);
             if (notificationList.isEmpty()) {
                 emptyState.setVisibility(View.VISIBLE);
@@ -697,10 +699,12 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         new Thread(() -> {
             List<com.example.instacare.data.local.Notification> unread = AppDatabase.getDatabase(requireContext()).notificationDao().getUnreadNotificationsForUser(userId);
             int count = (unread != null) ? unread.size() : 0;
+            int tipCount = sessionManager.getInt("CARATIP_BADGE", 0);
+            int total = count + tipCount;
             requireActivity().runOnUiThread(() -> {
-                if (count > 0) {
+                if (total > 0) {
                     tvNotifBadge.setVisibility(View.VISIBLE);
-                    tvNotifBadge.setText(String.valueOf(count));
+                    tvNotifBadge.setText(String.valueOf(total));
                 } else {
                     tvNotifBadge.setVisibility(View.GONE);
                 }
@@ -1851,14 +1855,16 @@ public class NotificationBottomSheetFragment extends BaseBlurredBottomSheet {
         }
         currentTipNotification = new com.example.instacare.data.local.Notification(
                 "<font color='#FFB300'>Tip</font> from <font color='#FFB300'>Cara</font>",
-            tip,
-            System.currentTimeMillis(),
-            false,
-            "CARATIP",
-            0,
-            "SYSTEM",
-            uid
+                tip,
+                System.currentTimeMillis(),
+                false,
+                "CARATIP",
+                0,
+                "SYSTEM",
+                uid
         );
+        SessionManager sm = SessionManager.getInstance(requireContext());
+        sm.putInt("CARATIP_BADGE", 1);
         if (isAdded() && isNotificationsView) {
             requireActivity().runOnUiThread(() -> {
                 int existingIdx = -1;
