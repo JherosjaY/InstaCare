@@ -13,18 +13,43 @@ public class SOSFlowManager {
 
     public static void startFlow(Context context) {
         if (context == null) return;
-        
+        showCautionDialog(context);
+    }
+
+    private static void showCautionDialog(Context context) {
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(context);
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_sos_caution, null);
+        builder.setView(view);
+        builder.setCancelable(false);
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        view.findViewById(R.id.btnProceedSOS).setOnClickListener(v -> {
+            dialog.dismiss();
+            proceedWithSOS(context);
+        });
+
+        view.findViewById(R.id.btnCancelSOS).setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+
+        com.example.instacare.utils.BlurUtils.applyBlur(dialog);
+        dialog.show();
+    }
+
+    private static void proceedWithSOS(Context context) {
         SessionManager sessionManager = SessionManager.getInstance(context);
         int userId = sessionManager.getCurrentUserUid();
-        
-        // --- IRONCLAD SECURITY: Verify contacts before proceeding ---
+
         new Thread(() -> {
             int count = com.example.instacare.data.local.AppDatabase.getDatabase(context).emergencyContactDao().getCountByUser(userId);
-            
+
             if (context instanceof android.app.Activity) {
                 ((android.app.Activity) context).runOnUiThread(() -> {
                     if (count > 0) {
-                        // Phase 1: 5-second Verification Countdown (Verification before selection)
                         showCountdown(context, "Preparing Emergency Signal", "PREPARE");
                     } else {
                         showMandatorySetupDialog(context);
